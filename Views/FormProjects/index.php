@@ -19,7 +19,7 @@
                         echo '    <td>'.$formProject['nama_project'].'</td>';
                         echo '    <td>';
                         echo '        <center>';
-                        echo '            <span data-tooltip="tooltip" data-placement="top" title="" data-original-title="View Data Form"><a class="icon-green" href="formproject/edit/'. $formProject["id"] .'"><i class="fe fe fe-eye"></i></a></span>';                                
+                        echo '            <span data-tooltip="tooltip" data-placement="top" title="" data-original-title="View Data Form"><a class="icon-green" href="forms/showAllForms/'. $formProject["id"] .'"><i class="fe fe fe-eye"></i></a></span>';                                
                         echo '            <span data-tooltip="tooltip" data-placement="top" title="" data-original-title="Edit Project"><a class="icon-green" href="javascript:get_form_project('. $formProject["id"] .')"><i class="fe fe-edit"></i></a></span>';
                         echo '           <span data-tooltip="tooltip" data-placement="top" title="" data-original-title="Delete Project"><a class="icon-red" href="javascript:delete_form_project('. $formProject["id"] .', '."'$formProject[nama_project]'".')"><i class="fe fe-trash-2"></i></a></span>';
                         echo '        </center>';
@@ -300,9 +300,6 @@
     //delete data
 
     function delete_form_project(form_project_id, nama_project){
-        link = "{{route('formproject.destroy', ':id')}}";
-        link = link.replace(':id', form_project_id);
-        
 		swal.fire({
 			title: "Delete "+nama_project+"?",
 			text: ""+nama_project+" will deleted on your project list!",
