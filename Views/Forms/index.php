@@ -2,7 +2,8 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12">	
-            <h2 class="text-center">Form Project <?php echo implode(array_column($forms, 'nama_project')); ?></h2>
+
+            <h2 class="text-center">Form Project <?php echo array_column($forms, 'nama_project')[0]; ?></h2>
             <form id="check-export-form">
                 <table id="formTable" class="table table-striped table-bordered" style="width:100%">
                     <thead>
@@ -17,24 +18,26 @@
                         <?php 
                             foreach ($forms as $number => $form){
                                 // print_r($form) ;
-                                echo '<tr>';
-                                echo '    <td>'.++$number.'</td>';
-                                echo '    <td><input name="checkform[]" value="'.$form[0].'" type="checkbox"> </td>';
-                                echo '    <td>'.$form['form_name'].'</td>';
-                                echo '    <td>';
-                                echo '        <center>';
-                                echo '            <span data-tooltip="tooltip" data-placement="top" title="" data-original-title="Preview Form"><a class="icon-green" href="previewForm/'.$form[0].'"><i class="fe fe fe-eye"></i></a></span>';
-                                echo '            <span data-tooltip="tooltip" data-placement="top" title="" data-original-title="Edit Form"><a class="icon-green" href="/formgeneratornative/formGenerator/edit/'.$form[0].'"><i class="fe fe-edit"></i></a></span>';
-                                echo '            <span data-tooltip="tooltip" data-placement="top" title="" data-original-title="Delete Form"><a class="icon-red" href="javascript:delete_form('.$form[0].', '."'$form[form_name]'".')"><i class="fe fe-trash-2"></i></a></span>';
-                                echo '        </center>';
-                                echo '    </td>';
-                                echo '</tr>';
+                                if(isset($form['form_name'])){
+                                    echo '<tr>';
+                                    echo '    <td>'.++$number.'</td>';
+                                    echo '    <td><input name="checkform[]" value="'.$form['id'].'" type="checkbox"> </td>';
+                                    echo '    <td>'.$form['form_name'].'</td>';
+                                    echo '    <td>';
+                                    echo '        <center>';
+                                    echo '            <span data-tooltip="tooltip" data-placement="top" title="" data-original-title="Preview Form"><a class="icon-green" href="previewForm/'.$form[0].'"><i class="fe fe fe-eye"></i></a></span>';
+                                    echo '            <span data-tooltip="tooltip" data-placement="top" title="" data-original-title="Edit Form"><a class="icon-green" href="/formgeneratornative/formGenerator/editForm/'.$form[0].'"><i class="fe fe-edit"></i></a></span>';
+                                    echo '            <span data-tooltip="tooltip" data-placement="top" title="" data-original-title="Delete Form"><a class="icon-red" href="javascript:delete_form('.$form[0].', '."'$form[form_name]'".')"><i class="fe fe-trash-2"></i></a></span>';
+                                    echo '        </center>';
+                                    echo '    </td>';
+                                    echo '</tr>';  
+                                }
                             }
                         ?>
                     </tbody>
                 </table>
             </form>
-            <a href="/formgeneratornative/formgenerator/createForm/<?php echo $form['form_projects_id']?>">
+            <a href="/formgeneratornative/formGenerator/createForm/<?php echo $form['form_projects_id']?>">
                 <button  class="float btn btn-icon btn-add btn-info mt-1 mb-1" data-tooltip="tooltip" data-placement="left" title="" data-original-title="Build Form">
                     <span class="btn-inner--icon"><i class="fe fe-plus"></i></span>
                 </button>

@@ -5,7 +5,8 @@ class formsController extends Controller{
 
         $forms = new Form();
 
-        $d['forms'] = $forms->showAllForms($id);
+        $d['forms'] = $forms->showAllForms($id) + $forms->projectName($id);
+        // print_r($d);
         $this->set($d);
         $this->render("index");
     }

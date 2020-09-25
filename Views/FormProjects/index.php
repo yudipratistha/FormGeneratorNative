@@ -86,8 +86,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    {{-- <a id="loggin" class='login' href="{{route('formProject.index')}}" target='popup' onclick=window.open(this.href,'popup','width=600,height=600'); return false;>Loggin</a> --}}
-                    {{-- <button type="button" onclick="getOAuth()"><a id="loggin" href="{{route('formproject.getToken')}}" onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=600'); return false;" >Loggin</a></button> --}}
+                    <!-- {{-- <a id="loggin" class='login' href="{{route('formProject.index')}}" target='popup' onclick=window.open(this.href,'popup','width=600,height=600'); return false;>Loggin</a> --}}
+                    {{-- <button type="button" onclick="getOAuth()"><a id="loggin" href="{{route('formproject.getToken')}}" onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=600'); return false;" >Loggin</a></button> --}} -->
                     <button type="button" class="btn btn-blue-gradient" onclick="getOAuth('create')">Get Access Token</button>
                     <button type="button" class="btn btn-blue-gradient" data-dismiss="modal">Close</button>
                     <button type="button" onclick="tambah_data_form_project()" class="btn btn-green-gradient">Save</button>
@@ -118,7 +118,7 @@
                                 </div>   
                                 <div class="form-group form-alert">
                                     <label class="form-label" >Upload OAuth</label>
-                                    <input type="file" value="" class="form-control input-md" name="oauth_edit" id="oauth_edit" accept="application/JSON">
+                                    <input type="file" class="form-control input-md" name="oauth_edit" id="oauth_edit" accept="application/JSON">
                                 </div> 
                                 <div class="form-group">
                                     <label for="usr">access_token:</label>
@@ -159,6 +159,10 @@
     </div>
 
 <script>
+if (window.opener && window.opener !== window) {
+  // you are in a popup
+  alert("Popup Closed");
+}
     function getOAuth(formId){
         if(formId == 'create'){
             var form = $("#formTambah").get(0);
@@ -167,13 +171,14 @@
         }
 		$.ajax({
 			type: "POST", 
-			url: "{{route('formproject.getOAuth')}}",
+			url: "formProjects/getOAuth/",
 			processData: false,
             contentType: false,
             cache: false, 
 			data: new FormData(form), 
 			success: function(data) {
-                window.open("{{route('formproject.getToken')}}",'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=600'); return false;
+                console.log(form)
+                window.open("formProjects/callback/",'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=600'); return false;
 			},
             error: function(xhr, status, error){
             }
@@ -235,13 +240,13 @@
                 // data_token = jQuery.parseJSON(data.data_token);
                 $('#form_project_id').val(data.formProject.id);
                 $('#nama_project_edit').val(data.formProject.nama_project);
-                // $('#name_update').val(data.data_project.nama_project);
-				// $('#access_token_edit').val(data_token.access_token);
-                // $('#expires_in_edit').val(data_token.expires_in);
-                // $('#refresh_token_edit').val(data_token.refresh_token);
-                // $('#scope_edit').val(data_token.scope);
-                // $('#token_type_edit').val(data_token.token_type);
-                // $('#created_edit').val(data_token.created);
+                $('#name_update').val(data.formProject.nama_project);
+				$('#access_token_edit').val(data.formProject.access_token);
+                $('#expires_in_edit').val(data.formProject.expires_in);
+                $('#refresh_token_edit').val(data.formProject.refresh_token);
+                $('#scope_edit').val(data.formProject.scope);
+                $('#token_type_edit').val(data.formProject.token_type);
+                $('#created_edit').val(data.formProject.created);
 				$('#editFormProject').modal('show');
             },
             error: function(data){

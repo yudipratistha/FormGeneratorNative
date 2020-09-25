@@ -6,6 +6,12 @@ class Form extends Model{
         $req->execute();
         return $req->fetchAll();
     }
+    public function projectName($id){
+        $sql = "SELECT nama_project FROM form_projects WHERE id =". $id;
+        $req = Database::getBdd()->prepare($sql);
+        $req->execute();
+        return $req->fetchAll();
+    }
 
     // public function create($nama_project){
     //     $sql = "INSERT INTO form_projects (nama_project, created_at, updated_at) VALUES (:nama_project, :created_at, :updated_at)";
@@ -20,8 +26,8 @@ class Form extends Model{
     //     ]);
     // }
 
-    public function showFormProject($id){
-        $sql = "SELECT * FROM form_projects WHERE id =" . $id;
+    public function showForm($id){
+        $sql = "SELECT * FROM forms WHERE id =" . $id;
         $req = Database::getBdd()->prepare($sql);
         $req->execute();
         return $req->fetch();
