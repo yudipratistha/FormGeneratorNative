@@ -14,10 +14,19 @@ class formProjectsController extends Controller{
         if (!empty($_POST["nama_project"])){
             require(ROOT . 'Models/FormProject.php');
             $formProject= new FormProject();
-            if ($formProject->create($_POST["nama_project"])){
-                mkdir("../public/1/test2/", 0777, true);
-                header("Location: " . WEBROOT . "formProject/index");
-            }
+            $projectPath = "../public/file/1/".$_POST["nama_project"]."/";
+
+            mkdir($projectPath, 0777, true);
+            $oauthFile = file_get_contents($_FILES["oauth"]['tmp_name']);
+            file_put_contents($projectPath."/oauth.json", $oauthFile);
+
+            $tokenFile = array("access_token"=> $_POST["access_token"], "expires_in"=>$_POST["expires_in"], "refresh_token"=>$_POST["refresh_token"], 
+                "scope"=>$_POST["scope"], "token_type"=>$_POST["token_type"], "created"=>$_POST["created"]);
+            file_put_contents($projectPath."/token.json", json_encode($tokenFile));
+
+            $formProject->create($_POST["nama_project"], $projectPath.'oauth.json', $projectPath.'token.json');
+            header("Location: " . WEBROOT . "formProject/index");
+            
         }else{
             header('Input Empty!', true, 500);
             die("Input Empty!");
@@ -25,35 +34,72 @@ class formProjectsController extends Controller{
     }
 
     function edit($id){
+        session_start();
         require(ROOT . 'Models/FormProject.php');
         $formProject= new FormProject();
-        $token_file = __DIR__ . '../../public/google/token.json';
+        $tokenPath["formProject"] = $formProject->getToken($id);
+        $token_file = __DIR__ . '../../public/'.$tokenPath["formProject"]["project_token_file"];
         $token_file = file_get_contents($token_file);
         $token = json_decode($token_file, true);
         $d["formProject"] = $formProject->showFormProject($id) + $token;
+        $_SESSION['edit_id_project'] = $id;
         echo json_encode($d);
     }
 
     function update($id){
         require(ROOT . 'Models/FormProject.php');
         $formProject= new FormProject();
+        $projectPath = "../public/file/6/".$_POST["nama_project_edit"]."/";
 
-        if (isset($_POST["title"]))
-        {
-            if ($formProject->edit($id, $_POST["title"], $_POST["description"]))
-            {
-                header("Location: " . WEBROOT . "formProjects/index");
+        if (!empty($_POST["nama_project_edit"])){
+            $tokenPath["formProject"] = $formProject->getToken($id);
+            rename("../public/".substr($tokenPath["formProject"]["project_oauth_file"], 0, -11), $projectPath);
+
+            if(!empty($_FILES["oauth_edit"]['tmp_name'])){
+                $oauthFile = file_get_contents($_FILES["oauth"]['tmp_name']);
+                file_put_contents($projectPath."/oauth.json", $oauthFile);
             }
+            $formProject->edit($id, $_POST["nama_project_edit"], $projectPath.'/oauth.json');
+            header("Location: " . WEBROOT . "formProjects/index");
+                // echo json_encode($tokenPath["formProject"]["project_oauth_file"]);
+        }else{
+            header('Input Empty!', true, 500);
+            die("Input Empty!");
         }
-        $this->render("edit");
     }
 
     function delete($id){
         require(ROOT . 'Models/FormProject.php');
 
         $formProject = new FormProject();
+        $oauthPath["formProject"] = $formProject->getToken($id);
         if ($formProject->delete($id))
         {
+            $dir = substr($oauthPath["formProject"]["project_oauth_file"], 0, -11);
+            $it = new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS);
+            $files = new RecursiveIteratorIterator($it,
+                        RecursiveIteratorIterator::CHILD_FIRST);
+            foreach($files as $file) {
+                if ($file->isDir()){
+                    rmdir($file->getRealPath());
+                } else {
+                    unlink($file->getRealPath());
+                }
+            }
+            rmdir($dir);
+            
+            // if (is_dir($dir)) {
+            //     $objects = scandir($dir);
+            //     foreach ($objects as $object) {
+            //       if ($object != "." && $object != "..") {
+            //         if (filetype($dir."/".$object) == "dir") 
+            //            rrmdir($dir."/".$object); 
+            //         else unlink   ($dir."/".$object);
+            //       }
+            //     }
+            //     reset($objects);
+            //     rmdir($dir);
+            //   }
             header("Location: " . WEBROOT . "formProjects/index");
         }
     }
@@ -62,24 +108,24 @@ class formProjectsController extends Controller{
         session_start();
         unset($_SESSION['oauth_credentials']);
         unset($_SESSION['upload_token']);
-        print_r("sdfsd");
         if(!empty($_FILES["oauth"])){
-            print_r("sdfsd");
-            $auth_file = $_FILES["oauth"]; 
-            $auth_file = file_get_contents($auth_file['tmp_name']);
+            $oauthPath = $_FILES["oauth"]; 
+            $oauthPath = file_get_contents($oauthPath['tmp_name']);
             $_SESSION['get_token'] =  'create';
         }else{
             unset($_SESSION['get_token']);
-            if(!empty($_FILES["oauth_edit"]['tmp_name'])){$_SESSION['oauth_edit'] = $_FILES["oauth_edit"]; $auth_file = $_FILES["oauth_edit"]; $auth_file = file_get_contents($auth_file['tmp_name']);} 
+            if(!empty($_FILES["oauth_edit"]['tmp_name'])){$_SESSION['oauth_edit'] = $_FILES["oauth_edit"]; $oauthPath = $_FILES["oauth_edit"]; $oauthPath = file_get_contents($oauthPath['tmp_name']);} 
             else{
-                // $formprojects = FormProject::find($_SESSION['edit_id_project']);
-                $auth_file = __DIR__ . '../../public/google/oauth.json';
-                $auth_file = file_get_contents($auth_file);
+                require(ROOT . 'Models/FormProject.php');
+                $formProject= new FormProject();
+                $oauthPath["formProject"] = $formProject->getToken($_SESSION['edit_id_project']);
+                $oauthPath = __DIR__ . '../../public/'.$oauthPath["formProject"]["project_oauth_file"];
+                $oauthPath = file_get_contents($oauthPath);
             }
                 
         }
         
-        $oauth = json_decode($auth_file, true);
+        $oauth = json_decode($oauthPath, true);
         $_SESSION['oauth_credentials'] =  $oauth;
     }
 
@@ -89,7 +135,6 @@ class formProjectsController extends Controller{
 
         session_start();
         // $oauth_credentials = storage_path('app\google\google\oauth-credentials.json');$_SERVER['PHP_SELF']
-    
         $redirect_uri = 'http://' . $_SERVER['HTTP_HOST'] . ('/formgeneratornative/formProjects/callback/');
 
         $client = new Google_Client();

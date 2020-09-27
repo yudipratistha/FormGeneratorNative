@@ -277,7 +277,7 @@ if (window.opener && window.opener !== window) {
             link = link.replace(':id', form_project_id);
             return $.ajax({
                 type: "POST", 
-                url: link ,
+                url: "formProjects/update/" + form_project_id ,
                 processData: false,
                 contentType: false,
                 cache: false,
@@ -295,7 +295,7 @@ if (window.opener && window.opener !== window) {
             if(result.value){
             swal.fire({title:"Update Project Success!", text:"Successfully updated this project", type:"success"})
             .then(function(){ 
-                window.location.href = "{{ url('/')}}";
+                window.location.reload();
             });
             }
         })
