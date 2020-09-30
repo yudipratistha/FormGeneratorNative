@@ -1,11 +1,16 @@
 <?php
 class formProjectsController extends Controller{
+    public function __construct(){
+        session_start();
+        if(empty($_SESSION["user"])) header("Location: /formgeneratornative/auth/login");
+    }
+
     function index(){
         require(ROOT . 'Models/FormProject.php');
 
         $formProjects = new FormProject();
 
-        $d['formProjects'] = $formProjects->showAllFormProjects();
+        $d['formProjects'] = $formProjects->showAllFormProjects($_SESSION["user"]['id']);
         $this->set($d);
         $this->render("index");
     }
@@ -24,7 +29,7 @@ class formProjectsController extends Controller{
                 "scope"=>$_POST["scope"], "token_type"=>$_POST["token_type"], "created"=>$_POST["created"]);
             file_put_contents($projectPath."/token.json", json_encode($tokenFile));
 
-            $formProject->create($_POST["nama_project"], $projectPath.'oauth.json', $projectPath.'token.json');
+            $formProject->create($_POST["nama_project"], $projectPath.'oauth.json', $projectPath.'token.json', $_SESSION['user']['id']);
             header("Location: " . WEBROOT . "formProject/index");
             
         }else{
@@ -34,7 +39,7 @@ class formProjectsController extends Controller{
     }
 
     function edit($id){
-        session_start();
+        // session_start();
         require(ROOT . 'Models/FormProject.php');
         $formProject= new FormProject();
         $tokenPath["formProject"] = $formProject->getToken($id);
@@ -49,19 +54,26 @@ class formProjectsController extends Controller{
     function update($id){
         require(ROOT . 'Models/FormProject.php');
         $formProject= new FormProject();
-        $projectPath = "../public/file/6/".$_POST["nama_project_edit"]."/";
+        $projectPath = "../public/file/1/".$_POST["nama_project_edit"]."/";
 
         if (!empty($_POST["nama_project_edit"])){
             $tokenPath["formProject"] = $formProject->getToken($id);
             rename("../public/".substr($tokenPath["formProject"]["project_oauth_file"], 0, -11), $projectPath);
 
             if(!empty($_FILES["oauth_edit"]['tmp_name'])){
-                $oauthFile = file_get_contents($_FILES["oauth"]['tmp_name']);
+                $oauthFile = file_get_contents($_FILES["oauth_edit"]['tmp_name']);
                 file_put_contents($projectPath."/oauth.json", $oauthFile);
             }
-            $formProject->edit($id, $_POST["nama_project_edit"], $projectPath.'/oauth.json');
+            $tokenFile = array("access_token"=> $_POST["access_token_edit"], "expires_in"=>$_POST["expires_in_edit"], "refresh_token"=>$_POST["refresh_token_edit"], 
+                "scope"=>$_POST["scope_edit"], "token_type"=>$_POST["token_type_edit"], "created"=>$_POST["created_edit"]);
+            $f=fopen($projectPath."/token.json",'w+');
+            fwrite($f,json_encode($tokenFile));
+            fclose($f);
+            // file_put_contents($projectPath."/token.json", json_encode($tokenFile));
+
+            $formProject->edit($id, $_POST["nama_project_edit"], $projectPath.'oauth.json');
             header("Location: " . WEBROOT . "formProjects/index");
-                // echo json_encode($tokenPath["formProject"]["project_oauth_file"]);
+            // echo json_encode($tokenPath["formProject"]["project_oauth_file"]);
         }else{
             header('Input Empty!', true, 500);
             die("Input Empty!");
@@ -105,7 +117,7 @@ class formProjectsController extends Controller{
     }
 
     function getOAuth(){
-        session_start();
+        // session_start();
         unset($_SESSION['oauth_credentials']);
         unset($_SESSION['upload_token']);
         if(!empty($_FILES["oauth"])){
@@ -133,7 +145,7 @@ class formProjectsController extends Controller{
     {
         require __DIR__ . '../../vendor/autoload.php';
 
-        session_start();
+        // session_start();
         // $oauth_credentials = storage_path('app\google\google\oauth-credentials.json');$_SERVER['PHP_SELF']
         $redirect_uri = 'http://' . $_SERVER['HTTP_HOST'] . ('/formgeneratornative/formProjects/callback/');
 

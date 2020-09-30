@@ -1,59 +1,955 @@
 <?php
 class formsController extends Controller{
-    function showAllForms($id){
+    public function __construct(){
         require(ROOT . 'Models/Form.php');
+        require __DIR__ . '../../vendor/autoload.php';
+        session_start();
+        if(!isset($_SESSION["user"])) header("Location: /formgeneratornative/auth/login");
+    }
 
+    function showAllForms($id){
         $forms = new Form();
 
         $d['forms'] = $forms->showAllForms($id) + $forms->projectName($id);
-        // print_r($d);
         $this->set($d);
         $this->render("index");
     }
 
-    // function create(){
-    //     if (!empty($_POST["nama_"])){
-    //         require(ROOT . 'Models/Form.php');
-    //         $form= new Form();
-    //         if ($form->create($_POST["nama_"]))
-    //         {
-    //             header("Location: " . WEBROOT . "form/index");
-    //         }
-    //     }else{
-    //         header('Input Empty!', true, 500);
-    //         die("Input Empty!");
-    //     }
-    // }
-
-    // function edit($id){
-    //     require(ROOT . 'Models/Form.php');
-    //     $form= new Form();
-    //     $d["form"] = $form->showForm($id);
-    //     echo json_encode($d);
-    // }
-
-    // function update($id){
-    //     require(ROOT . 'Models/Form.php');
-    //     $form= new Form();
-
-    //     if (isset($_POST["title"]))
-    //     {
-    //         if ($form->edit($id, $_POST["title"], $_POST["description"]))
-    //         {
-    //             header("Location: " . WEBROOT . "forms/index");
-    //         }
-    //     }
-    //     $this->render("edit");
-    // }
-
     function delete($id){
-        require(ROOT . 'Models/Form.php');
-
         $form = new Form();
         if ($form->delete($id))
         {
             echo "success";
         }
+    }
+
+    public function createMysql($project_name, $forms){
+        $sql = "";
+
+        $sql = $sql."create DATABASE `".$project_name."`; ".PHP_EOL;
+        $sql = $sql."USE `".$project_name."`; ".PHP_EOL;
+
+        foreach($forms as $i => $form){
+            $sql = $sql."DROP TABLE IF EXISTS `".str_replace(' ', '_', $form->form_name)."`; ".PHP_EOL;
+            $sql = $sql."create TABLE `".$form[0]['form_name']."` ( ".PHP_EOL;
+            $sql = $sql."`id` int(12) NOT NULL AUTO_INCREMENT, ".PHP_EOL;
+            foreach(explode(',', $form[0]['form_attr']) as $form_attr){
+                $sql = $sql."`".$form_attr."` varchar(255) DEFAULT NULL, ".PHP_EOL;
+            }
+            $sql = $sql."PRIMARY KEY (`id`) ".PHP_EOL;
+            $sql = $sql.") ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=latin1; ".PHP_EOL;
+        }
+        return $sql;
+    }
+
+    function deleteDirectory($dir){
+        $it = new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS);
+        $files = new RecursiveIteratorIterator($it,
+                    RecursiveIteratorIterator::CHILD_FIRST);
+        foreach($files as $file) {
+            if ($file->isDir()){
+                rmdir($file->getRealPath());
+            } else {
+                unlink($file->getRealPath());
+            }
+        }
+    }
+
+    function copyDirectory($source, $dest, $permissions = 0777){
+        $sourceHash = $this->hashDirectory($source);
+        // Check for symlinks
+        if (is_link($source)) {
+            return symlink(readlink($source), $dest);
+        }
+        // Simple copy for a file
+        if (is_file($source)) {
+            return copy($source, $dest);
+        }
+        // Make destination directory
+        if (!is_dir($dest)) {
+            mkdir($dest, $permissions);
+        }
+        // Loop through the folder
+        $dir = dir($source);
+        while (false !== $entry = $dir->read()) {
+            // Skip pointers
+            if ($entry == '.' || $entry == '..') {
+                continue;
+            }
+            // Deep copy directories
+            if($sourceHash != $this->hashDirectory($source."/".$entry)){
+                 $this->copyDirectory("$source/$entry", "$dest/$entry", $permissions);
+            }
+        }
+        // Clean up
+        $dir->close();
+        return true;
+    }
+    
+    // In case of coping a directory inside itself, there is a need to hash check the directory otherwise and infinite loop of coping is generated
+    
+    function hashDirectory($directory){
+        if (! is_dir($directory)){ return false; }
+    
+        $files = array();
+        $dir = dir($directory);
+    
+        while (false !== ($file = $dir->read())){
+            if ($file != '.' and $file != '..') {
+                if (is_dir($directory . '/' . $file)) { $files[] = $this->hashDirectory($directory . '/' . $file); }
+                else { $files[] = md5_file($directory . '/' . $file); }
+            }
+        }
+    
+        $dir->close();
+    
+        return md5(implode('', $files));
+    }
+
+    public function exportPhpProject($request){     
+        parse_str($request, $data);
+        $formQuery = new Form();
+        
+        if(empty($data['checkform'])) return header("Location: " . WEBROOT . 'forms/showAllForms/'.strtok($request, '?'));
+        foreach($data['checkform'] as $i => $checkform_id){
+            // $checkform_id = json_encode($checkform_id);
+            if($i==0)$form = 'id = '. $checkform_id;
+            else$form = $form.' OR id = '. $checkform_id;
+        }
+        $forms = $formQuery->getForm($form);
+        // foreach($forms as $i => $form){
+        //     echo $form['id'];
+        // }
+        // print_r($project['project_token_file']);
+        //     header('Content-Type: application/json');
+
+        $project = $formQuery->getProject(strtok($request, '?'));
+        $user_path = $_SESSION['user']['id'].'/';
+        
+
+        $client = new Google_Client();
+        $service = new Google_Service_Drive($client);
+        $oauth_file = json_decode(file_get_contents(__DIR__ . '../../public/'.$project['project_oauth_file']), true);
+        $token_file = json_decode(file_get_contents(__DIR__ . '../../public/'.$project['project_token_file']), true);
+        
+        $client->setAuthConfig($oauth_file);
+        $client->setAccessType('offline');
+        $client->setApprovalPrompt('force');
+
+        $client->setAccessToken($token_file);
+        
+        if ($client->isAccessTokenExpired()) {
+            if ($client->getRefreshToken()) {
+                $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
+            }
+            $project_token_file = $project['project_token_file'];
+            $project_token_file = substr($project_token_file, 0, -11);
+            $f=fopen($project_token_file.'/token.json','w+');
+            fwrite($f,json_encode($client->getAccessToken()));
+            fclose($f);
+        }
+        
+        
+        $this->deleteDirectory('../public/zip_file/'.$user_path);
+        if (!file_exists('../public/zip_file/'.$user_path)) mkdir('../public/zip_file/'.$user_path, 0777, true);
+        $project_path = $user_path.$project['nama_project'].'/';
+        $share_path = $user_path.$project['nama_project'];
+        if (!file_exists('../public/zip_file/'.$project_path)) mkdir('../public/zip_file/'.$project_path, 0777, true);
+        if (!file_exists('../public/zip_file/'.$share_path)) mkdir('../public/zip_file/'.$share_path, 0777, true);
+        if (!file_exists('../public/zip_file/'.$project_path."/attachment")) mkdir('../public/zip_file/'.$project_path."/attachment", 0777, true);
+        if (!file_exists('../public/zip_file/'.$share_path."/attachment")) mkdir('../public/zip_file/'.$share_path."/attachment", 0777, true);
+        if (!file_exists('../public/zip_file/'.$project_path."/google/secret/")) mkdir('../public/zip_file/'.$project_path."/google/secret/", 0777, true);
+        if (!file_exists('../public/zip_file/'.$share_path."/google/secret/")) mkdir('../public/zip_file/'.$share_path."/google/secret/", 0777, true);
+        if (!file_exists('../public/zip_file/'.$project_path."/google/secret/synchronize")) mkdir('../public/zip_file/'.$project_path."/google/secret/synchronize", 0777, true);
+        $storage_path1 = '../public/google/';
+        $storage_path3 = '../public/synchronize/';
+        $storage_path2 = '../public/zip_file/' . $project_path;
+        $storage_path4 = '../public/zip_file/' . $share_path;
+        $storage_path5 = '../public/zip_file/' . $user_path;
+        // $storage_path6 = 
+        // $storage_path6 = storage_path('app/attachment');
+        $this->copyDirectory($storage_path1, $storage_path2);
+        $this->copyDirectory($storage_path1, $storage_path4);
+
+        copy($project['project_oauth_file'], "../public/zip_file/".$project_path."/google/secret/oauth.json");
+        copy($project['project_oauth_file'], "../public/zip_file/".$share_path."/google/secret/oauth.json");
+
+        $project_name = str_replace(' ', '_', $project['nama_project']);
+        foreach($forms as $i => $form){
+            $this->export($form['id'], $share_path, $project_path);
+        //     $form_name = str_replace(' ', '_', $form['form_title']);
+
+        //     // Search Folder Sync
+        //     $folderNameSync = "Sync";
+        //     $optParams = array(
+        //         'pageSize' => 1,
+        //         'fields' => 'nextPageToken, files',
+        //         'q' => "name = '".$folderNameSync."' and mimeType = 'application/vnd.google-apps.folder'"
+        //     );
+        //     $Sync = $service->files->listFiles($optParams);
+        //     foreach ($Sync->getFiles() as $file) {
+        //         $idFoldSync = $file->getId();
+        //         $namaFoldSync = $file->getName();
+        //     }
+
+        //     if(empty($namaFoldSync)){
+        //         $file = new Google_Service_Drive_DriveFile();
+        //         $file->setName('Sync');
+        //         $file->setMimeType('application/vnd.google-apps.folder');
+        //         $folderSync = $service->files->create($file);
+        //         $optParams = array(
+        //             'pageSize' => 1,
+        //             'fields' => 'nextPageToken, files',
+        //             'q' => "name = '".$folderNameSync."' and mimeType = 'application/vnd.google-apps.folder'"
+        //         );
+        //         $Sync = $service->files->listFiles($optParams);
+        //         foreach ($Sync->getFiles() as $file) {
+        //             $idFoldSync = $file->getId();
+        //             $namaFoldSync = $file->getName();
+        //         }
+        //     }
+        //     do{
+        //     // Search Project Folder 
+        //         $optParams = array(
+        //             'pageSize' => 1,
+        //             'fields' => 'nextPageToken, files',
+        //             'q' => "parents = '".$idFoldSync."' and name = '".$project_name."' and mimeType = 'application/vnd.google-apps.folder'"
+        //         );
+        //         $searchFolder = $service->files->listFiles($optParams);
+        //         foreach ($searchFolder->getFiles() as $file) {
+        //             // printf("%s (%s)\n", $file->getName(), $file->getId());
+        //             $idProjFold = $file->getId();
+        //             $folderNameSearch = $file->getName();
+        //         }
+        //         if(empty($folderNameSearch)){
+        //             $file = new Google_Service_Drive_DriveFile();
+        //             $file->setParents([$idFoldSync]);
+        //             $file->setName($project_name);
+        //             $file->setMimeType('application/vnd.google-apps.folder');
+        //             $service->files->create($file);
+        //         }
+        //         $i++;
+        //     }while($i<=1);
+          
+        //     $optParams = array(
+        //         'pageSize' => 1,
+        //         'fields' => 'nextPageToken, files',
+        //         'q' => "parents = '".$idProjFold."' and name = '".$form_name."' and mimeType = 'application/vnd.google-apps.folder'"
+        //     );
+        //     $searchFolder = $service->files->listFiles($optParams);
+        //     foreach ($searchFolder->getFiles() as $file) {
+        //         // printf("%s (%s)\n", $file->getName(), $file->getId());
+        //         $formNameSearch = $file->getName();
+        //     }
+        //     if(empty($formNameSearch)){
+        //         $file = new Google_Service_Drive_DriveFile();
+        //         $file->setParents([$idProjFold]);
+        //         $file->setName($form_name);
+        //         $file->setMimeType('application/vnd.google-apps.folder');
+        //         $service->files->create($file);
+        //     }
+
+        //     $optParams = array(
+        //         'pageSize' => 1,
+        //         'fields' => 'nextPageToken, files',
+        //         'q' => "name = 'Out of Sync' and mimeType = 'application/vnd.google-apps.folder'"
+        //     );
+        //     $OutofSync = $service->files->listFiles($optParams);
+        //     foreach ($OutofSync->getFiles() as $file) {
+        //         $idFoldOutOfSync = $file->getId();
+        //         $namaFoldOutofSync = $file->getName();
+        //     }
+        //     if(empty($namaFoldOutofSync)){
+        //         // return response()->json($OutofSync);
+        //         $file = new Google_Service_Drive_DriveFile();
+        //         $file->setName('Out of Sync');
+        //         $file->setMimeType('application/vnd.google-apps.folder');
+        //         $folderOutofSync = $service->files->create($file);
+        //         // print("Folder Sukses");
+        //         $optParams = array(
+        //             'pageSize' => 1,
+        //             'fields' => 'nextPageToken, files',
+        //             'q' => "name = 'Out of Sync' and mimeType = 'application/vnd.google-apps.folder'"
+        //         );
+        //         $OutofSync = $service->files->listFiles($optParams);
+        //         foreach ($OutofSync->getFiles() as $file) {
+        //             $idFoldOutOfSync = $file->getId();
+        //             $namaFoldOutofSync = $file->getName();
+        //         }
+        //     }
+          
+        //     do{
+        //     // Search Project Folder 
+        //         $optParams = array(
+        //             'pageSize' => 1,
+        //             'fields' => 'nextPageToken, files',
+        //             'q' => "parents = '".$idFoldOutOfSync."' and name = '".$project_name."' and mimeType = 'application/vnd.google-apps.folder'"
+        //         );
+        //         $searchFolder = $service->files->listFiles($optParams);
+        //         foreach ($searchFolder->getFiles() as $file) {
+        //             // printf("%s (%s)\n", $file->getName(), $file->getId());
+        //             $idProjFoldOut = $file->getId();
+        //             $folderNameOutSearch = $file->getName();
+        //         }
+                
+        //         if(empty($folderNameOutSearch)){
+        //             // return response()->json($project_name);
+        //             $file = new Google_Service_Drive_DriveFile();
+        //             $file->setParents([$idFoldOutOfSync]);
+        //             $file->setName($project_name);
+        //             $file->setMimeType('application/vnd.google-apps.folder');
+        //             $service->files->create($file);
+        //             $optParams = array(
+        //                 'pageSize' => 1,
+        //                 'fields' => 'nextPageToken, files',
+        //                 'q' => "parents = '".$idFoldOutOfSync."' and name = '".$project_name."' and mimeType = 'application/vnd.google-apps.folder'"
+        //             );
+        //             $searchFolder = $service->files->listFiles($optParams);
+        //             foreach ($searchFolder->getFiles() as $file) {
+        //                 // printf("%s (%s)\n", $file->getName(), $file->getId());
+        //                 $idProjFoldOut = $file->getId();
+        //                 $folderNameOutSearch = $file->getName();
+        //             }
+        //         }
+        //         $i++;
+        //     }while($i<=1);
+        //   // return response()->json($idProjFoldOut);
+        //     $optParams = array(
+        //         'pageSize' => 1,
+        //         'fields' => 'nextPageToken, files',
+        //         'q' => "parents = '".$idProjFoldOut."' and name = '".$form_name."' and mimeType = 'application/vnd.google-apps.folder'"
+        //     );
+        //     $searchFolder = $service->files->listFiles($optParams);
+        //     foreach ($searchFolder->getFiles() as $file) {
+        //         // printf("%s (%s)\n", $file->getName(), $file->getId());
+        //         $formNameOutSearch = $file->getName();
+        //     }
+        //     if(empty($formNameOutSearch)){
+        //         $file = new Google_Service_Drive_DriveFile();
+        //         $file->setParents([$idProjFoldOut]);
+        //         $file->setName($form_name);
+        //         $file->setMimeType('application/vnd.google-apps.folder');
+        //         $service->files->create($file);
+        //     }
+        } 
+        
+        if(!empty($data['inputCheckbox'])){
+            $sql = $this->createMysql(str_replace(' ', '_', $project['nama_project']), $forms);
+            $sql_file_name = str_replace(' ', '_', $project['nama_project']).".sql";
+            Storage::disk('public')->put($project_path."/".$sql_file_name, $sql);
+        }
+        
+        $zip_file = str_replace(' ', '_', $project['nama_project']).'.zip';
+        
+        $zip = new \ZipArchive();
+        $zip->open($storage_path2.$zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+        $path = realpath('../public/zip_file/'.$share_path);
+        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
+        
+        foreach ($files as $name => $file){
+            if (!$file->isDir()) {
+                $filePath     = $file->getRealPath();
+                $relativePath = str_replace(' ', '_', $project['nama_project']).'/'. substr($filePath, strlen($path));
+                $zip->addFile($filePath, $relativePath);
+            }
+        }
+        $zip->close();
+
+        $this->copyDirectory($storage_path3, $storage_path2);
+        copy($project['project_oauth_file'], "../public/zip_file/".$share_path."/google/secret/synchronize/token.json");
+
+        $prepend = '<?php ';
+
+        $prepend = $prepend.'$project_name="'.str_replace(' ', '_', $project['nama_project']).'"; ';
+        $prepend = $prepend.'$tokenPath ="../google/secret/synchronize/token.json";';
+        foreach($forms as $i => $form){
+            $prepend = $prepend.'$form_attr["data"]['.$i.']["folder"] = "'.str_replace(' ', '_', $form['form_name']).'";';
+            $formInputs = explode(',', $form['form_attr']);
+            // return response()->json($formInputs);
+            foreach($formInputs as $j => $forminput){
+                $prepend = $prepend.'$form_attr["data"]['.$i.']["attribute"]['.$j.'] = "'.$forminput.'";';
+            }
+        }
+        
+        $prepend = $prepend.'if(!isset($_POST["server_name"])){ ?>';
+        $prepend = $prepend.'<script>var form_attr = <?php echo json_encode($form_attr); ?>;</script> <?php } ?>';
+        $file = '../public/zip_file/'.$project_path.'synchronize/engine_synchronize_set.php';
+        $fileContents = file_get_contents($file);
+        file_put_contents($file, $prepend . $fileContents);
+
+        $zip_file = str_replace(' ', '_', $project['nama_project'].'.zip');
+        $zip = new \ZipArchive();
+        $zip->open($zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+        $path = realpath('../public/zip_file/'.$project_path);
+        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
+        foreach ($files as $name => $file){
+            if (!$file->isDir()) {
+                $filePath     = $file->getRealPath();
+                $relativePath = str_replace(' ', '_', $project['nama_project']).'/'. substr($filePath, strlen($path));
+                $zip->addFile($filePath, $relativePath);
+            }
+        }
+        $zip->close();
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/force-download');
+        header("Content-Disposition: attachment; filename=\"" . basename($zip_file) . "\";");
+        header('Content-Transfer-Encoding: binary');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+        header('Content-Length: ' . filesize($zip_file));
+        ob_clean();
+        flush();
+        readfile($zip_file); //showing the path to the server where the file is to be download
+        foreach($forms as $i => $form){
+            $form_name = str_replace(' ', '_', $form['form_title']);
+            // return response()->json($form_name);
+            // Search Folder Sync
+            $folderNameSync = "Sync";
+            $optParams = array(
+                'pageSize' => 1,
+                'fields' => 'nextPageToken, files',
+                'q' => "name = '".$folderNameSync."' and mimeType = 'application/vnd.google-apps.folder'"
+            );
+            $Sync = $service->files->listFiles($optParams);
+            foreach ($Sync->getFiles() as $file) {
+                $idFoldSync = $file->getId();
+                $namaFoldSync = $file->getName();
+            }
+
+            if(empty($namaFoldSync)){
+                $file = new Google_Service_Drive_DriveFile();
+                $file->setName('Sync');
+                $file->setMimeType('application/vnd.google-apps.folder');
+                $folderSync = $service->files->create($file);
+                $optParams = array(
+                    'pageSize' => 1,
+                    'fields' => 'nextPageToken, files',
+                    'q' => "name = '".$folderNameSync."' and mimeType = 'application/vnd.google-apps.folder'"
+                );
+                $Sync = $service->files->listFiles($optParams);
+                foreach ($Sync->getFiles() as $file) {
+                    $idFoldSync = $file->getId();
+                    $namaFoldSync = $file->getName();
+                }
+            }
+            do{
+            // Search Project Folder 
+                $optParams = array(
+                    'pageSize' => 1,
+                    'fields' => 'nextPageToken, files',
+                    'q' => "parents = '".$idFoldSync."' and name = '".$project_name."' and mimeType = 'application/vnd.google-apps.folder'"
+                );
+                $searchFolder = $service->files->listFiles($optParams);
+                foreach ($searchFolder->getFiles() as $file) {
+                    // printf("%s (%s)\n", $file->getName(), $file->getId());
+                    $idProjFold = $file->getId();
+                    $folderNameSearch = $file->getName();
+                }
+                if(empty($folderNameSearch)){
+                    $file = new Google_Service_Drive_DriveFile();
+                    $file->setParents([$idFoldSync]);
+                    $file->setName($project_name);
+                    $file->setMimeType('application/vnd.google-apps.folder');
+                    $service->files->create($file);
+                }
+                $i++;
+            }while($i<=1);
+          
+            $optParams = array(
+                'pageSize' => 1,
+                'fields' => 'nextPageToken, files',
+                'q' => "parents = '".$idProjFold."' and name = '".$form_name."' and mimeType = 'application/vnd.google-apps.folder'"
+            );
+            $searchFolder = $service->files->listFiles($optParams);
+            foreach ($searchFolder->getFiles() as $file) {
+                // printf("%s (%s)\n", $file->getName(), $file->getId());
+                $formNameSearch = $file->getName();
+            }
+            if(empty($formNameSearch)){
+                $file = new Google_Service_Drive_DriveFile();
+                $file->setParents([$idProjFold]);
+                $file->setName($form_name);
+                $file->setMimeType('application/vnd.google-apps.folder');
+                $service->files->create($file);
+            }
+
+            $optParams = array(
+                'pageSize' => 1,
+                'fields' => 'nextPageToken, files',
+                'q' => "name = 'Out of Sync' and mimeType = 'application/vnd.google-apps.folder'"
+            );
+            $OutofSync = $service->files->listFiles($optParams);
+            foreach ($OutofSync->getFiles() as $file) {
+                $idFoldOutOfSync = $file->getId();
+                $namaFoldOutofSync = $file->getName();
+            }
+            if(empty($namaFoldOutofSync)){
+                // return response()->json($OutofSync);
+                $file = new Google_Service_Drive_DriveFile();
+                $file->setName('Out of Sync');
+                $file->setMimeType('application/vnd.google-apps.folder');
+                $folderOutofSync = $service->files->create($file);
+                // print("Folder Sukses");
+                $optParams = array(
+                    'pageSize' => 1,
+                    'fields' => 'nextPageToken, files',
+                    'q' => "name = 'Out of Sync' and mimeType = 'application/vnd.google-apps.folder'"
+                );
+                $OutofSync = $service->files->listFiles($optParams);
+                foreach ($OutofSync->getFiles() as $file) {
+                    $idFoldOutOfSync = $file->getId();
+                    $namaFoldOutofSync = $file->getName();
+                }
+            }
+          
+            do{
+            // Search Project Folder 
+                $optParams = array(
+                    'pageSize' => 1,
+                    'fields' => 'nextPageToken, files',
+                    'q' => "parents = '".$idFoldOutOfSync."' and name = '".$project_name."' and mimeType = 'application/vnd.google-apps.folder'"
+                );
+                $searchFolder = $service->files->listFiles($optParams);
+                foreach ($searchFolder->getFiles() as $file) {
+                    // printf("%s (%s)\n", $file->getName(), $file->getId());
+                    $idProjFoldOut = $file->getId();
+                    $folderNameOutSearch = $file->getName();
+                }
+                
+                if(empty($folderNameOutSearch)){
+                    // return response()->json($project_name);
+                    $file = new Google_Service_Drive_DriveFile();
+                    $file->setParents([$idFoldOutOfSync]);
+                    $file->setName($project_name);
+                    $file->setMimeType('application/vnd.google-apps.folder');
+                    $service->files->create($file);
+                    $optParams = array(
+                        'pageSize' => 1,
+                        'fields' => 'nextPageToken, files',
+                        'q' => "parents = '".$idFoldOutOfSync."' and name = '".$project_name."' and mimeType = 'application/vnd.google-apps.folder'"
+                    );
+                    $searchFolder = $service->files->listFiles($optParams);
+                    foreach ($searchFolder->getFiles() as $file) {
+                        // printf("%s (%s)\n", $file->getName(), $file->getId());
+                        $idProjFoldOut = $file->getId();
+                        $folderNameOutSearch = $file->getName();
+                    }
+                }
+                $i++;
+            }while($i<=1);
+          // return response()->json($idProjFoldOut);
+            $optParams = array(
+                'pageSize' => 1,
+                'fields' => 'nextPageToken, files',
+                'q' => "parents = '".$idProjFoldOut."' and name = '".$form_name."' and mimeType = 'application/vnd.google-apps.folder'"
+            );
+            $searchFolder = $service->files->listFiles($optParams);
+            foreach ($searchFolder->getFiles() as $file) {
+                // printf("%s (%s)\n", $file->getName(), $file->getId());
+                $formNameOutSearch = $file->getName();
+            }
+            if(empty($formNameOutSearch)){
+                $file = new Google_Service_Drive_DriveFile();
+                $file->setParents([$idProjFoldOut]);
+                $file->setName($form_name);
+                $file->setMimeType('application/vnd.google-apps.folder');
+                $service->files->create($file);
+            }
+        }
+        
+        exit;
+    }
+
+    public function export($id, $share_path, $project_path){
+        $formQuery = new Form();
+        $form = $formQuery->getForm('id = '.$id);
+        $project = $formQuery->getProject($form[0]['form_projects_id']);
+        print_r($form[0]['form_projects_id']);
+        $client = new Google_Client();
+        $service = new Google_Service_Drive($client);
+        $oauth_file = json_decode(file_get_contents(__DIR__ . '../../public/'.$project['project_oauth_file']), true);
+        $token_file = json_decode(file_get_contents(__DIR__ . '../../public/'.$project['project_token_file']), true);
+        $client->setAuthConfig($oauth_file);
+        $client->setAccessType('offline');
+        $client->setApprovalPrompt('force');
+        $client->setAccessToken($token_file);
+        if ($client->isAccessTokenExpired()) {
+            if ($client->getRefreshToken()) {
+                $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
+            } 
+            $project_token_file = $project['project_token_file'];
+            $project_token_file = substr($project_token_file, 0, -11);
+            $f=fopen($project_token_file.'/token.json','w+');
+            fwrite($f,json_encode($client->getAccessToken()));
+            fclose($f);
+        }
+
+        $about = $service->about->get(array('fields' => '*'));
+        $project_email = $about->user->emailAddress;
+        $request = (array)$form;
+        $request['project_email'] = $project_email;
+        $request['project_name'] = $project['nama_project'];
+        $request['form_name'] = $form[0]['form_name'];
+        $request['form_export'] = $form[0]['form_export'];
+        $request['form_type'] = $form[0]['form_type'];
+        $request['form_auth_path'] = $form[0]['form_auth_path'];
+        $request = (object)$request;
+
+        if($request->form_type == 'Without Auth Google Drive'){
+            if (!file_exists($project_path."/google/secret/".$form['form_name'])) mkdir($project_path."/google/secret/".$form['form_name']);
+            if (!file_exists($share_path."/google/secret/".$form['form_name'])) mkdir($share_path."/google/secret/".$form['form_name']);
+            copy($project['project_token_file'], "../public/zip_file/".$project_path."/google/secret/".$form['form_name']."/token.json");
+            copy($project['project_token_file'], "../public/zip_file/".$share_path."/google/secret/".$form['form_name']."/token.json");
+        }
+        if(!empty($request->form_auth_path)){
+            if (!file_exists($project_path."/google/auth/".$form['form_name'])) mkdir($project_path."/google/auth/".$form['form_name']);
+            if (!file_exists($share_path."/google/auth/".$form['form_name'])) mkdir($share_path."/google/auth/".$form['form_name']);
+            copy($form[0]['form_auth_path'], "../public/zip_file/".$project_path."/google/auth/".$form['form_name']."/auth.json");
+            copy($form[0]['form_auth_path'], "../public/zip_file/".$share_path."/google/auth/".$form['form_name']."/auth.json");
+        }
+        $layout = $this->create_layout($request);
+        $filename = str_replace(' ', '_',$form[0]['form_name']).".php";
+        $f=fopen("../public/zip_file/".$share_path."/".$filename,'w+');
+        fwrite($f, $layout);
+        fclose($f);
+        $f=fopen("../public/zip_file/".$project_path.$filename,'w+');
+        fwrite($f, $layout);
+        fclose($f);
+    }
+
+    public function create_layout($request){
+        $layout = $this->createPhpSubmit($request);
+        $layout = $layout.'<html>';
+        $layout = $layout.'    <head>';
+        $layout = $layout.'        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">';
+        $layout = $layout.'        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">';
+        $layout = $layout.'        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>';
+        $layout = $layout.'        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>';
+        $layout = $layout.'        <script src="https://cdn.jsdelivr.net/npm/select2@4.0.11/dist/js/select2.min.js"></script>';
+        $layout = $layout.'        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.11/dist/css/select2.min.css">';
+        $layout = $layout.'        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css">';
+        $layout = $layout.'        <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>';
+        $layout = $layout.'        <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>';
+        $layout = $layout.'    </head>';
+        $layout = $layout.'    <body>';
+        $layout = $layout.'        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">';
+        $layout = $layout.'            <div class="container">';
+        $layout = $layout.'                <a class="navbar-brand" href="<?php $link = $_SERVER["PHP_SELF"];$link = substr($link, 1);$link = substr($link, 0, strpos($link, "/")); echo "/" . $link; ?>">Form Builder</a>';
+        $layout = $layout.'                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __(\'Toggle navigation\') }}">';
+        $layout = $layout.'                    <span class="navbar-toggler-icon"></span>';
+        $layout = $layout.'                </button>';
+        $layout = $layout.'                <div class="collapse navbar-collapse" id="navbarSupportedContent">';
+        $layout = $layout.'                    <ul class="navbar-nav ml-auto">';
+        $layout = $layout.'                        <li class="nav-item dropdown">';
+        $layout = $layout.'                            <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>';
+        $layout = $layout.'                                <?php echo $_SESSION["email_login"]; ?>';
+        $layout = $layout.'                            </a>';
+        $layout = $layout.'                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">';
+        $layout = $layout.'                                <a class="dropdown-item" href="?logout=yes">Logout</a>';
+        $layout = $layout.'                            </div>';
+        $layout = $layout.'                        </li>';
+        $layout = $layout.'                    </ul>';
+        $layout = $layout.'                </div>';
+        $layout = $layout.'            </div>';
+        $layout = $layout.'        </nav>';
+        $layout = $layout.'        <div class="container border border-top-0 mt-5 shadow-sm">';
+        $layout = $layout.             $request->form_export;
+        $layout = $layout.'        </div>';
+        $layout = $layout.'    </body>';
+        $layout = $layout.'    <?php } ?>';
+        $layout = $layout.'</html>';
+        // $layout = $layout.$this->createPhpSuccess();
+
+        return $layout;
+    }
+
+    public function createPhpSubmit($request){      
+        $php = "\n\n\n";
+        $php = $php.'<?php ';
+        $php = $php.    '$oauth_credentials = __DIR__ ."/google/secret/oauth.json";';
+        $php = $php.    "include_once __DIR__ . '/google/autoload.php';";
+        $php = $php.    '$folderFormName = "'.str_replace(' ', '_', $request->form_name).'"; ';
+        if(!empty($request->form_auth_path)) $php = $php.    '$auth_file = "google/auth/'.$request->form_name.'/auth.json";  ';
+
+        $php = $php.    "session_start();";
+        $php = $php.    '$redirect_uri = \'http://\' . $_SERVER[\'HTTP_HOST\'] . $_SERVER[\'PHP_SELF\'];';
+        $php = $php.    '$client = new Google_Client();';
+        $php = $php.    '$client->setAuthConfig($oauth_credentials);';
+        $php = $php.    '$client->setRedirectUri($redirect_uri);';
+        $php = $php.    '$client->addScope("https://www.googleapis.com/auth/drive");';
+        if($request->form_type=='Without Auth Google Drive'){
+            $php = $php.    '$client->setAccessType(\'offline\');';
+            $php = $php.    '$client->setApprovalPrompt(\'force\');';
+        }
+        $php = $php.    '$service = new Google_Service_Drive($client);';
+       
+        $php = $php.    'if (isset($_REQUEST[\'logout\'])) {';
+        $php = $php.    '    unset($_SESSION[\'upload_token\']);';
+        $php = $php.    '    unset($_SESSION[\'email_login\']);';
+        $php = $php.    '    header("Location: " . $_SERVER["PHP_SELF"]);';
+        $php = $php.    '    exit;';
+        $php = $php.    '}';
+        $php = $php.    'else if(isset($_POST["password"]) ){    ';  
+        $php = $php.    '    $password = $_POST["password"]; ';
+        $php = $php.    '    $logged_in = false; ';
+        
+        $php = $php.    '    $auth_file = file_get_contents($auth_file); ';
+        $php = $php.    '    $auths = json_decode($auth_file); ';
+        $php = $php.    '    $auth_keys = array_keys((array)$auths[0]); ';
+        $php = $php.    '    foreach($auth_keys as $i => $auth_key){ ';
+        $php = $php.    '        if($i == 0) $username_key = $auth_key; ';
+        $php = $php.    '        else  $password_key = $auth_key; ';
+        $php = $php.    '    } ';
+        $php = $php.    '    foreach($auths as $auth){ ';
+        $php = $php.    '        $auth = (array)$auth; ';
+        $php = $php.    '        if($password == $auth[$password_key]) { ';
+        $php = $php.    '            $logged_in = true; ';
+        $php = $php.    '            $username =  $auth[$username_key]; ';
+        $php = $php.    '        } ';
+        $php = $php.    '    } ';
+        $php = $php.    '    if($logged_in){ ';
+        $php = $php.    '        $authUrl = $client->createAuthUrl();';   
+        $php = $php.    '        echo "<script>window.open(\'$authUrl\', \'targetWindow\', \'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=600\')</script>";';   
+        $php = $php.    '        $_SESSION["display_name_key"] = $username_key; ';    
+        $php = $php.    '        $_SESSION["display_name"] = $username; ';    
+        $php = $php.    '    } ';
+        $php = $php.    '    else{ ';
+        $php = $php.    '        $_SESSION["login_error"] = "Login Fail Wrong Key"; ';        
+        $php = $php.    '        header("Location: ".$_SERVER["PHP_SELF"]); ';         
+        $php = $php.    '        exit; ';   
+        $php = $php.    '    } ';
+        $php = $php.    '} ';
+
+        if($request->form_type!='Without Auth Google Drive'){
+            $php = $php.    'else if (isset($_GET[\'code\'])) {';
+            $php = $php.    '    $token = $client->fetchAccessTokenWithAuthCode($_GET[\'code\']);';
+            $php = $php.    '    $client->setAccessToken($token);';
+            $php = $php.    '    $_SESSION[\'upload_token\'] = $token;';
+            $php = $php.    '    header(\'Location: \' . filter_var($redirect_uri, FILTER_SANITIZE_URL));';
+            $php = $php.    '    }';
+            
+            $php = $php.    'else if (!empty($_SESSION[\'upload_token\'])) {';
+            $php = $php.    '    $client->setAccessToken($_SESSION[\'upload_token\']);';
+            $php = $php.    '    echo "<script>  if (window.opener != null){ opener.location.href = \'".$_SERVER["PHP_SELF"]."\'; close();}</script>";';
+            $php = $php.    '    $status= true;';
+            $php = $php.    '    if ($client->isAccessTokenExpired()) {';
+            $php = $php.    '        unset($_SESSION[\'upload_token\']);';
+            $php = $php.    '        $status= false;';
+            $php = $php.    '    }';
+            $php = $php.    '    if($status !== false){';
+            $php = $php.    '        $about = $service->about->get(array(\'fields\' => \'*\'));';
+            $php = $php.    '        $_SESSION["email_login"] = $email_login = $about->user->emailAddress;';
+            $php = $php.    '    }';
+            $php = $php.    '}';
+            $php = $php.    'if(empty($_SESSION[\'upload_token\'])){ ';
+            $php = $php.    '     $authUrl = $client->createAuthUrl();';
+            if(!empty($request->form_auth_path)) $php = $php.        '   include "google/register.php";  ';
+            else $php = $php.        '   include "google/login.php";  ';
+            $php = $php.    '    $status= false;';
+            $php = $php.    '} ';
+        }
+        
+        if($request->form_type=='Without Auth Google Drive') {
+            $php = $php.    'else if (file_exists(__DIR__ ."/google/secret/'.$request->form_name.'/token.json")) {';
+            $php = $php.    '$tokenPath = __DIR__ ."/google/secret/'.$request->form_name.'/token.json";';
+            $php = $php.    '    $accessToken = json_decode(file_get_contents($tokenPath), true);';
+            $php = $php.    '    $client->setAccessToken($accessToken);';
+            $php = $php.    '    $status= true;';
+            $php = $php.    '}';
+
+            $php = $php.    'if ($client->isAccessTokenExpired()) {';
+            $php = $php.    '    if ($client->getRefreshToken()) {';
+            $php = $php.    '        $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());';
+            $php = $php.    '    } ';
+            $php = $php.    '    if (array_key_exists(\'error\', $accessToken)) {';
+            $php = $php.    '        throw new Exception(join(\', \', $accessToken));';
+            $php = $php.    '    }';
+            $php = $php.    '    file_put_contents(__DIR__ ."/google/secret/'.$request->form_name.'/token.json", json_encode($client->getAccessToken()));';
+            $php = $php.    '    $status= true;';
+            $php = $php.    '}';
+        }
+        $php = $php.    'if($status){';
+        $php = $php.    '    if ($_SERVER[\'REQUEST_METHOD\'] == \'POST\' && $client->getAccessToken() ) {';
+        $php = $php.    '        if (!file_exists(\'files\')) {';
+        $php = $php.    '          mkdir(\'files\', 0777, true);';
+        $php = $php.    '        }';
+        $php = $php.    '        $labels = $_POST["values"];';
+        $php = $php.    '        $row = array();';
+        $php = $php.    '        $j=0;';
+        $php = $php.    '        $file_names = $_FILES["values"]["name"];';
+      
+        $php = $php.    '        $file_keys = array_keys($file_names);'; 
+      
+        $php = $php.    '        foreach($file_names as $file_name){';  
+        $php = $php.    '        $tmp = explode(".", $file_name);';
+        $php = $php.    '        $ext = end($tmp);';
+        $php = $php.    '        $new_value = array($file_keys[$j] => $file_keys[$j].".".$ext);';
+        $php = $php.    '        $labels = $labels + $new_value;';    
+        $php = $php.    '        print_r($ext);';
+        $php = $php.    '        $j++;';
+        $php = $php.    '    }';
+        $php = $php.    '    $keys = array_keys($labels);';
+
+        $php = $php.    '    if(isset($server)){ ';
+        $php = $php.    '        $conn = new PDO("mysql:host=$server;dbname=$db", $user, $pass); ';
+        $php = $php.    '        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); ';
+        $php = $php.    '        $direct_attributes = ""; ';
+        $php = $php.    '        $direct_values = ""; ';
+        $php = $php.    '        $excepted_attrs = array(); ';
+        
+        $php = $php.    '        if(isset($auth_file)){ ';
+        $php = $php.    '            $attr = array($_SESSION["display_name_key"] => $_SESSION["display_name"]); ';
+        $php = $php.    '            $row = $row + $attr; ';
+        $php = $php.    '        } ';
+        
+        $php = $php.    '        foreach($direct_to_db_folder as $j => $attr){ ';
+        $php = $php.    '            $direct_attributes = $direct_attributes.$direct_to_db_table[$j]; ';
+        $php = $php.    '            $value_index = array_search($attr, $labels); ';
+        $php = $php.    '            $data = str_replace(\'"\', \'\\"\', $values[$value_index]); ';
+        $php = $php.    '            $direct_values = $direct_values.\'"\'.$data.\'"\';  ';
+        
+        $php = $php.    '            array_push($excepted_attrs,$labels[$value_index]); ';
+        $php = $php.    '            if($j < count($direct_to_db_folder)-1) { ';
+        $php = $php.    '                $direct_attributes = $direct_attributes.","; ';
+        $php = $php.    '                $direct_values = $direct_values.","; ';
+        $php = $php.    '            } ';
+        $php = $php.    '        } ';
+        $php = $php.    '        $query = "INSERT INTO ".$table_name."(".$direct_attributes.") VALUES(".$direct_values.")"; ';
+        $php = $php.    '        $sql = $conn->prepare($query); ';
+        $php = $php.    '        $sql->execute(); ';
+
+        $php = $php.    '        $lastInsertId = $conn->lastInsertId();  ';
+        $php = $php.    '        $query ="SHOW KEYS FROM ".$table_name." WHERE Key_name = \'PRIMARY\'"; ';
+        $php = $php.    '        $sql = $conn->prepare($query); ';
+        $php = $php.    '        $sql->execute(); ';
+        $php = $php.    '        $result = $sql->fetchAll(); ';
+        $php = $php.    '        foreach( $result as $baris ) { ';
+        $php = $php.    '            $primary_column = $baris["Column_name"];  ';
+        $php = $php.    '        } ';
+        $php = $php.    '        $attr = array($primary_column => $lastInsertId);  ';
+        $php = $php.    '        $row = $row + $attr;  ';
+
+        $php = $php.    '        $json_name = "update.json"; ';
+        $php = $php.    '        $i = 0; ';
+        $php = $php.    '        foreach($values as $value){ ';   
+        $php = $php.    '            $is_value = true; '; 
+        $php = $php.    '            foreach($excepted_attrs as $excepted_attr){ ';  
+        $php = $php.    '                if($labels[$i] == $excepted_attr) $is_value = false; ';    
+        $php = $php.    '            } ';
+        $php = $php.    '            if($is_value){ ';
+        $php = $php.    '                if(is_array($value)) $attr = array($labels[$keys[$i]] => implode(", ",$value));  ';
+        $php = $php.    '                else $attr = array($labels[$keys[$i]] => $value); ';
+        $php = $php.    '                $row = $row + $attr; ';
+        $php = $php.    '            } ';
+        $php = $php.    '        $i++; ';
+        $php = $php.    '        } ';
+        $php = $php.    '    } ';
+
+        $php = $php.    '    else{ ';
+        $php = $php.    '        $json_name = "insert.json";';
+        $php = $php.    '        $i = 0;';
+        $php = $php.    '        foreach($labels as $value){';
+        $php = $php.    '            if(is_array($value)){';
+        $php = $php.    '                $attr = array($keys[$i] => implode(", ",$value));';
+        $php = $php.    '            }else $attr = array($keys[$i] => $value);';
+        $php = $php.    '            $row = $row + $attr; $i++;';
+        $php = $php.    '        }';
+        $php = $php.    '        $myJSON = json_encode($row);'; 
+        $php = $php.    '        $fp = fopen("files/".$json_name, "w");'; 
+        $php = $php.    '        fwrite($fp, $myJSON);'; 
+        $php = $php.    '        fclose($fp);';
+
+        $php = $php.    '        $folderName = $folderFormName;';
+        $php = $php.    '        $namaFoldSync = "";';
+        $php = $php.    '        $optParams = array(';
+        $php = $php.    '            \'pageSize\' => 20,';
+        $php = $php.    '            \'orderBy\' => \'modifiedTime asc\',';
+        $php = $php.    '            \'fields\' => \'nextPageToken, files\',';
+        $php = $php.    '            \'q\' => "name = \'".$folderName."\' and \'me\' in owners and mimeType = \'application/vnd.google-apps.folder\'"';
+        $php = $php.    '        );';
+
+        $php = $php.    '        $results = $service->files->listFiles($optParams);';
+        $php = $php.    '        foreach ($results->getFiles() as $files) {';
+        $php = $php.    '            $idFoldSync = $files->getId();';
+        $php = $php.    '            $namaFoldSync = $files->getName();';
+        $php = $php.    '        }';
+        $php = $php.    '        if($folderFormName === $namaFoldSync);';
+        $php = $php.    '        else{';
+        $php = $php.    '            $file = new Google_Service_Drive_DriveFile();';
+        $php = $php.    '            $file->setName($folderFormName);';
+        $php = $php.    '            $file->setMimeType(\'application/vnd.google-apps.folder\');';
+        $php = $php.    '            $folderSync = $service->files->create($file);';
+        $php = $php.    '        }';
+
+        $php = $php.    '        $optParams = array(';
+        $php = $php.    '            \'pageSize\' => 1,';
+        $php = $php.    '            \'orderBy\' => \'modifiedTime asc\',';
+        $php = $php.    '            \'fields\' => \'nextPageToken, files\',';
+        $php = $php.    '            \'q\' => "name = \'".$folderName."\' and mimeType = \'application/vnd.google-apps.folder\'"';
+        $php = $php.    '        );';
+
+        $php = $php.    '        $results = $service->files->listFiles($optParams);';
+        $php = $php.    '        foreach ($results->getFiles() as $files) {';
+        $php = $php.    '            $idFoldSync = $files->getId();';
+        $php = $php.    '            $namaFoldSync = $files->getName();';
+        $php = $php.    '        }';
+
+        $php = $php.    '        $fileMetadata = new Google_Service_Drive_DriveFile(array(';
+        $php = $php.    '            \'name\' => "$folderFormName",';
+        $php = $php.    '            \'parents\' => array($idFoldSync),';
+        $php = $php.    '            \'mimeType\' => \'application/vnd.google-apps.folder\'));';
+        $php = $php.    '        $file = $service->files->create($fileMetadata, array(\'fields\' => \'id\'));';
+        $php = $php.    '        $folderIdSave = $file->id;';
+        $php = $php.    '        $userPermission = new Google_Service_Drive_Permission(array(';
+        $php = $php.    '            \'type\' => \'user\',';
+        $php = $php.    '            \'role\' => \'writer\',';
+        $php = $php.    '            \'emailAddress\' => \''.$request->project_email.'\'';
+        $php = $php.    '        ));';
+        $php = $php.    '        $request = $service->permissions->create($folderIdSave, $userPermission, array(\'fields\' => \'id\'));';
+
+        $php = $php.    '        $k = 0;';
+        $php = $php.    '        $file_names = $_FILES["values"]["name"];';
+        $php = $php.    '        $file_keys = array_keys($file_names);';
+        $php = $php.    '        $files = $_FILES["values"]["tmp_name"];';
+
+        $php = $php.    '        $file = new Google_Service_Drive_DriveFile();';
+        $php = $php.    '        $file->setParents([$folderIdSave]);';
+        $php = $php.    '        $file->setName(\'insert.json\');';
+        $php = $php.    '        $content = file_get_contents(\'files/insert.json\');';
+        $php = $php.    '        $result2 = $service->files->create($file,array(\'data\' => $content, \'mimeType\' => \'application/json\', \'uploadType\' => \'multipart\'));';
+    
+        $php = $php.    '        $file = new Google_Service_Drive_DriveFile();';
+        $php = $php.    '        $file->setName("Attachment");';
+        $php = $php.    '        $file->setParents([$folderIdSave]);';
+        $php = $php.    '        $file->setMimeType(\'application/vnd.google-apps.folder\');';
+        $php = $php.    '        $folderAttachment = $service->files->create($file, array(\'fields\' => \'id\'));';
+        $php = $php.    '        $folderAttachmentId = $folderAttachment->id;';
+        $php = $php.    '        foreach ($files as $file){';
+        $php = $php.    '            $file_name = basename($_FILES["values"]["name"][$file_keys[$k]]);';
+        $php = $php.    '            $tmp = explode(".", $file_name);';
+        $php = $php.    '            $ext = end($tmp);';
+        $php = $php.    '            $target_file = "files/" . $file_keys[$k] . "." . $ext;';
+        $php = $php.    '            move_uploaded_file($file, $target_file);';
+        $php = $php.    '            $file = new Google_Service_Drive_DriveFile();';
+        $php = $php.    '            $file->setName($file_keys[$k] . "." . $ext);';
+        $php = $php.    '            $file->setParents([$folderAttachmentId]);';
+        $php = $php.    '            $content = file_get_contents("files/" .$file_keys[$k] . "." . $ext);';
+        $php = $php.    '            $result2 = $service->files->create($file, array(';
+        $php = $php.    '                \'data\' => $content,';
+        $php = $php.    '                \'mimeType\' => "image/\'".$ext."\'",';
+        $php = $php.    '                \'uploadType\' => \'multipart\'';
+        $php = $php.    '            ));';
+        $php = $php.    '        $k++;';
+        $php = $php.    '        unlink($target_file);';
+        $php = $php.    '        }';
+        $php = $php.    '    }';
+        $php = $php.    '    header("Location: " . $_SERVER["PHP_SELF"]);';
+        $php = $php.    '    exit;';
+        $php = $php.    '}';
+
+        $php = $php.'?> ';
+        return $php;
     }
 }
 ?>

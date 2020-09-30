@@ -266,11 +266,6 @@ if (window.opener && window.opener !== window) {
         confirmButtonText: "Update",
         showLoaderOnConfirm: true,
         preConfirm: (login) => {  
-            $.ajaxSetup({
-            headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-             }
-            });
             var form = $("#updateProject").get(0);
             form_project_id = $('#form_project_id').val();
             link = "{{route('formproject.update', ':id')}}";
@@ -314,11 +309,6 @@ if (window.opener && window.opener !== window) {
 			confirmButtonText: "Hapus",
             closeOnConfirm: true,
             preConfirm: (login) => {
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    }
-                });
                 return $.ajax({
                     type: "DELETE", 
                     url: 'formProjects/delete/'+form_project_id,

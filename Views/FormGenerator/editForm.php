@@ -79,7 +79,7 @@
 </div>
 
 <script>
-  var form_name= '{{$form->form_name}}'
+  // var form_name= 'asa'
   // update data form project
   function update_form(){
     swal.fire({
@@ -87,16 +87,16 @@
       type: "warning",
       html: '<p>Do you want to update the form?</p>\
               <form id="tambahFormOption" action="" method="POST" enctype="multipart/form-data">\
-                <input type="hidden" value="{{$form->id}}" name="form_id" id="form_id">\
+                <input type="hidden" value="<?php echo $form['id']; ?>" name="form_id" id="form_id">\
                 <input type="hidden" value="" name="form_title" id="form_title">\
                 <input type="hidden" value="" name="form_name" id="form_name">\
                 <input type="hidden" value="" name="convert_php" id="convert_php">\
                 <input type="hidden" value="" name="attr_form" id="attr_form">\
                 <select class="swal2-select" id="form-type" name="form_type"> \
                   <option value="" selected="" disabled="">Select an option</option>\
-                  <option <?php if($form->form_type == "With Auth Google Drive API") echo"selected";?> value="With Auth Google Drive API" >With Auth Google Drive API</option> \
-                  <option <?php if($form->form_type == "With Auth Google Drive API and Identifier") echo"selected";?> value="With Auth Google Drive API and Identifier" >With Auth Google Drive API and Identifier</option>\
-                  <option <?php if($form->form_type == "Without Auth Google Drive") echo"selected";?> value="Without Auth Google Drive" >Without Auth Google Drive</option>\
+                  <option <?php if($form['form_type'] == "With Auth Google Drive API") echo"selected";?> value="With Auth Google Drive API" >With Auth Google Drive API</option> \
+                  <option <?php if($form['form_type'] == "With Auth Google Drive API and Identifier") echo"selected";?> value="With Auth Google Drive API and Identifier" >With Auth Google Drive API and Identifier</option>\
+                  <option <?php if($form['form_type'] == "Without Auth Google Drive") echo"selected";?> value="Without Auth Google Drive" >Without Auth Google Drive</option>\
                 </select>\
              </form>',
       showCancelButton: true,
@@ -123,17 +123,12 @@
         if (!selected) {
             swal.showValidationMessage('Please select an option!');
         }else{
-          form_id = $('#form_id').val();
-          link = "{{route('formgenerator.update', ':id')}}";
-          link = link.replace(':id', form_id);
-          $.ajaxSetup({
-              headers: {
-                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-              }
-          });
+          // form_id = $('#form_id').val();
+          // link = ;
+          // link = link.replace(':id', form_id);
           return $.ajax({
               type: "POST", 
-              url: link ,
+              url: "/formgeneratornative/formGenerator/update/"+$('#form_id').val() ,
               processData: false,
               contentType: false,
               cache: false,
@@ -156,10 +151,9 @@
         if(result.value){
           swal.fire({title:"Update Form Success!", text:"Update form success running", type:"success"})
           .then(function(){ 
-            window.location.href = "{{ url('/form', $form->form_projects_id)}}";
+            window.location.href = '/formgeneratornative/forms/showAllForms/'+<?php echo $form['form_projects_id'] ?>;
           });
         }
       })
     }
 </script>
-@endsection

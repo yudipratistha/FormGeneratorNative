@@ -2,7 +2,6 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12">	
-
             <h2 class="text-center">Form Project <?php echo array_column($forms, 'nama_project')[0]; ?></h2>
             <form id="check-export-form">
                 <table id="formTable" class="table table-striped table-bordered" style="width:100%">
@@ -16,12 +15,12 @@
                     </thead>
                     <tbody>
                         <?php 
+                        // print_r($forms );
                             foreach ($forms as $number => $form){
-                                // print_r($form) ;
                                 if(isset($form['form_name'])){
                                     echo '<tr>';
                                     echo '    <td>'.++$number.'</td>';
-                                    echo '    <td><input name="checkform[]" value="'.$form['id'].'" type="checkbox"> </td>';
+                                    echo '    <td><input name="checkform[]" value="'.$form[0].'" type="checkbox"> </td>';
                                     echo '    <td>'.$form['form_name'].'</td>';
                                     echo '    <td>';
                                     echo '        <center>';
@@ -37,7 +36,7 @@
                     </tbody>
                 </table>
             </form>
-            <a href="/formgeneratornative/formGenerator/createForm/<?php echo $form['form_projects_id']?>">
+            <a href="/formgeneratornative/formGenerator/createForm/<?php echo array_column($forms, 'id')[0];?>">
                 <button  class="float btn btn-icon btn-add btn-info mt-1 mb-1" data-tooltip="tooltip" data-placement="left" title="" data-original-title="Build Form">
                     <span class="btn-inner--icon"><i class="fe fe-plus"></i></span>
                 </button>
@@ -69,8 +68,8 @@
 
 //export form
 function export_form(formProjName){
-        link= "{{route('form.exportPhpProject', $form_projects_id)}}";
         exportid = $("#check-export-form").serialize();
+        console.log(exportid)
         swal.fire({
             title: "Export Form?",
             text: "Do you want to export this project?",
@@ -84,7 +83,7 @@ function export_form(formProjName){
             preConfirm: (inputCheckbox) => {
                 return $.ajax({
                     type: "get",
-                    url: link+"?"+exportid,
+                    url: '/formgeneratornative/forms/exportPhpProject/'+<?php echo array_column($forms, 'id')[0];?>+"?"+exportid,
                     data:{inputCheckbox:`${inputCheckbox}`},
                     // dataType: "zip",
                     xhrFields: {
@@ -172,7 +171,7 @@ function export_form(formProjName){
 		}, function(){
 		   $.ajax({
                 type: "GET",
-				url: link,
+				url: '/formgeneratornative/forms/exportPhpProject/'+form_projects_id,
 				datatype : "json", 
 				data:{id:form_id},
 				success: function(data) {
@@ -202,7 +201,7 @@ function export_form(formProjName){
                 { "orderable": false, "width": "13%" }
             ]
         } );
-        $("div.dataTables_length").append('  <span onclick="export_form(\'{{$user_id_proj->nama_project}}\')" class="btn btn-danger">Export to PHP</span>');
+        $("div.dataTables_length").append('  <span onclick="export_form(\'<?php echo array_column($forms, 'nama_project')[0]; ?>\')" class="btn btn-danger">Export to PHP</span>');
     });
     
 </script>

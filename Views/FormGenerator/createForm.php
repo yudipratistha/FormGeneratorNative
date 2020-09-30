@@ -98,7 +98,7 @@
                 <input type="hidden" value="" name="form_name" id="form_name">\
                 <input type="hidden" value="" name="attr_form" id="attr_form">\
                 <input type="hidden" value="" name="convert_php" id="convert_php">\
-                <input type="hidden" value="{{$form_projects_id}}" name="form_projects_id" id="form_projects_id">\
+                <input type="hidden" value="<?php echo $form_projects_id ?>" name="form_projects_id" id="form_projects_id">\
                 <select class="swal2-select" id="form-type" name="form_type"> \
                   <option value="" selected="selected" disabled="">Select an option</option>\
                   <option value="With Auth Google Drive API">With Auth Google Drive API</option> \
@@ -136,14 +136,9 @@
         if (!selected) {
             swal.showValidationMessage('Please select an option!');
         }else{
-          $.ajaxSetup({
-              headers: {
-                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-              }
-          });
           return $.ajax({
             type: "POST", 
-            url: "{{route('formgenerator-create.store')}}",
+            url: "/formgeneratornative/formGenerator/create/",
             // datatype : "json", 
             processData: false,
             contentType: false,
@@ -164,11 +159,10 @@
         if(result.value){
           swal.fire({title:"Form Project Di Tambah!", text:"Form Project berhasil di tambahkan", type:"success"})
           .then(function(){ 
-              window.location.href = "{{ url('/form', $form_projects_id)}}";
+              window.location.href = '/formgeneratornative/forms/showAllForms/'+<?php echo $form_projects_id ?>;
           });
         }
     })
   }
   
 </script>
-@endsection
