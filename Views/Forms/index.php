@@ -24,7 +24,7 @@
                                     echo '    <td>'.$form['form_name'].'</td>';
                                     echo '    <td>';
                                     echo '        <center>';
-                                    echo '            <span data-tooltip="tooltip" data-placement="top" title="" data-original-title="Preview Form"><a class="icon-green" href="previewForm/'.$form[0].'"><i class="fe fe fe-eye"></i></a></span>';
+                                    echo '            <span data-tooltip="tooltip" data-placement="top" title="" data-original-title="Preview Form"><a class="icon-green" href="/formgeneratornative/forms/previewForm/'.$form[0].'"><i class="fe fe fe-eye"></i></a></span>';
                                     echo '            <span data-tooltip="tooltip" data-placement="top" title="" data-original-title="Edit Form"><a class="icon-green" href="/formgeneratornative/formGenerator/editForm/'.$form[0].'"><i class="fe fe-edit"></i></a></span>';
                                     echo '            <span data-tooltip="tooltip" data-placement="top" title="" data-original-title="Delete Form"><a class="icon-red" href="javascript:delete_form('.$form[0].', '."'$form[form_name]'".')"><i class="fe fe-trash-2"></i></a></span>';
                                     echo '        </center>';

@@ -47,30 +47,33 @@
                 <!-- Right Side Of Navbar -->
                 <ul class="navbar-nav ml-auto">
                     <!-- Authentication Links -->
-                    
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('login') }}">Login</a>
-                        </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('register') }}">Register</a>
-                            </li>
-                        <li class="nav-item dropdown">
-                            <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                Test <span class="caret"></span>
-                            </a>
-
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="/formgeneratornative/auth/logout"
-                                    onclick="event.preventDefault();
-                                                    document.getElementById('logout-form').submit();">
-                                    Logout
-                                </a>
-
-                                <form id="logout-form" action="/formgeneratornative/auth/logout" method="POST" style="display: none;">
-                                    
-                                </form>
-                            </div>
-                        </li>
+                    <?php 
+                        if(empty($_SESSION['user'])){
+                            echo' <li class="nav-item">';
+                            echo'     <a class="nav-link" href="/formgeneratornative/auth/login">Login</a>';
+                            echo" </li>";
+                            echo' <li class="nav-item">';
+                            echo'     <a class="nav-link" href="/formgeneratornative/auth/register">Register</a>';
+                            echo" </li>";
+                        }else{
+                            echo' <li class="nav-item dropdown">';
+                            echo'     <a id="navbarDropdown" class="nav-link dropdown-toggle" href="" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>';
+                            echo      $_SESSION['user']['name']."<span class='caret'></span>";
+                            echo"     </a>";
+                            echo'     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">';
+                            echo'         <a class="dropdown-item" href="/formgeneratornative/auth/logout"';
+                            echo'             onclick="event.preventDefault();';
+                            echo'                             document.getElementById(\'logout-form\').submit();">';
+                            echo"             Logout";
+                            echo"         </a>";
+                            echo'         <form id="logout-form" action="/formgeneratornative/auth/logout" method="POST" style="display: none;">';            
+                            echo"         </form>";
+                            echo"     </div>";
+                            echo" </li>  ";
+                        }
+                    ?>
+                        
+                        
                     
                 </ul>
             </div>

@@ -15,6 +15,14 @@ class formsController extends Controller{
         $this->render("index");
     }
 
+    function previewForm($id){
+        $forms = new Form();
+
+        $d['form'] = $forms->showForm($id);
+        $this->set($d);
+        $this->render("previewForm");
+    }
+
     function delete($id){
         $form = new Form();
         if ($form->delete($id))
@@ -177,160 +185,6 @@ class formsController extends Controller{
         $project_name = str_replace(' ', '_', $project['nama_project']);
         foreach($forms as $i => $form){
             $this->export($form['id'], $share_path, $project_path);
-        //     $form_name = str_replace(' ', '_', $form['form_title']);
-
-        //     // Search Folder Sync
-        //     $folderNameSync = "Sync";
-        //     $optParams = array(
-        //         'pageSize' => 1,
-        //         'fields' => 'nextPageToken, files',
-        //         'q' => "name = '".$folderNameSync."' and mimeType = 'application/vnd.google-apps.folder'"
-        //     );
-        //     $Sync = $service->files->listFiles($optParams);
-        //     foreach ($Sync->getFiles() as $file) {
-        //         $idFoldSync = $file->getId();
-        //         $namaFoldSync = $file->getName();
-        //     }
-
-        //     if(empty($namaFoldSync)){
-        //         $file = new Google_Service_Drive_DriveFile();
-        //         $file->setName('Sync');
-        //         $file->setMimeType('application/vnd.google-apps.folder');
-        //         $folderSync = $service->files->create($file);
-        //         $optParams = array(
-        //             'pageSize' => 1,
-        //             'fields' => 'nextPageToken, files',
-        //             'q' => "name = '".$folderNameSync."' and mimeType = 'application/vnd.google-apps.folder'"
-        //         );
-        //         $Sync = $service->files->listFiles($optParams);
-        //         foreach ($Sync->getFiles() as $file) {
-        //             $idFoldSync = $file->getId();
-        //             $namaFoldSync = $file->getName();
-        //         }
-        //     }
-        //     do{
-        //     // Search Project Folder 
-        //         $optParams = array(
-        //             'pageSize' => 1,
-        //             'fields' => 'nextPageToken, files',
-        //             'q' => "parents = '".$idFoldSync."' and name = '".$project_name."' and mimeType = 'application/vnd.google-apps.folder'"
-        //         );
-        //         $searchFolder = $service->files->listFiles($optParams);
-        //         foreach ($searchFolder->getFiles() as $file) {
-        //             // printf("%s (%s)\n", $file->getName(), $file->getId());
-        //             $idProjFold = $file->getId();
-        //             $folderNameSearch = $file->getName();
-        //         }
-        //         if(empty($folderNameSearch)){
-        //             $file = new Google_Service_Drive_DriveFile();
-        //             $file->setParents([$idFoldSync]);
-        //             $file->setName($project_name);
-        //             $file->setMimeType('application/vnd.google-apps.folder');
-        //             $service->files->create($file);
-        //         }
-        //         $i++;
-        //     }while($i<=1);
-          
-        //     $optParams = array(
-        //         'pageSize' => 1,
-        //         'fields' => 'nextPageToken, files',
-        //         'q' => "parents = '".$idProjFold."' and name = '".$form_name."' and mimeType = 'application/vnd.google-apps.folder'"
-        //     );
-        //     $searchFolder = $service->files->listFiles($optParams);
-        //     foreach ($searchFolder->getFiles() as $file) {
-        //         // printf("%s (%s)\n", $file->getName(), $file->getId());
-        //         $formNameSearch = $file->getName();
-        //     }
-        //     if(empty($formNameSearch)){
-        //         $file = new Google_Service_Drive_DriveFile();
-        //         $file->setParents([$idProjFold]);
-        //         $file->setName($form_name);
-        //         $file->setMimeType('application/vnd.google-apps.folder');
-        //         $service->files->create($file);
-        //     }
-
-        //     $optParams = array(
-        //         'pageSize' => 1,
-        //         'fields' => 'nextPageToken, files',
-        //         'q' => "name = 'Out of Sync' and mimeType = 'application/vnd.google-apps.folder'"
-        //     );
-        //     $OutofSync = $service->files->listFiles($optParams);
-        //     foreach ($OutofSync->getFiles() as $file) {
-        //         $idFoldOutOfSync = $file->getId();
-        //         $namaFoldOutofSync = $file->getName();
-        //     }
-        //     if(empty($namaFoldOutofSync)){
-        //         // return response()->json($OutofSync);
-        //         $file = new Google_Service_Drive_DriveFile();
-        //         $file->setName('Out of Sync');
-        //         $file->setMimeType('application/vnd.google-apps.folder');
-        //         $folderOutofSync = $service->files->create($file);
-        //         // print("Folder Sukses");
-        //         $optParams = array(
-        //             'pageSize' => 1,
-        //             'fields' => 'nextPageToken, files',
-        //             'q' => "name = 'Out of Sync' and mimeType = 'application/vnd.google-apps.folder'"
-        //         );
-        //         $OutofSync = $service->files->listFiles($optParams);
-        //         foreach ($OutofSync->getFiles() as $file) {
-        //             $idFoldOutOfSync = $file->getId();
-        //             $namaFoldOutofSync = $file->getName();
-        //         }
-        //     }
-          
-        //     do{
-        //     // Search Project Folder 
-        //         $optParams = array(
-        //             'pageSize' => 1,
-        //             'fields' => 'nextPageToken, files',
-        //             'q' => "parents = '".$idFoldOutOfSync."' and name = '".$project_name."' and mimeType = 'application/vnd.google-apps.folder'"
-        //         );
-        //         $searchFolder = $service->files->listFiles($optParams);
-        //         foreach ($searchFolder->getFiles() as $file) {
-        //             // printf("%s (%s)\n", $file->getName(), $file->getId());
-        //             $idProjFoldOut = $file->getId();
-        //             $folderNameOutSearch = $file->getName();
-        //         }
-                
-        //         if(empty($folderNameOutSearch)){
-        //             // return response()->json($project_name);
-        //             $file = new Google_Service_Drive_DriveFile();
-        //             $file->setParents([$idFoldOutOfSync]);
-        //             $file->setName($project_name);
-        //             $file->setMimeType('application/vnd.google-apps.folder');
-        //             $service->files->create($file);
-        //             $optParams = array(
-        //                 'pageSize' => 1,
-        //                 'fields' => 'nextPageToken, files',
-        //                 'q' => "parents = '".$idFoldOutOfSync."' and name = '".$project_name."' and mimeType = 'application/vnd.google-apps.folder'"
-        //             );
-        //             $searchFolder = $service->files->listFiles($optParams);
-        //             foreach ($searchFolder->getFiles() as $file) {
-        //                 // printf("%s (%s)\n", $file->getName(), $file->getId());
-        //                 $idProjFoldOut = $file->getId();
-        //                 $folderNameOutSearch = $file->getName();
-        //             }
-        //         }
-        //         $i++;
-        //     }while($i<=1);
-        //   // return response()->json($idProjFoldOut);
-        //     $optParams = array(
-        //         'pageSize' => 1,
-        //         'fields' => 'nextPageToken, files',
-        //         'q' => "parents = '".$idProjFoldOut."' and name = '".$form_name."' and mimeType = 'application/vnd.google-apps.folder'"
-        //     );
-        //     $searchFolder = $service->files->listFiles($optParams);
-        //     foreach ($searchFolder->getFiles() as $file) {
-        //         // printf("%s (%s)\n", $file->getName(), $file->getId());
-        //         $formNameOutSearch = $file->getName();
-        //     }
-        //     if(empty($formNameOutSearch)){
-        //         $file = new Google_Service_Drive_DriveFile();
-        //         $file->setParents([$idProjFoldOut]);
-        //         $file->setName($form_name);
-        //         $file->setMimeType('application/vnd.google-apps.folder');
-        //         $service->files->create($file);
-        //     }
         } 
         
         if(!empty($data['inputCheckbox'])){
@@ -356,7 +210,7 @@ class formsController extends Controller{
         $zip->close();
 
         $this->copyDirectory($storage_path3, $storage_path2);
-        copy($project['project_oauth_file'], "../public/zip_file/".$share_path."/google/secret/synchronize/token.json");
+        copy($project['project_token_file'], "../public/zip_file/".$share_path."/google/secret/synchronize/token.json");
 
         $prepend = '<?php ';
 
@@ -390,6 +244,7 @@ class formsController extends Controller{
             }
         }
         $zip->close();
+
         header('Content-Description: File Transfer');
         header('Content-Type: application/force-download');
         header("Content-Disposition: attachment; filename=\"" . basename($zip_file) . "\";");
@@ -401,11 +256,25 @@ class formsController extends Controller{
         ob_clean();
         flush();
         readfile($zip_file); //showing the path to the server where the file is to be download
-        foreach($forms as $i => $form){
-            $form_name = str_replace(' ', '_', $form['form_title']);
-            // return response()->json($form_name);
-            // Search Folder Sync
-            $folderNameSync = "Sync";
+
+        // Search Folder Sync
+        $folderNameSync = "Sync";
+        $optParams = array(
+            'pageSize' => 1,
+            'fields' => 'nextPageToken, files',
+            'q' => "name = '".$folderNameSync."' and mimeType = 'application/vnd.google-apps.folder'"
+        );
+        $Sync = $service->files->listFiles($optParams);
+        foreach ($Sync->getFiles() as $file) {
+            $idFoldSync = $file->getId();
+            $namaFoldSync = $file->getName();
+        }
+
+        if(empty($namaFoldSync)){
+            $file = new Google_Service_Drive_DriveFile();
+            $file->setName('Sync');
+            $file->setMimeType('application/vnd.google-apps.folder');
+            $folderSync = $service->files->create($file);
             $optParams = array(
                 'pageSize' => 1,
                 'fields' => 'nextPageToken, files',
@@ -416,45 +285,92 @@ class formsController extends Controller{
                 $idFoldSync = $file->getId();
                 $namaFoldSync = $file->getName();
             }
+        }
+        // Search Project Folder 
+        $optParams = array(
+            'pageSize' => 1,
+            'fields' => 'nextPageToken, files',
+            'q' => "parents = '".$idFoldSync."' and name = '".$project_name."' and mimeType = 'application/vnd.google-apps.folder'"
+        );
+        $searchFolder = $service->files->listFiles($optParams);
+        foreach ($searchFolder->getFiles() as $file) {
+            // printf("%s (%s)\n", $file->getName(), $file->getId());
+            $idProjFold = $file->getId();
+            $folderNameSearch = $file->getName();
+        }
+        if(empty($folderNameSearch)){
+            $file = new Google_Service_Drive_DriveFile();
+            $file->setParents([$idFoldSync]);
+            $file->setName($project_name);
+            $file->setMimeType('application/vnd.google-apps.folder');
+            $service->files->create($file);
+        }
 
-            if(empty($namaFoldSync)){
-                $file = new Google_Service_Drive_DriveFile();
-                $file->setName('Sync');
-                $file->setMimeType('application/vnd.google-apps.folder');
-                $folderSync = $service->files->create($file);
-                $optParams = array(
-                    'pageSize' => 1,
-                    'fields' => 'nextPageToken, files',
-                    'q' => "name = '".$folderNameSync."' and mimeType = 'application/vnd.google-apps.folder'"
-                );
-                $Sync = $service->files->listFiles($optParams);
-                foreach ($Sync->getFiles() as $file) {
-                    $idFoldSync = $file->getId();
-                    $namaFoldSync = $file->getName();
-                }
+        //search out of sync
+        $optParams = array(
+            'pageSize' => 1,
+            'fields' => 'nextPageToken, files',
+            'q' => "name = 'Out of Sync' and mimeType = 'application/vnd.google-apps.folder'"
+        );
+        $OutofSync = $service->files->listFiles($optParams);
+        foreach ($OutofSync->getFiles() as $file) {
+            $idFoldOutOfSync = $file->getId();
+            $namaFoldOutofSync = $file->getName();
+        }
+        if(empty($namaFoldOutofSync)){
+            // return response()->json($OutofSync);
+            $file = new Google_Service_Drive_DriveFile();
+            $file->setName('Out of Sync');
+            $file->setMimeType('application/vnd.google-apps.folder');
+            $folderOutofSync = $service->files->create($file);
+            // print("Folder Sukses");
+            $optParams = array(
+                'pageSize' => 1,
+                'fields' => 'nextPageToken, files',
+                'q' => "name = 'Out of Sync' and mimeType = 'application/vnd.google-apps.folder'"
+            );
+            $OutofSync = $service->files->listFiles($optParams);
+            foreach ($OutofSync->getFiles() as $file) {
+                $idFoldOutOfSync = $file->getId();
+                $namaFoldOutofSync = $file->getName();
             }
-            do{
-            // Search Project Folder 
-                $optParams = array(
-                    'pageSize' => 1,
-                    'fields' => 'nextPageToken, files',
-                    'q' => "parents = '".$idFoldSync."' and name = '".$project_name."' and mimeType = 'application/vnd.google-apps.folder'"
-                );
-                $searchFolder = $service->files->listFiles($optParams);
-                foreach ($searchFolder->getFiles() as $file) {
-                    // printf("%s (%s)\n", $file->getName(), $file->getId());
-                    $idProjFold = $file->getId();
-                    $folderNameSearch = $file->getName();
-                }
-                if(empty($folderNameSearch)){
-                    $file = new Google_Service_Drive_DriveFile();
-                    $file->setParents([$idFoldSync]);
-                    $file->setName($project_name);
-                    $file->setMimeType('application/vnd.google-apps.folder');
-                    $service->files->create($file);
-                }
-                $i++;
-            }while($i<=1);
+        }
+      
+        // Search Project Folder 
+        $optParams = array(
+            'pageSize' => 1,
+            'fields' => 'nextPageToken, files',
+            'q' => "parents = '".$idFoldOutOfSync."' and name = '".$project_name."' and mimeType = 'application/vnd.google-apps.folder'"
+        );
+        $searchFolder = $service->files->listFiles($optParams);
+        foreach ($searchFolder->getFiles() as $file) {
+            // printf("%s (%s)\n", $file->getName(), $file->getId());
+            $idProjFoldOut = $file->getId();
+            $folderNameOutSearch = $file->getName();
+        }
+        
+        if(empty($folderNameOutSearch)){
+            // return response()->json($project_name);
+            $file = new Google_Service_Drive_DriveFile();
+            $file->setParents([$idFoldOutOfSync]);
+            $file->setName($project_name);
+            $file->setMimeType('application/vnd.google-apps.folder');
+            $service->files->create($file);
+            $optParams = array(
+                'pageSize' => 1,
+                'fields' => 'nextPageToken, files',
+                'q' => "parents = '".$idFoldOutOfSync."' and name = '".$project_name."' and mimeType = 'application/vnd.google-apps.folder'"
+            );
+            $searchFolder = $service->files->listFiles($optParams);
+            foreach ($searchFolder->getFiles() as $file) {
+                // printf("%s (%s)\n", $file->getName(), $file->getId());
+                $idProjFoldOut = $file->getId();
+                $folderNameOutSearch = $file->getName();
+            }
+        }
+
+        foreach($forms as $i => $form){
+            $form_name = str_replace(' ', '_', $form['form_title']);
           
             $optParams = array(
                 'pageSize' => 1,
@@ -477,71 +393,6 @@ class formsController extends Controller{
             $optParams = array(
                 'pageSize' => 1,
                 'fields' => 'nextPageToken, files',
-                'q' => "name = 'Out of Sync' and mimeType = 'application/vnd.google-apps.folder'"
-            );
-            $OutofSync = $service->files->listFiles($optParams);
-            foreach ($OutofSync->getFiles() as $file) {
-                $idFoldOutOfSync = $file->getId();
-                $namaFoldOutofSync = $file->getName();
-            }
-            if(empty($namaFoldOutofSync)){
-                // return response()->json($OutofSync);
-                $file = new Google_Service_Drive_DriveFile();
-                $file->setName('Out of Sync');
-                $file->setMimeType('application/vnd.google-apps.folder');
-                $folderOutofSync = $service->files->create($file);
-                // print("Folder Sukses");
-                $optParams = array(
-                    'pageSize' => 1,
-                    'fields' => 'nextPageToken, files',
-                    'q' => "name = 'Out of Sync' and mimeType = 'application/vnd.google-apps.folder'"
-                );
-                $OutofSync = $service->files->listFiles($optParams);
-                foreach ($OutofSync->getFiles() as $file) {
-                    $idFoldOutOfSync = $file->getId();
-                    $namaFoldOutofSync = $file->getName();
-                }
-            }
-          
-            do{
-            // Search Project Folder 
-                $optParams = array(
-                    'pageSize' => 1,
-                    'fields' => 'nextPageToken, files',
-                    'q' => "parents = '".$idFoldOutOfSync."' and name = '".$project_name."' and mimeType = 'application/vnd.google-apps.folder'"
-                );
-                $searchFolder = $service->files->listFiles($optParams);
-                foreach ($searchFolder->getFiles() as $file) {
-                    // printf("%s (%s)\n", $file->getName(), $file->getId());
-                    $idProjFoldOut = $file->getId();
-                    $folderNameOutSearch = $file->getName();
-                }
-                
-                if(empty($folderNameOutSearch)){
-                    // return response()->json($project_name);
-                    $file = new Google_Service_Drive_DriveFile();
-                    $file->setParents([$idFoldOutOfSync]);
-                    $file->setName($project_name);
-                    $file->setMimeType('application/vnd.google-apps.folder');
-                    $service->files->create($file);
-                    $optParams = array(
-                        'pageSize' => 1,
-                        'fields' => 'nextPageToken, files',
-                        'q' => "parents = '".$idFoldOutOfSync."' and name = '".$project_name."' and mimeType = 'application/vnd.google-apps.folder'"
-                    );
-                    $searchFolder = $service->files->listFiles($optParams);
-                    foreach ($searchFolder->getFiles() as $file) {
-                        // printf("%s (%s)\n", $file->getName(), $file->getId());
-                        $idProjFoldOut = $file->getId();
-                        $folderNameOutSearch = $file->getName();
-                    }
-                }
-                $i++;
-            }while($i<=1);
-          // return response()->json($idProjFoldOut);
-            $optParams = array(
-                'pageSize' => 1,
-                'fields' => 'nextPageToken, files',
                 'q' => "parents = '".$idProjFoldOut."' and name = '".$form_name."' and mimeType = 'application/vnd.google-apps.folder'"
             );
             $searchFolder = $service->files->listFiles($optParams);
@@ -557,7 +408,6 @@ class formsController extends Controller{
                 $service->files->create($file);
             }
         }
-        
         exit;
     }
 

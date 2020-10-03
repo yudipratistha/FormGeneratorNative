@@ -52,7 +52,7 @@ class FormProject extends Model{
     }
 
     public function delete($id){
-        $sql = 'DELETE FROM form_projects WHERE id = ?';
+        $sql = 'DELETE form_projects, forms FROM forms INNER JOIN form_projects ON forms.`form_projects_id` = form_projects.`id` WHERE form_projects.`id`= ?';
         $req = Database::getBdd()->prepare($sql);
         return $req->execute([$id]);
     }

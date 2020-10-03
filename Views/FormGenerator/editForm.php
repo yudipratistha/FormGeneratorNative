@@ -79,7 +79,7 @@
 </div>
 
 <script>
-  // var form_name= 'asa'
+  var form_name= '<?php echo $form['form_name']; ?>'
   // update data form project
   function update_form(){
     swal.fire({

@@ -1,4 +1,3 @@
-<?php $project_name="Form_Mahasiswa"; $tokenPath ="../google/secret/synchronize/token.json";$form_attr["data"][0]["folder"] = "form_biodata";$form_attr["data"][0]["attribute"][0] = "nama";$form_attr["data"][0]["attribute"][1] = "nim";$form_attr["data"][0]["attribute"][2] = "jk";$form_attr["data"][0]["attribute"][3] = "dates";$form_attr["data"][0]["attribute"][4] = "dattime";$form_attr["data"][0]["attribute"][5] = "data_barang";$form_attr["data"][0]["attribute"][6] = "foto1";$form_attr["data"][1]["folder"] = "form_test";$form_attr["data"][1]["attribute"][0] = "attr";if(!isset($_POST["server_name"])){ ?><script>var form_attr = <?php echo json_encode($form_attr); ?>;</script> <?php } ?>
 
 
 <?php 
@@ -449,14 +448,11 @@ else{
             ');
             $.each(item['attribute'], function(j, attribute) { 
                 $('#folder-' +  i).append('<a class="list-group-item">'+attribute+'</a>')
-                // $('#folder-' +  i).append('<input type=hidden name=attribute['+item["folder"]+']['+j+'] value='+attribute+'>')
             });
             $('.sync-from').append('<option>'+ item["folder"] + '</option>')
         });
         append = updateOption();
                
-
-
         function validateEmptyField(class_name){
             var isError = false;
             $(class_name).each(function(){
@@ -468,10 +464,6 @@ else{
             }  
         }
     });
-</script>
-
-
-<script>
 
     //-- Variable --//
     var max_fields      = 50; //maximum input boxes allowed
@@ -493,10 +485,6 @@ else{
         $(this).parent().parent().parent().parent().remove(); 
         x--;
     })  
-</script>
-
-
-<script>
 
     //-- Variable --//
     var max_fields2      = 50; //maximum input boxes allowed
@@ -519,6 +507,5 @@ else{
             })  
         }
     });
-    
     
 </script>

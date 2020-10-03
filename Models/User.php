@@ -1,12 +1,25 @@
 <?php
 class User extends Model{
     public function login($email, $password){
-        $sql = "SELECT id, email, name FROM users WHERE email =:email OR password=:password";
+        $sql = "SELECT id, email, password FROM users WHERE email =:email OR password=:password";
         $req = Database::getBdd()->prepare($sql);
         // $req->execute();
         $req->execute([
             'email' => $email,
             'password' => $password
+        ]);
+        // foreach($req as $row) {
+        //     echo $row['name'];
+        // }
+        return $req->fetch();
+    }
+
+    public function getUserData($id){
+        $sql = "SELECT id, email, name FROM users WHERE id = :id";
+        $req = Database::getBdd()->prepare($sql);
+        // $req->execute();
+        $req->execute([
+            'id' => $id,
         ]);
         // foreach($req as $row) {
         //     echo $row['name'];

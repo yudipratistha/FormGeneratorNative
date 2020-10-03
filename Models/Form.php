@@ -28,10 +28,12 @@ class Form extends Model{
         return $req->fetchAll();
     }
 
-    public function create($form_title, $form_name, $convert_php, $attr_form, $form_type, $form_projects_id){
-        $sql = "INSERT INTO forms (form_title, form_name, form_export, form_attr, form_type, form_projects_id, created_at, updated_at) VALUES (:form_title, :form_name, :convert_php, :attr_form, :form_type, :form_projects_id, :created_at, :updated_at)";
+    public function create($form_title, $form_name, $convert_php, $attr_form, $form_type, $form_auth_path, $form_projects_id){
+        $sql = "INSERT INTO forms (form_title, form_name, form_export, form_attr, form_type, form_auth_path, form_projects_id, created_at, updated_at) VALUES (:form_title, :form_name, :convert_php, :attr_form, :form_type, :form_auth_path, :form_projects_id, :created_at, :updated_at)";
 
         $req = Database::getBdd()->prepare($sql);
+
+        // if(!empty($form_auth_path)) $form_auth_path = $form_auth_path; else $form_auth_path = 'NULL';
 
         return $req->execute([
             'form_title' => $form_title,
@@ -39,6 +41,7 @@ class Form extends Model{
             'convert_php' => $convert_php,
             'attr_form' => $attr_form,
             'form_type' => $form_type,
+            'form_auth_path' => $form_auth_path,
             'form_projects_id' => $form_projects_id,
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s')
@@ -53,9 +56,8 @@ class Form extends Model{
     }
 
 
-    public function update($id, $form_title, $form_name, $convert_php, $attr_form, $form_type){
-        $sql = "UPDATE forms SET form_title = :form_title, form_name = :form_name, form_export = :form_export, form_attr = :form_attr, form_type = :form_type, updated_at = :updated_at WHERE id = :id";
-
+    public function update($id, $form_title, $form_name, $convert_php, $attr_form, $form_type, $form_auth_path){
+        $sql = "UPDATE forms SET form_title = :form_title, form_name = :form_name, form_export = :form_export, form_attr = :form_attr, form_type = :form_type, form_auth_path = :form_auth_path, updated_at = :updated_at WHERE id = :id";
         $req = Database::getBdd()->prepare($sql);
 
         return $req->execute([
@@ -65,6 +67,7 @@ class Form extends Model{
             'form_export' => $convert_php,
             'form_attr' => $attr_form,
             'form_type' => $form_type,
+            'form_auth_path' => $form_auth_path,
             'updated_at' => date('Y-m-d H:i:s')
         ]);
     }
