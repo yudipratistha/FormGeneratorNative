@@ -1,4 +1,4 @@
-
+<?php $project_name="Toko_Pratistha"; $tokenPath ="../google/secret/synchronize/token.json";$form_attr["data"][0]["folder"] = "Form_Data_Barang";$form_attr["data"][0]["attribute"][0] = "nama_barang";$form_attr["data"][0]["attribute"][1] = "banyak_barang";if(!isset($_POST["server_name"])){ ?><script>var form_attr = <?php echo json_encode($form_attr); ?>;</script> <?php } ?>
 
 <?php 
 $token = json_decode(file_get_contents($tokenPath));

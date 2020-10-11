@@ -65,37 +65,29 @@ class formsController extends Controller{
 
     function copyDirectory($source, $dest, $permissions = 0777){
         $sourceHash = $this->hashDirectory($source);
-        // Check for symlinks
         if (is_link($source)) {
             return symlink(readlink($source), $dest);
         }
-        // Simple copy for a file
         if (is_file($source)) {
             return copy($source, $dest);
         }
-        // Make destination directory
         if (!is_dir($dest)) {
             mkdir($dest, $permissions);
         }
-        // Loop through the folder
+
         $dir = dir($source);
         while (false !== $entry = $dir->read()) {
-            // Skip pointers
             if ($entry == '.' || $entry == '..') {
                 continue;
             }
-            // Deep copy directories
             if($sourceHash != $this->hashDirectory($source."/".$entry)){
                  $this->copyDirectory("$source/$entry", "$dest/$entry", $permissions);
             }
         }
-        // Clean up
         $dir->close();
         return true;
     }
-    
-    // In case of coping a directory inside itself, there is a need to hash check the directory otherwise and infinite loop of coping is generated
-    
+        
     function hashDirectory($directory){
         if (! is_dir($directory)){ return false; }
     
@@ -174,8 +166,7 @@ class formsController extends Controller{
         $storage_path2 = '../public/zip_file/' . $project_path;
         $storage_path4 = '../public/zip_file/' . $share_path;
         $storage_path5 = '../public/zip_file/' . $user_path;
-        // $storage_path6 = 
-        // $storage_path6 = storage_path('app/attachment');
+
         $this->copyDirectory($storage_path1, $storage_path2);
         $this->copyDirectory($storage_path1, $storage_path4);
 
