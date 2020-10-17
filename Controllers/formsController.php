@@ -38,10 +38,10 @@ class formsController extends Controller{
         $sql = $sql."USE `".$project_name."`; ".PHP_EOL;
 
         foreach($forms as $i => $form){
-            $sql = $sql."DROP TABLE IF EXISTS `".str_replace(' ', '_', $form->form_name)."`; ".PHP_EOL;
-            $sql = $sql."create TABLE `".$form[0]['form_name']."` ( ".PHP_EOL;
+            $sql = $sql."DROP TABLE IF EXISTS `".str_replace(' ', '_', $form['form_name'])."`; ".PHP_EOL;
+            $sql = $sql."create TABLE `".$form['form_name']."` ( ".PHP_EOL;
             $sql = $sql."`id` int(12) NOT NULL AUTO_INCREMENT, ".PHP_EOL;
-            foreach(explode(',', $form[0]['form_attr']) as $form_attr){
+            foreach(explode(',', $form['form_attr']) as $form_attr){
                 $sql = $sql."`".$form_attr."` varchar(255) DEFAULT NULL, ".PHP_EOL;
             }
             $sql = $sql."PRIMARY KEY (`id`) ".PHP_EOL;
@@ -111,17 +111,12 @@ class formsController extends Controller{
         $formQuery = new Form();
         
         if(empty($data['checkform'])) return header("Location: " . WEBROOT . 'forms/showAllForms/'.strtok($request, '?'));
-        foreach($data['checkform'] as $i => $checkform_id){
+        foreach($data['checkform'] as $i => $checkform_id){          
             // $checkform_id = json_encode($checkform_id);
             if($i==0)$form = 'id = '. $checkform_id;
             else$form = $form.' OR id = '. $checkform_id;
         }
         $forms = $formQuery->getForm($form);
-        // foreach($forms as $i => $form){
-        //     echo $form['id'];
-        // }
-        // print_r($project['project_token_file']);
-        //     header('Content-Type: application/json');
 
         $project = $formQuery->getProject(strtok($request, '?'));
         $user_path = $_SESSION['user']['id'].'/';
@@ -181,7 +176,9 @@ class formsController extends Controller{
         if(!empty($data['inputCheckbox'])){
             $sql = $this->createMysql(str_replace(' ', '_', $project['nama_project']), $forms);
             $sql_file_name = str_replace(' ', '_', $project['nama_project']).".sql";
-            Storage::disk('public')->put($project_path."/".$sql_file_name, $sql);
+            $f=fopen('../public/zip_file/'.$project_path.$sql_file_name, 'w+');
+            fwrite($f, $sql);
+            fclose($f);
         }
         
         $zip_file = str_replace(' ', '_', $project['nama_project']).'.zip';
@@ -246,7 +243,7 @@ class formsController extends Controller{
         header('Content-Length: ' . filesize($zip_file));
         ob_clean();
         flush();
-        readfile($zip_file); //showing the path to the server where the file is to be download
+        readfile($zip_file);
 
         // Search Folder Sync
         $folderNameSync = "Sync";
@@ -285,7 +282,6 @@ class formsController extends Controller{
         );
         $searchFolder = $service->files->listFiles($optParams);
         foreach ($searchFolder->getFiles() as $file) {
-            // printf("%s (%s)\n", $file->getName(), $file->getId());
             $idProjFold = $file->getId();
             $folderNameSearch = $file->getName();
         }
@@ -295,6 +291,16 @@ class formsController extends Controller{
             $file->setName($project_name);
             $file->setMimeType('application/vnd.google-apps.folder');
             $service->files->create($file);
+            $optParams = array(
+                'pageSize' => 1,
+                'fields' => 'nextPageToken, files',
+                'q' => "parents = '".$idFoldSync."' and name = '".$project_name."' and mimeType = 'application/vnd.google-apps.folder'"
+            );
+            $searchFolder = $service->files->listFiles($optParams);
+            foreach ($searchFolder->getFiles() as $file) {
+                $idProjFold = $file->getId();
+                $folderNameSearch = $file->getName();
+            }
         }
 
         //search out of sync
@@ -406,7 +412,7 @@ class formsController extends Controller{
         $formQuery = new Form();
         $form = $formQuery->getForm('id = '.$id);
         $project = $formQuery->getProject($form[0]['form_projects_id']);
-        print_r($form[0]['form_projects_id']);
+        // print_r($form[0]['form_projects_id']);
         $client = new Google_Client();
         $service = new Google_Service_Drive($client);
         $oauth_file = json_decode(file_get_contents(__DIR__ . '../../public/'.$project['project_oauth_file']), true);
@@ -438,16 +444,16 @@ class formsController extends Controller{
         $request = (object)$request;
 
         if($request->form_type == 'Without Auth Google Drive'){
-            if (!file_exists($project_path."/google/secret/".$form['form_name'])) mkdir($project_path."/google/secret/".$form['form_name']);
-            if (!file_exists($share_path."/google/secret/".$form['form_name'])) mkdir($share_path."/google/secret/".$form['form_name']);
-            copy($project['project_token_file'], "../public/zip_file/".$project_path."/google/secret/".$form['form_name']."/token.json");
-            copy($project['project_token_file'], "../public/zip_file/".$share_path."/google/secret/".$form['form_name']."/token.json");
+            if (!file_exists("../public/zip_file/".$project_path."/google/secret/".$form[0]['form_name'])) mkdir("../public/zip_file/".$project_path."/google/secret/".$form[0]['form_name'], 0777, true);
+            if (!file_exists("../public/zip_file/".$share_path."/google/secret/".$form[0]['form_name'])) mkdir("../public/zip_file/".$share_path."/google/secret/".$form[0]['form_name'], 0777, true);
+            copy($project['project_token_file'], "../public/zip_file/".$project_path."/google/secret/".$form[0]['form_name']."/token.json");
+            copy($project['project_token_file'], "../public/zip_file/".$share_path."/google/secret/".$form[0]['form_name']."/token.json");
         }
         if(!empty($request->form_auth_path)){
-            if (!file_exists($project_path."/google/auth/".$form['form_name'])) mkdir($project_path."/google/auth/".$form['form_name']);
-            if (!file_exists($share_path."/google/auth/".$form['form_name'])) mkdir($share_path."/google/auth/".$form['form_name']);
-            copy($form[0]['form_auth_path'], "../public/zip_file/".$project_path."/google/auth/".$form['form_name']."/auth.json");
-            copy($form[0]['form_auth_path'], "../public/zip_file/".$share_path."/google/auth/".$form['form_name']."/auth.json");
+            if (!file_exists("../public/zip_file/".$project_path."/google/auth/".$form[0]['form_name'])) mkdir("../public/zip_file/".$project_path."/google/auth/".$form[0]['form_name'], 0777, true);
+            if (!file_exists("../public/zip_file/".$share_path."/google/auth/".$form[0]['form_name'])) mkdir("../public/zip_file/".$share_path."/google/auth/".$form[0]['form_name'], 0777, true);
+            copy($form[0]['form_auth_path'], "../public/zip_file/".$project_path."/google/auth/".$form[0]['form_name']."/auth.json");
+            copy($form[0]['form_auth_path'], "../public/zip_file/".$share_path."/google/auth/".$form[0]['form_name']."/auth.json");
         }
         $layout = $this->create_layout($request);
         $filename = str_replace(' ', '_',$form[0]['form_name']).".php";
@@ -477,21 +483,20 @@ class formsController extends Controller{
         $layout = $layout.'        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">';
         $layout = $layout.'            <div class="container">';
         $layout = $layout.'                <a class="navbar-brand" href="<?php $link = $_SERVER["PHP_SELF"];$link = substr($link, 1);$link = substr($link, 0, strpos($link, "/")); echo "/" . $link; ?>">Form Builder</a>';
-        $layout = $layout.'                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __(\'Toggle navigation\') }}">';
-        $layout = $layout.'                    <span class="navbar-toggler-icon"></span>';
-        $layout = $layout.'                </button>';
-        $layout = $layout.'                <div class="collapse navbar-collapse" id="navbarSupportedContent">';
-        $layout = $layout.'                    <ul class="navbar-nav ml-auto">';
-        $layout = $layout.'                        <li class="nav-item dropdown">';
-        $layout = $layout.'                            <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>';
-        $layout = $layout.'                                <?php echo $_SESSION["email_login"]; ?>';
-        $layout = $layout.'                            </a>';
-        $layout = $layout.'                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">';
-        $layout = $layout.'                                <a class="dropdown-item" href="?logout=yes">Logout</a>';
-        $layout = $layout.'                            </div>';
-        $layout = $layout.'                        </li>';
-        $layout = $layout.'                    </ul>';
-        $layout = $layout.'                </div>';
+        if($request->form_type!='Without Auth Google Drive') {
+            $layout = $layout.'                <div class="collapse navbar-collapse" id="navbarSupportedContent">';
+            $layout = $layout.'                    <ul class="navbar-nav ml-auto">';
+            $layout = $layout.'                        <li class="nav-item dropdown">';
+            $layout = $layout.'                            <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>';
+            $layout = $layout.'                                <?php echo $_SESSION["email_login"]; ?>';
+            $layout = $layout.'                            </a>';
+            $layout = $layout.'                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">';
+            $layout = $layout.'                                <a class="dropdown-item" href="?logout=yes">Logout</a>';
+            $layout = $layout.'                            </div>';
+            $layout = $layout.'                        </li>';
+            $layout = $layout.'                    </ul>';
+            $layout = $layout.'                </div>';
+        }
         $layout = $layout.'            </div>';
         $layout = $layout.'        </nav>';
         $layout = $layout.'        <div class="container border border-top-0 mt-5 shadow-sm">';
@@ -500,7 +505,6 @@ class formsController extends Controller{
         $layout = $layout.'    </body>';
         $layout = $layout.'    <?php } ?>';
         $layout = $layout.'</html>';
-        // $layout = $layout.$this->createPhpSuccess();
 
         return $layout;
     }
@@ -510,6 +514,7 @@ class formsController extends Controller{
         $php = $php.'<?php ';
         $php = $php.    '$oauth_credentials = __DIR__ ."/google/secret/oauth.json";';
         $php = $php.    "include_once __DIR__ . '/google/autoload.php';";
+        $php = $php.    '$folderName = "'.str_replace(' ', '_', $request->project_name).'"; ';
         $php = $php.    '$folderFormName = "'.str_replace(' ', '_', $request->form_name).'"; ';
         if(!empty($request->form_auth_path)) $php = $php.    '$auth_file = "google/auth/'.$request->form_name.'/auth.json";  ';
 
@@ -701,44 +706,71 @@ class formsController extends Controller{
         $php = $php.    '        fwrite($fp, $myJSON);'; 
         $php = $php.    '        fclose($fp);';
 
-        $php = $php.    '        $folderName = $folderFormName;';
+        
+        
         $php = $php.    '        $namaFoldSync = "";';
-        $php = $php.    '        $optParams = array(';
-        $php = $php.    '            \'pageSize\' => 20,';
-        $php = $php.    '            \'orderBy\' => \'modifiedTime asc\',';
-        $php = $php.    '            \'fields\' => \'nextPageToken, files\',';
-        $php = $php.    '            \'q\' => "name = \'".$folderName."\' and \'me\' in owners and mimeType = \'application/vnd.google-apps.folder\'"';
-        $php = $php.    '        );';
-
-        $php = $php.    '        $results = $service->files->listFiles($optParams);';
-        $php = $php.    '        foreach ($results->getFiles() as $files) {';
-        $php = $php.    '            $idFoldSync = $files->getId();';
-        $php = $php.    '            $namaFoldSync = $files->getName();';
-        $php = $php.    '        }';
-        $php = $php.    '        if($folderFormName === $namaFoldSync);';
-        $php = $php.    '        else{';
-        $php = $php.    '            $file = new Google_Service_Drive_DriveFile();';
-        $php = $php.    '            $file->setName($folderFormName);';
-        $php = $php.    '            $file->setMimeType(\'application/vnd.google-apps.folder\');';
-        $php = $php.    '            $folderSync = $service->files->create($file);';
-        $php = $php.    '        }';
-
-        $php = $php.    '        $optParams = array(';
-        $php = $php.    '            \'pageSize\' => 1,';
-        $php = $php.    '            \'orderBy\' => \'modifiedTime asc\',';
-        $php = $php.    '            \'fields\' => \'nextPageToken, files\',';
-        $php = $php.    '            \'q\' => "name = \'".$folderName."\' and mimeType = \'application/vnd.google-apps.folder\'"';
-        $php = $php.    '        );';
-
-        $php = $php.    '        $results = $service->files->listFiles($optParams);';
-        $php = $php.    '        foreach ($results->getFiles() as $files) {';
-        $php = $php.    '            $idFoldSync = $files->getId();';
-        $php = $php.    '            $namaFoldSync = $files->getName();';
-        $php = $php.    '        }';
+        if($request->form_type=='Without Auth Google Drive'){
+            $php = $php.    '        $optParams = array(';
+            $php = $php.    '            \'pageSize\' => 1,';
+            $php = $php.    '            \'fields\' => \'nextPageToken, files\',';
+            $php = $php.    '            \'q\' => "name = \'Out of Sync\' and mimeType = \'application/vnd.google-apps.folder\'"';
+            $php = $php.    '        );';
+            $php = $php.    '        $OutofSync = $service->files->listFiles($optParams);';
+            $php = $php.    '        foreach ($OutofSync->getFiles() as $file) {';
+            $php = $php.    '            $idFoldOutOfSync = $file->getId();';
+            $php = $php.    '        }';
+            $php = $php.    '        $optParams = array(';
+            $php = $php.    '            \'pageSize\' => 1,';
+            $php = $php.    '            \'fields\' => \'nextPageToken, files\',';
+            $php = $php.    '            \'q\' => "parents = \'".$idFoldOutOfSync."\' and name = \'".$folderName."\' and mimeType = \'application/vnd.google-apps.folder\'"';
+            $php = $php.    '        );';
+            $php = $php.    '        $searchFolder = $service->files->listFiles($optParams);';
+            $php = $php.    '        foreach ($searchFolder->getFiles() as $file) {';
+            $php = $php.    '            $idProjFoldOut = $file->getId();';
+            $php = $php.    '        }';
+    
+            $php = $php.    '        $optParams = array(';
+            $php = $php.    '            \'pageSize\' => 1,';
+            $php = $php.    '            \'orderBy\' => \'modifiedTime asc\',';
+            $php = $php.    '            \'fields\' => \'nextPageToken, files\',';
+            $php = $php.    '            \'q\' => "parents = \'".$idProjFoldOut."\' and name = \'" . $folderFormName . "\' and mimeType = \'application/vnd.google-apps.folder\'"';
+            $php = $php.    '        );';
+            $php = $php.    '        $results = $service->files->listFiles($optParams);';
+            $php = $php.    '        foreach ($results->getFiles() as $files) {';
+            $php = $php.    '            $idFold = $files->getId();';
+            $php = $php.    '        }';
+        }else{
+            $php = $php.    '        $optParams = array(';
+            $php = $php.    '            \'pageSize\' => 1,';
+            $php = $php.    '            \'orderBy\' => \'modifiedTime asc\',';
+            $php = $php.    '            \'fields\' => \'nextPageToken, files\',';
+            $php = $php.    '            \'q\' => "name = \'".$folderFormName."\' and mimeType = \'application/vnd.google-apps.folder\'"';
+            $php = $php.    '        );';
+            $php = $php.    '        $searchFolder = $service->files->listFiles($optParams);';
+            $php = $php.    '        foreach ($searchFolder->getFiles() as $file) {';
+            $php = $php.    '            $idFold = $file->getId();';
+            $php = $php.    '        }';
+    
+            $php = $php.    '        if(empty($idFold)){';
+            $php = $php.    '            $file = new Google_Service_Drive_DriveFile();';
+            $php = $php.    '            $file->setName($folderFormName);';
+            $php = $php.    '            $file->setMimeType(\'application/vnd.google-apps.folder\');';
+            $php = $php.    '            $service->files->create($file);';
+            $php = $php.    '            $optParams = array(';
+            $php = $php.    '                \'pageSize\' => 1,';
+            $php = $php.    '                \'fields\' => \'nextPageToken, files\',';
+            $php = $php.    '                \'q\' => "name = \'".$folderFormName."\' and mimeType = \'application/vnd.google-apps.folder\'"';
+            $php = $php.    '            );';
+            $php = $php.    '            $searchFolder = $service->files->listFiles($optParams);';
+            $php = $php.    '            foreach ($searchFolder->getFiles() as $file) {';
+            $php = $php.    '                $idFold = $file->getId();';
+            $php = $php.    '            }';
+            $php = $php.    '        }';
+        }
 
         $php = $php.    '        $fileMetadata = new Google_Service_Drive_DriveFile(array(';
         $php = $php.    '            \'name\' => "$folderFormName",';
-        $php = $php.    '            \'parents\' => array($idFoldSync),';
+        $php = $php.    '            \'parents\' => array($idFold),';
         $php = $php.    '            \'mimeType\' => \'application/vnd.google-apps.folder\'));';
         $php = $php.    '        $file = $service->files->create($fileMetadata, array(\'fields\' => \'id\'));';
         $php = $php.    '        $folderIdSave = $file->id;';

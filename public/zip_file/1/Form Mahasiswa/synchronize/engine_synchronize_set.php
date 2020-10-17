@@ -1,4 +1,4 @@
-<?php $project_name="Toko_Pratistha"; $tokenPath ="../google/secret/synchronize/token.json";$form_attr["data"][0]["folder"] = "Form_Data_Barang";$form_attr["data"][0]["attribute"][0] = "nama_barang";$form_attr["data"][0]["attribute"][1] = "banyak_barang";if(!isset($_POST["server_name"])){ ?><script>var form_attr = <?php echo json_encode($form_attr); ?>;</script> <?php } ?>
+<?php $project_name="Form_Mahasiswa"; $tokenPath ="../google/secret/synchronize/token.json";$form_attr["data"][0]["folder"] = "form_biodata";$form_attr["data"][0]["attribute"][0] = "nama";$form_attr["data"][0]["attribute"][1] = "nim";$form_attr["data"][0]["attribute"][2] = "jk";$form_attr["data"][0]["attribute"][3] = "dates";$form_attr["data"][0]["attribute"][4] = "dattime";$form_attr["data"][0]["attribute"][5] = "data_barang";$form_attr["data"][0]["attribute"][6] = "foto1";$form_attr["data"][1]["folder"] = "form_test";$form_attr["data"][1]["attribute"][0] = "attr";if(!isset($_POST["server_name"])){ ?><script>var form_attr = <?php echo json_encode($form_attr); ?>;</script> <?php } ?>
 
 <?php 
 $token = json_decode(file_get_contents($tokenPath));

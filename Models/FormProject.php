@@ -31,8 +31,8 @@ class FormProject extends Model{
     }
 
 
-    public function edit($id, $nama_project_edit, $project_oauth_file){
-        $sql = "UPDATE form_projects SET nama_project = :nama_project_edit, project_oauth_file = :project_oauth_file, updated_at = :updated_at WHERE id = :id";
+    public function edit($id, $nama_project_edit, $project_oauth_file, $project_token_file){
+        $sql = "UPDATE form_projects SET nama_project = :nama_project_edit, project_oauth_file = :project_oauth_file, project_token_file = :project_token_file, updated_at = :updated_at WHERE id = :id";
 
         $req = Database::getBdd()->prepare($sql);
 
@@ -40,6 +40,7 @@ class FormProject extends Model{
             'id' => $id,
             'nama_project_edit' => $nama_project_edit,
             'project_oauth_file' => $project_oauth_file,
+            'project_token_file' => $project_token_file,
             'updated_at' => date('Y-m-d H:i:s')
         ]);
     }

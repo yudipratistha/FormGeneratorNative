@@ -59,15 +59,14 @@ class formGeneratorController extends Controller{
             print_r($project_name["form_projects_id"]);
             $data_form_project = $form->getProject($showForm["form_projects_id"]);
 
-            $projectPath = "../public/file/".$_SESSION['user']['id'].$data_form_project["nama_project"]."/".$_POST["form_name"];
+            $projectPath = "../public/file/".$_SESSION['user']['id']."/".$data_form_project["nama_project"]."/".$_POST["form_name"];
 
             // mkdir("1/test/", 0777, true);
             if(!empty($_FILES["json_identifier"]['tmp_name'])){
                 mkdir($projectPath, 0777, true);
                 $jsonIdentifierFile = file_get_contents($_FILES["json_identifier"]['tmp_name']);
-                file_put_contents($projectPath."/auth.json", json_encode($jsonIdentifierFile));
-                header('Content-Type: application/json');
-                print_r($jsonIdentifierFile);
+                file_put_contents($projectPath."/auth.json", $jsonIdentifierFile);
+                
                 $form_auth_path = $projectPath."/auth.json";
             }else if($_POST["form_type"] == 'With Auth Google Drive API and Identifier'){
                 $form_auth_path = $showForm['form_auth_path'];
