@@ -71,7 +71,7 @@ class formProjectsController extends Controller{
             fclose($f);
             // file_put_contents($projectPath."/token.json", json_encode($tokenFile));
 
-            $formProject->edit($id, $_POST["nama_project_edit"], $projectPath.'oauth.json');
+            $formProject->edit($id, $_POST["nama_project_edit"], $projectPath.'oauth.json', $projectPath.'token.json');
             header("Location: " . WEBROOT . "formProjects/index");
             // echo json_encode($tokenPath["formProject"]["project_oauth_file"]);
         }else{

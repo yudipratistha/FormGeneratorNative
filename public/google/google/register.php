@@ -24,17 +24,17 @@
                 <form id="card" method="POST" class="col-md-8 shadow-sm" style="margin-top:100px">
                     <div class="form-group card-title">
                         <center>
-                            <h3>Register</h3>
+                            <h3>Login to Form</h3>
                         </center>
                     </div>
                     <div class=card-input>
                         <div class=form-group>
                             <label>Key</label>
-                            <input type="password" class=form-control name="password" placeholder="Example : bK2t2209">
+                            <input type="password" class=form-control name="password" placeholder="Ex. 03121xxx">
                         </div>
                     </div>
-                    <div class="form-group card-title" style="margin-bottom:30px;">
-                        <button type="submit" class="col-md-12 btn btn-success btn-block">Submit</button>
+                    <div class="form-group card-title" style="text-align:center;margin-bottom:30px;">
+                        <button type="submit" class="col-md-12 btn btn-success">Get Access</button>
                     </div>
                 </form>
             </div>

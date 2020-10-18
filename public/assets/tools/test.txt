@@ -1,0 +1,27 @@
+id|nama|alamat|checkbox|foto|foto2
+1|Yudi|Jl. Nangka|Option one, gfhf|1/1_foto.jpg|1/1_foto2.png
+2|Yudi|Jl. Teuku Umar|Option one, gfhf, uijh|2/2_foto.jpg|2/2_foto2.jpg
+3|asdsad|aweaweaw|Option one, gfhf|3/3_foto.jpg|3/3_foto2.png
+4|asdsad|aweaweaw|Option one, gfhf|4/4_foto.png|4/4_foto2.png
+5|asdasd|awewae|Option one|5/5_foto.jpg|5/5_foto2.jpg
+6|asdasd|asdsad|Option one, gfhf|6/6_foto.jpg|6/6_foto2.jpg
+7|Yudi|Jl. Nangka|Option one, gfhf|7/7_foto.jpg|7/7_foto2.png
+8|Yudi|Jl. Nangka|Option one, gfhf|8/8_foto.jpg|8/8_foto2.png
+9|Yudi|Jl. Nangka|Option one, gfhf|9/9_foto.jpg|9/9_foto2.png
+10|Yudi|Jl. Nangka|Option one, gfhf|10/10_foto.jpg|10/10_foto2.png
+11|Yudi|Jl. Nangka|Option one, gfhf|11/11_foto.jpg|11/11_foto2.png
+12|Yudi|Jl. Nangka|Option one, gfhf|12/12_foto.jpg|12/12_foto2.png
+13|Yudi|Jl. Nangka|Option one, gfhf|13/13_foto.jpg|13/13_foto2.png
+14|Yudi|Jl. Nangka|Option one, gfhf|14/14_foto.jpg|14/14_foto2.png
+15|Yudi|Jl. Nangka|Option one, gfhf|15/15_foto.jpg|15/15_foto2.png
+16|Yudi|Jl. Nangka|Option one, gfhf|16/16_foto.jpg|16/16_foto2.png
+17|Yudi|Jl. Nangka|Option one, gfhf|17/17_foto.jpg|17/17_foto2.png
+18|Yudi|Jl. Nangka|Option one, gfhf|18/18_foto.jpg|18/18_foto2.png
+19|Yudi|Jl. Nangka|Option one, gfhf|19/19_foto.jpg|19/19_foto2.png
+20|Yudi|Jl. Nangka|Option one, gfhf|20/20_foto.jpg|20/20_foto2.png
+21|Yudi|Jl. Nangka|Option one, gfhf|21/21_foto.jpg|21/21_foto2.png
+22|Pande|Jl. Teuku Umar|Option one, gfhf, uijh|22/22_foto.jpg|22/22_foto2.jpg
+23|asdsad|aweaweaw|Option one, gfhf|23/23_foto.jpg|23/23_foto2.png
+24|asdsad|aweaweaw|Option one, gfhf|24/24_foto.png|24/24_foto2.png
+25|asdasd|awewae|Option one|25/25_foto.jpg|25/25_foto2.jpg
+26|asdasd|asdsad|Option one, gfhf|26/26_foto.jpg|26/26_foto2.jpg
