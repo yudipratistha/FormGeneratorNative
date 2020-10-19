@@ -3,18 +3,15 @@
 class Router
 {
 
-    static public function parse($url, $request)
-    {
+    static public function parse($url, $request){
         $url = trim($url);
 
-        if (strtolower($url) == "/formgeneratornative/")
-        {
+        if (strtolower($url) == "/formgeneratornative/"){
             $request->controller = "formProjects";
             $request->action = "index";
             $request->params = [];
         }
-        else
-        {
+        else{
             $explode_url = explode('/', $url);
             $explode_url = array_slice($explode_url, 2);
             $request->controller = $explode_url[0];

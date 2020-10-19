@@ -151,8 +151,6 @@ class formsController extends Controller{
         $share_path = $user_path.$project['nama_project'];
         if (!file_exists('../public/zip_file/'.$project_path)) mkdir('../public/zip_file/'.$project_path, 0777, true);
         if (!file_exists('../public/zip_file/'.$share_path)) mkdir('../public/zip_file/'.$share_path, 0777, true);
-        if (!file_exists('../public/zip_file/'.$project_path."/attachment")) mkdir('../public/zip_file/'.$project_path."/attachment", 0777, true);
-        if (!file_exists('../public/zip_file/'.$share_path."/attachment")) mkdir('../public/zip_file/'.$share_path."/attachment", 0777, true);
         if (!file_exists('../public/zip_file/'.$project_path."/google/secret/")) mkdir('../public/zip_file/'.$project_path."/google/secret/", 0777, true);
         if (!file_exists('../public/zip_file/'.$share_path."/google/secret/")) mkdir('../public/zip_file/'.$share_path."/google/secret/", 0777, true);
         if (!file_exists('../public/zip_file/'.$project_path."/google/secret/synchronize")) mkdir('../public/zip_file/'.$project_path."/google/secret/synchronize", 0777, true);

@@ -1,10 +1,8 @@
 <?php
-    class Request
-    {
+    class Request{
         public $url;
 
-        public function __construct()
-        {
+        public function __construct(){
             $this->url = $_SERVER["REQUEST_URI"];
         }
     }
