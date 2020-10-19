@@ -442,16 +442,16 @@ class formsController extends Controller{
         $request = (object)$request;
 
         if($request->form_type == 'Without Auth Google Drive'){
-            if (!file_exists("../public/zip_file/".$project_path."/google/secret/".$form[0]['form_name'])) mkdir("../public/zip_file/".$project_path."/google/secret/".$form[0]['form_name'], 0777, true);
-            if (!file_exists("../public/zip_file/".$share_path."/google/secret/".$form[0]['form_name'])) mkdir("../public/zip_file/".$share_path."/google/secret/".$form[0]['form_name'], 0777, true);
-            copy($project['project_token_file'], "../public/zip_file/".$project_path."/google/secret/".$form[0]['form_name']."/token.json");
-            copy($project['project_token_file'], "../public/zip_file/".$share_path."/google/secret/".$form[0]['form_name']."/token.json");
+            if (!file_exists("../public/zip_file/".$project_path."/google/secret/".str_replace(' ', '_', $form[0]['form_name']))) mkdir("../public/zip_file/".$project_path."/google/secret/".str_replace(' ', '_', $form[0]['form_name']), 0777, true);
+            if (!file_exists("../public/zip_file/".$share_path."/google/secret/".str_replace(' ', '_', $form[0]['form_name']))) mkdir("../public/zip_file/".$share_path."/google/secret/".str_replace(' ', '_', $form[0]['form_name']), 0777, true);
+            copy($project['project_token_file'], "../public/zip_file/".$project_path."/google/secret/".str_replace(' ', '_', $form[0]['form_name'])."/token.json");
+            copy($project['project_token_file'], "../public/zip_file/".$share_path."/google/secret/".str_replace(' ', '_', $form[0]['form_name'])."/token.json");
         }
         if(!empty($request->form_auth_path)){
-            if (!file_exists("../public/zip_file/".$project_path."/google/auth/".$form[0]['form_name'])) mkdir("../public/zip_file/".$project_path."/google/auth/".$form[0]['form_name'], 0777, true);
-            if (!file_exists("../public/zip_file/".$share_path."/google/auth/".$form[0]['form_name'])) mkdir("../public/zip_file/".$share_path."/google/auth/".$form[0]['form_name'], 0777, true);
-            copy($form[0]['form_auth_path'], "../public/zip_file/".$project_path."/google/auth/".$form[0]['form_name']."/auth.json");
-            copy($form[0]['form_auth_path'], "../public/zip_file/".$share_path."/google/auth/".$form[0]['form_name']."/auth.json");
+            if (!file_exists("../public/zip_file/".$project_path."/google/secret/auth/".str_replace(' ', '_', $form[0]['form_name']))) mkdir("../public/zip_file/".$project_path."/google/secret/auth/".str_replace(' ', '_', $form[0]['form_name']), 0777, true);
+            if (!file_exists("../public/zip_file/".$share_path."/google/secret/auth/".str_replace(' ', '_', $form[0]['form_name']))) mkdir("../public/zip_file/".$share_path."/google/secret/auth/".str_replace(' ', '_', $form[0]['form_name']), 0777, true);
+            copy($form[0]['form_auth_path'], "../public/zip_file/".$project_path."/google/secret/auth/".str_replace(' ', '_', $form[0]['form_name'])."/auth.json");
+            copy($form[0]['form_auth_path'], "../public/zip_file/".$share_path."/google/secret/auth/".str_replace(' ', '_', $form[0]['form_name'])."/auth.json");
         }
         $layout = $this->create_layout($request);
         $filename = str_replace(' ', '_',$form[0]['form_name']).".php";
@@ -514,7 +514,7 @@ class formsController extends Controller{
         $php = $php.    "include_once __DIR__ . '/google/autoload.php';";
         $php = $php.    '$folderName = "'.str_replace(' ', '_', $request->project_name).'"; ';
         $php = $php.    '$folderFormName = "'.str_replace(' ', '_', $request->form_name).'"; ';
-        if(!empty($request->form_auth_path)) $php = $php.    '$auth_file = "google/auth/'.$request->form_name.'/auth.json";  ';
+        if(!empty($request->form_auth_path)) $php = $php.    '$auth_file = "google/secret/auth/'.str_replace(' ', '_', $request->form_name).'/auth.json";  ';
 
         $php = $php.    "session_start();";
         $php = $php.    '$redirect_uri = \'http://\' . $_SERVER[\'HTTP_HOST\'] . $_SERVER[\'PHP_SELF\'];';

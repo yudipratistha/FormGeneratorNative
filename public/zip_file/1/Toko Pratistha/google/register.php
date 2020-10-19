@@ -1,5 +1,4 @@
-
-
+ 
 <html>
     <head>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
@@ -22,16 +21,22 @@
         <div class="container">
             <div class="row" style="margin-top:50px;">
                 <div class="col-md-2"></div>
-                <div id="card" class="col-md-8 shadow-sm" style="margin-top:100px">
+                <form id="card" method="POST" class="col-md-8 shadow-sm" style="margin-top:100px">
                     <div class="form-group card-title">
                         <center>
-                            <h3>Login</h3>
+                            <h3>Login to Form</h3>
                         </center>
                     </div>
-                    <div class="form-group card-title" style="margin-bottom:30px;">
-                        <button type="submit" class="col-md-12 btn btn-success btn-block" onclick="window.open('<?php echo $authUrl; ?>','targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=600')">Get Access</button>
+                    <div class=card-input>
+                        <div class=form-group>
+                            <label>Key</label>
+                            <input type="password" class=form-control name="password" placeholder="Example : bK2t2209">
+                        </div>
                     </div>
-                </div>
+                    <div class="form-group card-title" style="margin-bottom:30px;">
+                        <button type="submit" class="col-md-12 btn btn-success">Submit</button>
+                    </div>
+                </form>
             </div>
         </div>
     </body>
