@@ -151,8 +151,6 @@ class formsController extends Controller{
         $share_path = $user_path.$project['nama_project'];
         if (!file_exists('../public/zip_file/'.$project_path)) mkdir('../public/zip_file/'.$project_path, 0777, true);
         if (!file_exists('../public/zip_file/'.$share_path)) mkdir('../public/zip_file/'.$share_path, 0777, true);
-        if (!file_exists('../public/zip_file/'.$project_path."/attachment")) mkdir('../public/zip_file/'.$project_path."/attachment", 0777, true);
-        if (!file_exists('../public/zip_file/'.$share_path."/attachment")) mkdir('../public/zip_file/'.$share_path."/attachment", 0777, true);
         if (!file_exists('../public/zip_file/'.$project_path."/google/secret/")) mkdir('../public/zip_file/'.$project_path."/google/secret/", 0777, true);
         if (!file_exists('../public/zip_file/'.$share_path."/google/secret/")) mkdir('../public/zip_file/'.$share_path."/google/secret/", 0777, true);
         if (!file_exists('../public/zip_file/'.$project_path."/google/secret/synchronize")) mkdir('../public/zip_file/'.$project_path."/google/secret/synchronize", 0777, true);
@@ -181,7 +179,7 @@ class formsController extends Controller{
             fclose($f);
         }
         
-        $zip_file = str_replace(' ', '_', $project['nama_project']).'.zip';
+        $zip_file = str_replace(' ', '_', $project['nama_project']).'_share.zip';
         
         $zip = new \ZipArchive();
         $zip->open($storage_path2.$zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
@@ -315,7 +313,6 @@ class formsController extends Controller{
             $namaFoldOutofSync = $file->getName();
         }
         if(empty($namaFoldOutofSync)){
-            // return response()->json($OutofSync);
             $file = new Google_Service_Drive_DriveFile();
             $file->setName('Out of Sync');
             $file->setMimeType('application/vnd.google-apps.folder');
