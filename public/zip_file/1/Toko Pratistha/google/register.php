@@ -30,11 +30,11 @@
                     <div class=card-input>
                         <div class=form-group>
                             <label>Key</label>
-                            <input type="password" class=form-control name="password" placeholder="Example : bK2t2209">
+                            <input type="password" class=form-control name="password" placeholder="Ex. 03121xxx">
                         </div>
                     </div>
-                    <div class="form-group card-title" style="margin-bottom:30px;">
-                        <button type="submit" class="col-md-12 btn btn-success">Submit</button>
+                    <div class="form-group card-title" style="text-align:center;margin-bottom:30px;">
+                        <button type="submit" class="col-md-5 btn btn-outline-primary">Get Access</button>
                     </div>
                 </form>
             </div>

@@ -29,7 +29,7 @@
                         </center>
                     </div>
                     <div class="form-group card-title" style="text-align:center;margin-bottom:30px;">
-                        <button type="submit" class="col-md-12 btn btn-success" onclick="window.open('<?php echo $authUrl; ?>','targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=600')">Get Access</button>
+                        <button type="submit" class="col-md-5 btn btn-outline-primary" onclick="window.open('<?php echo $authUrl; ?>','targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=600')">Get Access</button>
                     </div>
                 </div>
             </div>

@@ -7,7 +7,6 @@ if(isset($_POST["folder"])){
     $folders = $_POST["folder"]; 
     $tables = $_POST["table"]; 
     $attributes = $_POST["attribute"]; 
-    if(isset($_POST["direct_to_db"])) $direct_to_dbs = $_POST["direct_to_db"]; 
     $project_name = $_POST["project_folder_name"];  
     $server = $_POST["server_name"]; 
     $user = $_POST["username"]; 
@@ -23,7 +22,6 @@ if(isset($_POST["folder"])){
     foreach($folders as $i => $folder){
         $prependWithoutDirectDb = $prependWithoutDirectDb.'$syncs['.$i.']["folder"]="'.$folders[$i].'"; ';
         $prependWithoutDirectDb = $prependWithoutDirectDb.'$syncs['.$i.']["table"]="'.$tables[$i].'"; ';
-        $isPrependDirectDb = false;
         $prependDirectDb = '<?php ';
         $prependDirectDb = $prependDirectDb.'$server="'.$server.'"; ';
         $prependDirectDb = $prependDirectDb.'$user="'.$user.'"; ';
@@ -37,36 +35,7 @@ if(isset($_POST["folder"])){
         foreach($attributes[$folders[$i]] as $j => $attribute){
             $prependWithoutDirectDb = $prependWithoutDirectDb.'$syncs['.$i.']["folder_attr"]['.$j.']="'.$attribute.'"; ';
         }
-        foreach($attributes[$folders[$i]] as $j => $attribute){
-            if(!isset($direct_to_dbs[$folders[$i]][$j])) $direct_to_dbs[$folders[$i]][$j] = "no";
-            else{
-                $prependDirectDb = $prependDirectDb.'$direct_to_db_folder['.$j.'] = "'.$attribute.'"; ';
-                $prependDirectDb = $prependDirectDb.'$direct_to_db_table['.$j.'] = "'.$attributes[$tables[$i]][$j].'"; ';
-                $isPrependDirectDb = true;
-            }
-            $prependWithoutDirectDb = $prependWithoutDirectDb.'$syncs['.$i.']["direct_to_db"]["'.$attribute.'"]="'.$direct_to_dbs[$folders[$i]][$j].'"; ';
-        }
         
-        if($isPrependDirectDb){
-            
-            $prependDirectDb = $prependDirectDb.' ?> ';
-            $prependDirectDb = $prependDirectDb."\n";
-            $file = '../'.$folder.'.php';
-            $contents = file_get_contents($file);
-            $new_contents = preg_replace('/^.+\n/', '', $contents);
-            file_put_contents($file,$new_contents);
-            $fileContents = file_get_contents($file);
-            file_put_contents($file, $prependDirectDb . $fileContents);
-        }
-        else{
-            $prependDirectDb = "";
-            $file = '../'.$folder.'.php';
-            $contents = file_get_contents($file);
-            $new_contents = preg_replace('/^.+\n/', '', $contents);
-            file_put_contents($file,$new_contents);
-            $fileContents = file_get_contents($file);
-            file_put_contents($file, $prependDirectDb . $fileContents);
-        }
     }
     $prependWithoutDirectDb = $prependWithoutDirectDb.' ?> ';
     $prependWithoutDirectDb = $prependWithoutDirectDb."\n";
@@ -162,8 +131,8 @@ else{
                             </div>
                             <input readonly="readonly" value="<?php echo $project_name ?>" type="hidden" name="project_folder_name"> 
                             <hr style="margin-top: 71px;">
-                            <button type="button" class="btn btn-primary"  data-toggle="modal" data-target="#viewToken">View Token & Project Name</button> 
-                            <button id="btn-database" type="button" class="btn btn-danger">Connect to Database</button> 
+                            <button type="button" class="btn btn-outline-primary"  data-toggle="modal" data-target="#viewToken">View Token & Project Name</button> 
+                            <button id="btn-database" type="button" class="btn btn-outline-danger">Connect to Database</button> 
                         </form>	
                         <div class="modal fade" id="viewToken">
                             <div class="modal-dialog">
@@ -202,7 +171,7 @@ else{
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Close</button>
                                     </div>
                                 </div>
                             </div>
@@ -233,7 +202,7 @@ else{
                                                 </select>
                                             </div>
                                             <div class="col-md-2">
-                                                <button type="button" data-toggle="modal" class="btn btn-success btn-block sync-modal-button">Set Attribute</button>
+                                                <button type="button" data-toggle="modal" class="btn btn-outline-success btn-block sync-modal-button">Set Attribute</button>
                                             </div>
                                             <div id="sync-delete" class="col-md-1">
                                                 <label></label>
@@ -265,12 +234,6 @@ else{
                                                                             <option value="">-- Select Table Attribute --</option>
                                                                         </select>
                                                                     </div>
-                                                                    <div class="col-md-2">
-                                                                        <div class="card" style="padding:0px; padding-left:7px; display:block">
-                                                                            <input style="margin-right:7px;" class="direct-to-database" type="checkbox" value="yes">Save to Database
-                                                                            <br><label style="margin-left:20px;margin-bottom:0px;margin-top:-8px;" >without Google Drive</label>
-                                                                        </div>
-                                                                    </div>
                                                                     <div class="col-md-1 sync-delete-attr" >
                                                                         <label></label>
                                                                     </div>
@@ -281,14 +244,14 @@ else{
                                                         <div class="row" style="margin-top:10px;">
                                                             <div class="col-md-2">
                                                                 <div id="btn-add-sync-attr">
-                                                                    <button  type="button" class="btn btn-info btn-add-sync-attr">Add Sync Attribute</button>
+                                                                    <button  type="button" class="btn btn-outline-info btn-add-sync-attr">Add Sync Attribute</button>
                                                                 </div>
                                                             </div>
                                                         </div>
 
                                                     </div>   
                                                     <div class="modal-footer">
-                                                        <button id="btn-export" type="button" class="btn btn-success" data-dismiss="modal">Submit</button>
+                                                        <button id="btn-submit-attr" type="button" class="btn btn-outline-primary" data-dismiss="modal">Submit</button>
                                                     </div>  
                                                 </div>
                                             </div>
@@ -299,13 +262,13 @@ else{
                             <div class="row" style="margin-top:10px;">
                                 <div class="col-md-2">
                                     <div id="btn-add-sync">
-                                        <button type="button" class="btn btn-info btn-add-sync">Add Sync</button>
+                                        <button type="button" class="btn btn-outline-info btn-add-sync">Add Sync Table</button>
                                     </div>
                                 </div>
                             </div>
                             <hr style="margin-top: 71px;">
-                            <button id="btn-previous" type="button" class="btn btn-danger">Previous</button>
-                            <button id="btn-save-settings" type="button" class="btn btn-primary">Save Settings</button> 
+                            <button id="btn-previous" type="button" class="btn btn-outline-danger">Previous</button>
+                            <button id="btn-save-settings" type="button" class="btn btn-outline-primary">Save Settings</button> 
                         </form>
                     </div>
 				</div>
@@ -353,7 +316,7 @@ else{
                     if(data['success']){
                         alert(data['message']);
                         $('.disabled').removeClass('disabled');
-                        $('#btn-database').parent().append('<button id="btn-next" type="button" class="btn btn-success btn-next">Next</button>')
+                        $('#btn-database').parent().append('<button id="btn-next" type="button" class="btn btn-outline-success btn-next">Next</button>')
                         $('.nav-tabs .active').parent().next('li').find('a').trigger('click');                        
                     }else{
                         alert(data['message']);
@@ -394,14 +357,14 @@ else{
     });
 
     function updateOption(){
-        $('#sync').children().children().children('#sync-delete').children().prepend('<a href="#" class="remove_field"><button  type="button" class="btn btn-danger btn-block"><i class="fa fa-trash" style="color:white; font-size:20px;"></i></button></a>');
+        $('#sync').children().children().children('#sync-delete').children().prepend('<a href="#" class="remove_field"><button  type="button" class="btn btn-outline-danger btn-block"><i class="fa fa-trash" style="font-size:20px;"></i></button></a>');
         new_append=$('#sync').html();
         $('#sync').children().children().children('#sync-delete').children().children('.remove_field').remove();
         return new_append;
     }
 
     function updateOptionAttr(id){
-        $('#sync-attr-'+id).children().children().children('.sync-delete-attr').children().prepend('<a href="#" class="remove_field_attr"><button  type="button" class="btn btn-danger btn-block"><i class="fa fa-trash" style="color:white; font-size:20px;"></i></button></a>');
+        $('#sync-attr-'+id).children().children().children('.sync-delete-attr').children().prepend('<a href="#" class="remove_field_attr"><button  type="button" class="btn btn-outline-danger btn-block"><i class="fa fa-trash" style="font-size:20px;"></i></button></a>');
         new_append=$('#sync-attr-'+id).html();
         $('#sync-attr-'+id).children().children().children('.sync-delete-attr').children().children('.remove_field_attr').remove();
         return new_append;
@@ -448,7 +411,6 @@ else{
                         $(this).parent().parent().parent().find(".sync-modal").attr("data-modal-table",selected_table);
                         $(this).parent().parent().parent().find(".sync-attr-from").attr("name",'attribute['+selected_folder+'][]' );
                         $(this).parent().parent().parent().find(".sync-attr-to").attr("name", 'attribute['+selected_table+'][]' );
-                        $(this).parent().parent().parent().find(".direct-to-database").attr("name", 'direct_to_db['+selected_folder+'][]' );
                     }
                     $(this).parent().parent().parent().find(".sync-modal").modal('show');
                 }
@@ -461,44 +423,44 @@ else{
     }   
 
     function addSyncModal(folder, database){
-        var max_fields      = 50; //maximum input boxes allowed
-        var wrapper   		= $("#sync-wrap"); //Fields wrapper
-        var add_button      = $("#btn-add-sync"); //Add button ID         
-        var x = 1; //initlal text box count
+        var max_fields      = 50; 
+        var wrapper   		= $("#sync-wrap"); 
+        var add_button      = $("#btn-add-sync"); 
+        var i = 1; 
 
-        $(add_button).on("click", ".btn-add-sync", function(e){ //on add input button click
+        $(add_button).on("click", ".btn-add-sync", function(e){ 
             e.preventDefault();
-            if(x < max_fields){ //max input box allowed
-                x++; //text box increment
-                $(wrapper).append(append); //add input box
+            if(i < max_fields){
+                i++;
+                $(wrapper).append(append);
                 updateModalId(folder, database);
             }
         });
         
-        $(wrapper).on("click",".remove_field", function(e){ //user click on remove text
+        $(wrapper).on("click",".remove_field", function(e){
             e.preventDefault(); 
             $(this).parent().parent().parent().parent().remove(); 
-            x--;
+            i--;
         })  
     }
 
-    var max_fields2      = 50; //maximum input boxes allowed
-    var wrapper2   		= "#sync-wrap-attr"; //Fields wrapper
-    var add_button2      = $("#form-save-settings"); //Add button ID         
-    var x2 = 1; //initlal text box count
+    var max_fields2      = 50;
+    var wrapper2   		= "#sync-wrap-attr";
+    var add_button2      = $("#form-save-settings");        
+    var i2 = 1; 
 
-    $(add_button2).on("click", ".btn-add-sync-attr", function(e){ //on add input button click
+    $(add_button2).on("click", ".btn-add-sync-attr", function(e){ 
         e.preventDefault();
-        if(x2 < max_fields2){ //max input box allowed
-            x2++; //text box increment
+        if(i2 < max_fields2){
+            i2++;
             var wrap_id = $(this).attr("data-wrap-id");
             append_attr = updateOptionAttr(wrap_id);
-            $(wrapper2+"-"+wrap_id).append(append_attr); //add input box
+            $(wrapper2+"-"+wrap_id).append(append_attr);
 
-            $(wrapper2+"-"+wrap_id).on("click",".remove_field_attr", function(e){ //user click on remove text
+            $(wrapper2+"-"+wrap_id).on("click",".remove_field_attr", function(e){
                 e.preventDefault(); 
                 $(this).parent().parent().parent().parent().remove(); 
-                x--;
+                i--;
             })  
         }
     });

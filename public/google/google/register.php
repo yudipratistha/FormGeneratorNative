@@ -34,7 +34,7 @@
                         </div>
                     </div>
                     <div class="form-group card-title" style="text-align:center;margin-bottom:30px;">
-                        <button type="submit" class="col-md-12 btn btn-success">Get Access</button>
+                        <button type="submit" class="col-md-5 btn btn-outline-primary">Get Access</button>
                     </div>
                 </form>
             </div>
