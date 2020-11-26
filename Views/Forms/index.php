@@ -17,16 +17,16 @@
                         <?php 
                         // print_r($forms );
                             foreach ($forms as $number => $form){
-                                if(isset($form['form_name'])){
+                                if(isset($form['form_title'])){
                                     echo '<tr>';
                                     echo '    <td>'.++$number.'</td>';
                                     echo '    <td><input name="checkform[]" value="'.$form[0].'" type="checkbox"> </td>';
-                                    echo '    <td>'.$form['form_name'].'</td>';
+                                    echo '    <td>'.$form['form_title'].'</td>';
                                     echo '    <td>';
                                     echo '        <center>';
                                     echo '            <span data-tooltip="tooltip" data-placement="top" title="" data-original-title="Preview Form"><a class="icon-green" href="/formgeneratornative/forms/previewForm/'.$form[0].'"><i class="fe fe fe-eye"></i></a></span>';
                                     echo '            <span data-tooltip="tooltip" data-placement="top" title="" data-original-title="Edit Form"><a class="icon-green" href="/formgeneratornative/formGenerator/editForm/'.$form[0].'"><i class="fe fe-edit"></i></a></span>';
-                                    echo '            <span data-tooltip="tooltip" data-placement="top" title="" data-original-title="Delete Form"><a class="icon-red" href="javascript:delete_form('.$form[0].', '."'$form[form_name]'".')"><i class="fe fe-trash-2"></i></a></span>';
+                                    echo '            <span data-tooltip="tooltip" data-placement="top" title="" data-original-title="Delete Form"><a class="icon-red" href="javascript:delete_form('.$form[0].', '."'$form[form_title]'".')"><i class="fe fe-trash-2"></i></a></span>';
                                     echo '        </center>';
                                     echo '    </td>';
                                     echo '</tr>';  

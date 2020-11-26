@@ -34,11 +34,7 @@
                         </div>
                     </div>
                     <div class="form-group card-title" style="text-align:center;margin-bottom:30px;">
-<<<<<<< HEAD
                         <button type="submit" class="col-md-5 btn btn-outline-primary">Get Access</button>
-=======
-                        <button type="submit" class="col-md-12 btn btn-success">Get Access</button>
->>>>>>> 64096bd5efa7c3435a780a00844660360b95dd89
                     </div>
                 </form>
             </div>

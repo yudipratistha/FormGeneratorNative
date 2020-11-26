@@ -1,0 +1,13 @@
+[ 
+{ 
+"id":1,
+"nama_customer":"Yudi",
+"telp_customer":"0812312",
+"alamat_customer":"Jl Nangka"
+},
+{ 
+"id":2,
+"nama_customer":"Pratistha",
+"telp_customer":"0812312",
+"alamat_customer":"Jl Nangka"
+}]

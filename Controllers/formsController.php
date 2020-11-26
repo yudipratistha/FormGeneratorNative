@@ -23,6 +23,15 @@ class formsController extends Controller{
         $this->render("previewForm");
     }
 
+    function updateProjectMenu(){
+        $form = new form();
+
+        foreach($_POST['form_menu_id'] as $i => $id){
+            $form->updateprojectMenu($id, $_POST['form_menu_index'][$i]);
+        }
+        header("Location: " . WEBROOT . "formProject/index");
+    }
+
     function delete($id){
         $form = new Form();
         if ($form->delete($id))
@@ -106,7 +115,7 @@ class formsController extends Controller{
         return md5(implode('', $files));
     }
 
-    public function exportPhpProject($request){     
+    public function exportPhpProject($request){
         parse_str($request, $data);
         $formQuery = new Form();
         
@@ -205,7 +214,6 @@ class formsController extends Controller{
         foreach($forms as $i => $form){
             $prepend = $prepend.'$form_attr["data"]['.$i.']["folder"] = "'.str_replace(' ', '_', $form['form_name']).'";';
             $formInputs = explode(',', $form['form_attr']);
-            // return response()->json($formInputs);
             foreach($formInputs as $j => $forminput){
                 $prepend = $prepend.'$form_attr["data"]['.$i.']["attribute"]['.$j.'] = "'.$forminput.'";';
             }
@@ -219,13 +227,14 @@ class formsController extends Controller{
 
         $zip_file = str_replace(' ', '_', $project['nama_project'].'.zip');
         $zip = new \ZipArchive();
-        $zip->open($zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+        $zip->open('../public/'.$zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
         $path = realpath('../public/zip_file/'.$project_path);
         $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
         foreach ($files as $name => $file){
             if (!$file->isDir()) {
                 $filePath     = $file->getRealPath();
                 $relativePath = str_replace(' ', '_', $project['nama_project']).'/'. substr($filePath, strlen($path));
+                header('Content-Type: application/json');
                 $zip->addFile($filePath, $relativePath);
             }
         }
@@ -238,10 +247,10 @@ class formsController extends Controller{
         header('Expires: 0');
         header('Cache-Control: must-revalidate');
         header('Pragma: public');
-        header('Content-Length: ' . filesize($zip_file));
+        header('Content-Length: ' . filesize(realpath('../public/'.$zip_file)));
         ob_clean();
         flush();
-        readfile($zip_file);
+        readfile(realpath('../public/'.$zip_file));
 
         // Search Folder Sync
         $folderNameSync = "Sync";
@@ -407,8 +416,9 @@ class formsController extends Controller{
 
     public function export($id, $share_path, $project_path){
         $formQuery = new Form();
+        $projects = new FormProject();
         $form = $formQuery->getForm('id = '.$id);
-        $project = $formQuery->getProject($form[0]['form_projects_id']);
+        $project = $projects->showAllFormProjects($form[0]['form_projects_id']);
         // print_r($form[0]['form_projects_id']);
         $client = new Google_Client();
         $service = new Google_Service_Drive($client);
@@ -436,21 +446,21 @@ class formsController extends Controller{
         $request['project_name'] = $project['nama_project'];
         $request['form_name'] = $form[0]['form_name'];
         $request['form_export'] = $form[0]['form_export'];
-        $request['form_type'] = $form[0]['form_type'];
-        $request['form_auth_path'] = $form[0]['form_auth_path'];
+        $request['project_auth_type'] = $project['project_auth_type'];
+        $request['project_auth_path'] = $form[0]['project_auth_path'];
         $request = (object)$request;
 
-        if($request->form_type == 'Without Auth Google Drive'){
+        if($request->project_auth_type == 'Without Auth Google Drive'){
             if (!file_exists("../public/zip_file/".$project_path."/google/secret/".str_replace(' ', '_', $form[0]['form_name']))) mkdir("../public/zip_file/".$project_path."/google/secret/".str_replace(' ', '_', $form[0]['form_name']), 0777, true);
             if (!file_exists("../public/zip_file/".$share_path."/google/secret/".str_replace(' ', '_', $form[0]['form_name']))) mkdir("../public/zip_file/".$share_path."/google/secret/".str_replace(' ', '_', $form[0]['form_name']), 0777, true);
             copy($project['project_token_file'], "../public/zip_file/".$project_path."/google/secret/".str_replace(' ', '_', $form[0]['form_name'])."/token.json");
             copy($project['project_token_file'], "../public/zip_file/".$share_path."/google/secret/".str_replace(' ', '_', $form[0]['form_name'])."/token.json");
         }
-        if(!empty($request->form_auth_path)){
+        if(!empty($request->project_auth_path)){
             if (!file_exists("../public/zip_file/".$project_path."/google/secret/auth/".str_replace(' ', '_', $form[0]['form_name']))) mkdir("../public/zip_file/".$project_path."/google/secret/auth/".str_replace(' ', '_', $form[0]['form_name']), 0777, true);
             if (!file_exists("../public/zip_file/".$share_path."/google/secret/auth/".str_replace(' ', '_', $form[0]['form_name']))) mkdir("../public/zip_file/".$share_path."/google/secret/auth/".str_replace(' ', '_', $form[0]['form_name']), 0777, true);
-            copy($form[0]['form_auth_path'], "../public/zip_file/".$project_path."/google/secret/auth/".str_replace(' ', '_', $form[0]['form_name'])."/auth.json");
-            copy($form[0]['form_auth_path'], "../public/zip_file/".$share_path."/google/secret/auth/".str_replace(' ', '_', $form[0]['form_name'])."/auth.json");
+            copy($form[0]['project_auth_path'], "../public/zip_file/".$project_path."/google/secret/auth/".str_replace(' ', '_', $form[0]['form_name'])."/auth.json");
+            copy($form[0]['project_auth_path'], "../public/zip_file/".$share_path."/google/secret/auth/".str_replace(' ', '_', $form[0]['form_name'])."/auth.json");
         }
         $layout = $this->create_layout($request);
         $filename = str_replace(' ', '_',$form[0]['form_name']).".php";
@@ -480,7 +490,7 @@ class formsController extends Controller{
         $layout = $layout.'        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">';
         $layout = $layout.'            <div class="container">';
         $layout = $layout.'                <a class="navbar-brand" href="<?php $link = $_SERVER["PHP_SELF"];$link = substr($link, 1);$link = substr($link, 0, strpos($link, "/")); echo "/" . $link; ?>">Form Builder</a>';
-        if($request->form_type!='Without Auth Google Drive') {
+        if($request->project_auth_type!='Without Auth Google Drive') {
             $layout = $layout.'                <div class="collapse navbar-collapse" id="navbarSupportedContent">';
             $layout = $layout.'                    <ul class="navbar-nav ml-auto">';
             $layout = $layout.'                        <li class="nav-item dropdown">';
@@ -513,7 +523,7 @@ class formsController extends Controller{
         $php = $php.    "include_once __DIR__ . '/google/autoload.php';";
         $php = $php.    '$folderName = "'.str_replace(' ', '_', $request->project_name).'"; ';
         $php = $php.    '$folderFormName = "'.str_replace(' ', '_', $request->form_name).'"; ';
-        if(!empty($request->form_auth_path)) $php = $php.    '$auth_file = "google/secret/auth/'.str_replace(' ', '_', $request->form_name).'/auth.json";  ';
+        if(!empty($request->project_auth_path)) $php = $php.    '$auth_file = "google/secret/auth/'.str_replace(' ', '_', $request->form_name).'/auth.json";  ';
 
         $php = $php.    "session_start();";
         $php = $php.    '$redirect_uri = \'http://\' . $_SERVER[\'HTTP_HOST\'] . $_SERVER[\'PHP_SELF\'];';
@@ -521,7 +531,7 @@ class formsController extends Controller{
         $php = $php.    '$client->setAuthConfig($oauth_credentials);';
         $php = $php.    '$client->setRedirectUri($redirect_uri);';
         $php = $php.    '$client->addScope("https://www.googleapis.com/auth/drive");';
-        if($request->form_type=='Without Auth Google Drive'){
+        if($request->project_auth_type=='Without Auth Google Drive'){
             $php = $php.    '$client->setAccessType(\'offline\');';
             $php = $php.    '$client->setApprovalPrompt(\'force\');';
         }
@@ -564,7 +574,7 @@ class formsController extends Controller{
         $php = $php.    '    } ';
         $php = $php.    '} ';
 
-        if($request->form_type!='Without Auth Google Drive'){
+        if($request->project_auth_type!='Without Auth Google Drive'){
             $php = $php.    'else if (isset($_GET[\'code\'])) {';
             $php = $php.    '    $token = $client->fetchAccessTokenWithAuthCode($_GET[\'code\']);';
             $php = $php.    '    $client->setAccessToken($token);';
@@ -587,13 +597,13 @@ class formsController extends Controller{
             $php = $php.    '}';
             $php = $php.    'if(empty($_SESSION[\'upload_token\'])){ ';
             $php = $php.    '     $authUrl = $client->createAuthUrl();';
-            if(!empty($request->form_auth_path)) $php = $php.        '   include "google/register.php";  ';
+            if(!empty($request->project_auth_path)) $php = $php.        '   include "google/register.php";  ';
             else $php = $php.        '   include "google/login.php";  ';
             $php = $php.    '    $status= false;';
             $php = $php.    '} ';
         }
         
-        if($request->form_type=='Without Auth Google Drive') {
+        if($request->project_auth_type=='Without Auth Google Drive') {
             $php = $php.    'else if (file_exists(__DIR__ ."/google/secret/'.$request->form_name.'/token.json")) {';
             $php = $php.    '$tokenPath = __DIR__ ."/google/secret/'.$request->form_name.'/token.json";';
             $php = $php.    '    $accessToken = json_decode(file_get_contents($tokenPath), true);';
@@ -706,7 +716,7 @@ class formsController extends Controller{
         
         
         $php = $php.    '        $namaFoldSync = "";';
-        if($request->form_type=='Without Auth Google Drive'){
+        if($request->project_auth_type=='Without Auth Google Drive'){
             $php = $php.    '        $optParams = array(';
             $php = $php.    '            \'pageSize\' => 1,';
             $php = $php.    '            \'fields\' => \'nextPageToken, files\',';
