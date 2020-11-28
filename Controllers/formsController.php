@@ -2,6 +2,7 @@
 class formsController extends Controller{
     public function __construct(){
         require(ROOT . 'Models/Form.php');
+        require(ROOT . 'Models/FormProject.php');
         require __DIR__ . '../../vendor/autoload.php';
         session_start();
         if(!isset($_SESSION["user"])) header("Location: /formgeneratornative/auth/login");
@@ -180,6 +181,24 @@ class formsController extends Controller{
             $this->export($form['id'], $share_path, $project_path);
         } 
         
+        $sidebar = $this->create_sidebar($forms, $project['nama_project']);
+        $filename = "sidebar.php";
+        $f=fopen("../public/zip_file/".$share_path."/".$filename,'w+');
+        fwrite($f, $sidebar);
+        fclose($f);
+        $f=fopen("../public/zip_file/".$project_path.$filename,'w+');
+        fwrite($f, $sidebar);
+        fclose($f);
+        
+        $index = '<?php header("Location: '.$forms[0]['form_name'].'.php"); ?>';
+        $filename = "index.php";
+        $f=fopen("../public/zip_file/".$share_path."/".$filename,'w+');
+        fwrite($f, $index);
+        fclose($f);
+        $f=fopen("../public/zip_file/".$project_path.$filename,'w+');
+        fwrite($f, $index);
+        fclose($f);
+
         if(!empty($data['inputCheckbox'])){
             $sql = $this->createMysql(str_replace(' ', '_', $project['nama_project']), $forms);
             $sql_file_name = str_replace(' ', '_', $project['nama_project']).".sql";
@@ -418,7 +437,7 @@ class formsController extends Controller{
         $formQuery = new Form();
         $projects = new FormProject();
         $form = $formQuery->getForm('id = '.$id);
-        $project = $projects->showAllFormProjects($form[0]['form_projects_id']);
+        $project = $projects->showFormProject($form[0]['form_projects_id']);
         // print_r($form[0]['form_projects_id']);
         $client = new Google_Client();
         $service = new Google_Service_Drive($client);
@@ -449,7 +468,7 @@ class formsController extends Controller{
         $request['project_auth_type'] = $project['project_auth_type'];
         $request['project_auth_path'] = $form[0]['project_auth_path'];
         $request = (object)$request;
-
+        
         if($request->project_auth_type == 'Without Auth Google Drive'){
             if (!file_exists("../public/zip_file/".$project_path."/google/secret/".str_replace(' ', '_', $form[0]['form_name']))) mkdir("../public/zip_file/".$project_path."/google/secret/".str_replace(' ', '_', $form[0]['form_name']), 0777, true);
             if (!file_exists("../public/zip_file/".$share_path."/google/secret/".str_replace(' ', '_', $form[0]['form_name']))) mkdir("../public/zip_file/".$share_path."/google/secret/".str_replace(' ', '_', $form[0]['form_name']), 0777, true);
@@ -472,44 +491,98 @@ class formsController extends Controller{
         fclose($f);
     }
 
+    public function create_sidebar($forms, $project_name){
+        $sidebar = $sidebar.'<html>';
+        $sidebar = $sidebar.'    <head>';
+        $sidebar = $sidebar.'        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">';
+        $sidebar = $sidebar.'        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">';
+        $sidebar = $sidebar.'        <link rel="stylesheet" href="google/css/sidebar.css">';
+        $sidebar = $sidebar.'        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.11/dist/css/select2.min.css">';
+        $sidebar = $sidebar.'        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css">';
+        $sidebar = $sidebar.'        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>';
+        $sidebar = $sidebar.'        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>';
+        $sidebar = $sidebar.'        <script src="https://cdn.jsdelivr.net/npm/select2@4.0.11/dist/js/select2.min.js"></script>';
+        $sidebar = $sidebar.'        <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>';
+        $sidebar = $sidebar.'        <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>';
+        $sidebar = $sidebar.'    </head>';
+        $sidebar = $sidebar.'    <body>';
+        $sidebar = $sidebar.'        <div class="page-wrapper chiller-theme toggled">';
+        $sidebar = $sidebar.'            <a id="show-sidebar" class="btn btn-sm btn-light"><i class="fa fa-bars"></i></a>';
+        $sidebar = $sidebar.'            <nav id="sidebar" class="sidebar-wrapper">';
+        $sidebar = $sidebar.'                <div class="sidebar-content">';
+        $sidebar = $sidebar.'                    <div class="sidebar-brand">';
+        $sidebar = $sidebar.'                        <a href="#">'.$project_name.'</a>';
+        $sidebar = $sidebar.'                        <div id="close-sidebar">';
+        $sidebar = $sidebar.'                            <i class="fa fa-times"></i>';
+        $sidebar = $sidebar.'                        </div>';
+        $sidebar = $sidebar.'                    </div>';
+        $sidebar = $sidebar.'                    <div class="sidebar-header">';
+        $sidebar = $sidebar.'                        <div class="user-info">';
+        $sidebar = $sidebar.'                            <span class="user-name"><?php echo $_SESSION["name_login"]; ?></span>';
+        $sidebar = $sidebar.'                            <span class="user-role"><?php echo $_SESSION["email_login"]; ?></span>';
+        $sidebar = $sidebar.'                        </div>';
+        $sidebar = $sidebar.'                    </div>';
+        $sidebar = $sidebar.'                    <div class="sidebar-menu">';
+        $sidebar = $sidebar.'                        <ul>';
+        $sidebar = $sidebar.'                            <li class="header-menu">';
+        $sidebar = $sidebar.'                                <span>Menu</span>';
+        $sidebar = $sidebar.'                            </li>';
+        foreach($forms as $form){
+            $sidebar = $sidebar.'                            <li class="sidebar-content">';
+            $sidebar = $sidebar.'                                <a class="active" href="'.$form['form_name'].'.php">';
+            $sidebar = $sidebar.'                                    <i class="fa fa-folder"></i>';
+            $sidebar = $sidebar.'                                    <span>'.$form['form_title'].'</span>';
+            $sidebar = $sidebar.'                                </a>';
+            $sidebar = $sidebar.'                            </li>';
+        }
+        $sidebar = $sidebar.'                        </ul>';
+        $sidebar = $sidebar.'                    </div>';
+        $sidebar = $sidebar.'                </div>';
+        $sidebar = $sidebar.'                <div class="sidebar-footer">';
+        $sidebar = $sidebar.'                    <a href="?logout=yes"><i class="fa fa-power-off"></i></a>';
+        $sidebar = $sidebar.'                </div>';
+        $sidebar = $sidebar.'            </nav>';
+        $sidebar = $sidebar.'            <main class="page-content">';
+        $sidebar = $sidebar.'                <div class="container-fluid">';
+
+        return $sidebar;
+    }
+
     public function create_layout($request){
         $layout = $this->createPhpSubmit($request);
-        $layout = $layout.'<html>';
-        $layout = $layout.'    <head>';
-        $layout = $layout.'        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">';
-        $layout = $layout.'        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">';
-        $layout = $layout.'        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>';
-        $layout = $layout.'        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>';
-        $layout = $layout.'        <script src="https://cdn.jsdelivr.net/npm/select2@4.0.11/dist/js/select2.min.js"></script>';
-        $layout = $layout.'        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.11/dist/css/select2.min.css">';
-        $layout = $layout.'        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css">';
-        $layout = $layout.'        <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>';
-        $layout = $layout.'        <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>';
-        $layout = $layout.'    </head>';
-        $layout = $layout.'    <body>';
-        $layout = $layout.'        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">';
-        $layout = $layout.'            <div class="container">';
-        $layout = $layout.'                <a class="navbar-brand" href="<?php $link = $_SERVER["PHP_SELF"];$link = substr($link, 1);$link = substr($link, 0, strpos($link, "/")); echo "/" . $link; ?>">Form Builder</a>';
-        if($request->project_auth_type!='Without Auth Google Drive') {
-            $layout = $layout.'                <div class="collapse navbar-collapse" id="navbarSupportedContent">';
-            $layout = $layout.'                    <ul class="navbar-nav ml-auto">';
-            $layout = $layout.'                        <li class="nav-item dropdown">';
-            $layout = $layout.'                            <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>';
-            $layout = $layout.'                                <?php echo $_SESSION["email_login"]; ?>';
-            $layout = $layout.'                            </a>';
-            $layout = $layout.'                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">';
-            $layout = $layout.'                                <a class="dropdown-item" href="?logout=yes">Logout</a>';
-            $layout = $layout.'                            </div>';
-            $layout = $layout.'                        </li>';
-            $layout = $layout.'                    </ul>';
-            $layout = $layout.'                </div>';
-        }
-        $layout = $layout.'            </div>';
-        $layout = $layout.'        </nav>';
-        $layout = $layout.'        <div class="container border border-top-0 mt-5 shadow-sm">';
-        $layout = $layout.             $request->form_export;
+        $layout = $layout.'                    <?php include "sidebar.php"; ?>';
+        $layout = $layout.'                    <div class="container border border-top-0 mt-5 shadow-sm">';
+        $layout = $layout.                         $request->form_export;
+        $layout = $layout.'                    </div>';
+        $layout = $layout.'                </div>';
+        $layout = $layout.'            </main>';
         $layout = $layout.'        </div>';
         $layout = $layout.'    </body>';
+        $layout = $layout.'    <script type="text/javascript">';
+        $layout = $layout.'        $(\'a[href="\' + window.location.pathname.split(\'/\').pop() + \'"]\').parent().addClass("active");';
+        $layout = $layout.'        $(\'.sidebar-content > a\').click(function(){';
+        $layout = $layout.'            $(\'.sidebar-content\').removeClass(\'active\');';
+        $layout = $layout.'            $(this).parent().addClass("active");';
+        $layout = $layout.'        });';
+        $layout = $layout.'        $(".sidebar-dropdown > a").click(function() {';
+        $layout = $layout.'            $(".sidebar-submenu").slideUp(200);';
+        $layout = $layout.'            if ($(this).parent().hasClass("active")) {';
+        $layout = $layout.'                $(".sidebar-dropdown").removeClass("active");';
+        $layout = $layout.'                $(this).parent().removeClass("active");';
+        $layout = $layout.'            } else {';
+        $layout = $layout.'                $(".sidebar-dropdown").removeClass("active");';
+        $layout = $layout.'                $(this).next(".sidebar-submenu").slideDown(200);';
+        $layout = $layout.'                $(this).parent().addClass("active");';
+        $layout = $layout.'            }';
+        $layout = $layout.'        });';
+
+        $layout = $layout.        '$("#close-sidebar").click(function() {';
+        $layout = $layout.'            $(".page-wrapper").removeClass("toggled");';
+        $layout = $layout.'        });';
+        $layout = $layout.'        $("#show-sidebar").click(function() {';
+        $layout = $layout.'            $(".page-wrapper").addClass("toggled");';
+        $layout = $layout.'        });';
+        $layout = $layout.'    </script>';
         $layout = $layout.'    <?php } ?>';
         $layout = $layout.'</html>';
 

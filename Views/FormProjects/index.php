@@ -294,57 +294,49 @@
 
     function get_form_project_menu(form_project_id){
         $.ajax({
-            url: "formProjects/editMenu/" + form_project_id ,
+            url: "formProjects/getMenu/" + form_project_id ,
             method: "GET",
 			dataType: 'json',
 			success: function(data){
-                $('#project-menu').children().remove()
-                // Object.keys(data.formProject).forEach(function(key, index) {
-                //     $('#project-menu').append('<li class="list-group-item menu">'+data.formProject[key].form_title+ '\
-                //     <div class="up"><input type="button" value="Up" class="up-button"/></div><div class="down"><input type="button" value="down" class="down-button"/></div>\
-                //     <input type="hidden" id="form_menu_index" name="form_menu_index[]" value="'+data.formProject[key].form_menu_index+'">\
-                //     <input type="hidden" id="form_menu_id" name="form_menu_id[]" value="'+data.formProject[key].id+'"></li>')
-                // });
-
+                $('#project-menu').children().remove();
                 Object.keys(data.formProject).forEach(function(key, index) {
                     $('#project-menu').append('<tr class="menu"><td>'+data.formProject[key].form_title+'</td>\
                     <td><center><span class="up" data-tooltip="tooltip" data-placement="top" title="" data-original-title="View Data Form"><button type="button" class="up-button"><i class="fe fe fe-arrow-up"></i></button></span>\
                     <span class="down" data-tooltip="tooltip" data-placement="top" title="" data-original-title="View Data Form"><button type="button" value="down" class="down-button"><i class="fe fe fe-arrow-down"></i></button></span>\
                     <input type="hidden" id="form_menu_index" name="form_menu_index[]" value="'+data.formProject[key].form_menu_index+'">\
-                    <input type="hidden" id="form_menu_id" name="form_menu_id[]" value="'+data.formProject[key].id+'"></center></td></tr>')
+                    <input type="hidden" id="form_menu_id" name="form_menu_id[]" value="'+data.formProject[key].id+'"></center></td></tr>');
                 });
                 
-                if(data.formProject.length == 0) alert("Create Form First!")
+                if(data.formProject.length == 0) alert("Create Form First!");
                                     
-                $('.menu:first').find('.up').remove()
-                $('.menu:last').find('.down').remove() 
+                $('.menu:first').find('.up').remove();
+                $('.menu:last').find('.down').remove();
                 
-
                 $('#project-menu').delegate('.up-button','click',function(e){
                     e.stopImmediatePropagation();
                     $(this).parents('.menu').find('input#form_menu_index').val(parseInt($(this).parents('.menu').find('input#form_menu_index').val()) - parseInt(1));
                     $(this).parents('.menu').prev().find('input#form_menu_index').val(parseInt($(this).parents('.menu').prev().find('input#form_menu_index').val()) + parseInt(1));
                     $(this).parents('.menu').insertBefore($(this).parents('.menu').prev());
 
-                    if($(this).parents('.menu').next().find('.up').length == 0) $(this).parents('.menu').next().find("center").prepend('<span class="up" data-tooltip="tooltip" data-placement="top" title="" data-original-title="View Data Form"><button type="button" class="up-button"><i class="fe fe fe-arrow-up"></i></button></span>')
-                    if($(this).parents('.menu').find('.down').length == 0) $(this).parents('.menu').find('input#form_menu_index').after('<span class="down" data-tooltip="tooltip" data-placement="top" title="" data-original-title="View Data Form"><button type="button" value="down" class="down-button"><i class="fe fe fe-arrow-down"></i></button></span>')
+                    if($(this).parents('.menu').next().find('.up').length == 0) $(this).parents('.menu').next().find("center").prepend('<span class="up" data-tooltip="tooltip" data-placement="top" title="" data-original-title="View Data Form"><button type="button" class="up-button"><i class="fe fe fe-arrow-up"></i></button></span>');
+                    if($(this).parents('.menu').find('.down').length == 0) $(this).parents('.menu').find('input#form_menu_index').after('<span class="down" data-tooltip="tooltip" data-placement="top" title="" data-original-title="View Data Form"><button type="button" value="down" class="down-button"><i class="fe fe fe-arrow-down"></i></button></span>');
 
-                    if($(this).parents('.menu').next().find('input#form_menu_index').val() == $('.menu').length) $(this).parents('.menu').next().find('.down').remove()
+                    if($(this).parents('.menu').next().find('input#form_menu_index').val() == $('.menu').length) $(this).parents('.menu').next().find('.down').remove();
                     if($(this).parents('.menu').find('input#form_menu_index').val() == 1) $(this).parents('.menu').find('.up').remove();
                                         
                 });
 
                 $('#project-menu').delegate('.down-button','click',function(e){
                     e.stopImmediatePropagation();
-                    $(this).parents('.menu').find('input#form_menu_index').val(parseInt($(this).parents('.menu').find('input#form_menu_index').val()) + parseInt(1))
-                    $(this).parents('.menu').next().find('input#form_menu_index').val(parseInt($(this).parents('.menu').next().find('input#form_menu_index').val()) - parseInt(1))
+                    $(this).parents('.menu').find('input#form_menu_index').val(parseInt($(this).parents('.menu').find('input#form_menu_index').val()) + parseInt(1));
+                    $(this).parents('.menu').next().find('input#form_menu_index').val(parseInt($(this).parents('.menu').next().find('input#form_menu_index').val()) - parseInt(1));
                     $(this).parents('.menu').insertAfter($(this).parents('.menu').next());
 
-                    if($(this).parents('.menu').find('.up').length == 0) $(this).parents('.menu').find("center").prepend('<span class="up" data-tooltip="tooltip" data-placement="top" title="" data-original-title="View Data Form"><button type="button" class="up-button"><i class="fe fe fe-arrow-up"></i></button></span>')
-                    if($(this).parents('.menu').prev().find('.down').length == 0) $(this).parents('.menu').prev().find('input#form_menu_index').after('<span class="down" data-tooltip="tooltip" data-placement="top" title="" data-original-title="View Data Form"><button type="button" value="down" class="down-button"><i class="fe fe fe-arrow-down"></i></button></span>')
+                    if($(this).parents('.menu').find('.up').length == 0) $(this).parents('.menu').find("center").prepend('<span class="up" data-tooltip="tooltip" data-placement="top" title="" data-original-title="View Data Form"><button type="button" class="up-button"><i class="fe fe fe-arrow-up"></i></button></span>');
+                    if($(this).parents('.menu').prev().find('.down').length == 0) $(this).parents('.menu').prev().find('input#form_menu_index').after('<span class="down" data-tooltip="tooltip" data-placement="top" title="" data-original-title="View Data Form"><button type="button" value="down" class="down-button"><i class="fe fe fe-arrow-down"></i></button></span>');
                     
                     if($(this).parents('.menu').prev().find('input#form_menu_index').val() == 1) $(this).parents('.menu').prev().find('.up').remove();
-                    if($(this).parents('.menu').find('input#form_menu_index').val() == $('.menu').length) $(this).parents('.menu').find('.down').remove()                    
+                    if($(this).parents('.menu').find('input#form_menu_index').val() == $('.menu').length) $(this).parents('.menu').find('.down').remove();                    
 
                 });
                 $('#editFormProjectMenu').modal('show');

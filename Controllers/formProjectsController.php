@@ -49,11 +49,11 @@ class formProjectsController extends Controller{
         }
     }
 
-    function editMenu($id){
+    function getMenu($id){
         // session_start();
         require(ROOT . 'Models/Form.php');
         $form= new Form();
-        $d["formProject"] = $form->editMenu($id);;
+        $d["formProject"] = $form->getMenu($id);;
         $_SESSION['edit_id_project'] = $id;
         echo json_encode($d);
     }

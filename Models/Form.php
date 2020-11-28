@@ -28,7 +28,7 @@ class Form extends Model{
         return $req->fetch();
     }
 
-    public function editMenu($id){
+    public function getMenu($id){
         $sql = "SELECT id, form_name, form_title, form_menu_index FROM forms WHERE form_projects_id = $id ORDER BY form_menu_index ASC";
         $req = Database::getBdd()->prepare($sql);
         $req->execute();
@@ -47,7 +47,7 @@ class Form extends Model{
     }
 
     public function getForm($query){
-        $sql = "SELECT * FROM forms WHERE ". $query;
+        $sql = "SELECT * FROM forms WHERE $query ORDER BY form_menu_index ASC";
         $req = Database::getBdd()->prepare($sql);
         $req->execute();
         return $req->fetchAll();
