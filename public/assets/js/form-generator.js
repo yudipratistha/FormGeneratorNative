@@ -992,7 +992,8 @@ var getTitle = function() {
 //get form name
 var getFormName = function() {
     var $formName = $("legend").attr('form-name');
-    $("#form_name").val($formName.replace());
+    console.log($formName.replace(/ /g,"_"))
+    $("#form_name").val($formName.replace(/ /g,"_"));
 }
 
   //get attribute form

@@ -93,18 +93,12 @@
       title: "Create this form?",
       text: "Apakah ",
       type: "warning",
-      html: '<form id="tambahFormOption" action="" method="POST" enctype="multipart/form-data">\
+      html: '<form id="tambahForm" action="" method="POST" enctype="multipart/form-data">\
                 <input type="hidden" value="" name="form_title" id="form_title">\
                 <input type="hidden" value="" name="form_name" id="form_name">\
                 <input type="hidden" value="" name="attr_form" id="attr_form">\
                 <input type="hidden" value="" name="convert_php" id="convert_php">\
                 <input type="hidden" value="<?php echo $form_projects_id ?>" name="form_projects_id" id="form_projects_id">\
-                <select class="swal2-select" id="form-type" name="form_type"> \
-                  <option value="" selected="selected" disabled="">Select an option</option>\
-                  <option value="With Auth Google Drive API">With Auth Google Drive API</option> \
-                  <option value="With Auth Google Drive API and Identifier">With Auth Google Drive API and Identifier</option>\
-                  <option value="Without Auth Google Drive">Without Auth Google Drive</option>\
-                </select>\
              </form>',
       showCancelButton: true,
       confirmButtonText: "Save",
@@ -115,53 +109,30 @@
         getTitle();
         getAttr();
         genPHP();
-        $('#form-type').change(function() {
-          // console.log("tes ",$('#form-type :selected').val())
-          // if(!$('#form-type').find(":selected").text()){
-            $('#json-identifier-upload').remove();
-            $('#swal2-validation-message').remove();
-            if($('#form-type').val() == 'With Auth Google Drive API and Identifier'){
-              $('#tambahFormOption').append('\
-                  <input id="json-identifier-upload" type="file" name="json_identifier"\
-                  aria-label="Upload your profile picture" class="swal2-file" \
-                  style="display: flex;" placeholder="">'
-              );
-            }
-        });
       },
-      preConfirm: (login) => {  
-        let selected = $('#form-type :selected').val() !== '';
-        var form = $("#tambahFormOption").get(0);
+      preConfirm: (result) => {  
+        var form = $("#tambahForm").get(0);
 
-        if (!selected) {
-            swal.showValidationMessage('Please select an option!');
-        }else{
-          return $.ajax({
-            type: "POST", 
-            url: "/formgeneratornative/formGenerator/create/",
-            // datatype : "json", 
-            processData: false,
-            contentType: false,
-            cache: false,
-            // data: $("#tambahForm, #tambahFormOption").serialize(), 
-            data: new FormData(form), 
-            success: function(data) {
-              var request = 'success';
-            },
-              error: function(xhr, status, error){
-                  swal.fire({title:"Form Project Gagal Di Tambah!", text: xhr.responseText, type:"error"});
-              }
-          });
-        }                
+        return $.ajax({
+          type: "POST", 
+          url: "/formgeneratornative/formGenerator/create/",
+          processData: false,
+          contentType: false,
+          cache: false,
+          data: new FormData(form), 
+          success: function(data) {
+            var request = 'success';
+          },
+            error: function(xhr, status, error){
+                swal.fire({title:"Form Project Gagal Di Tambah!", text: xhr.responseText, type:"error"});
+            }
+        });       
       }          
     }).then((result) => {
-      console.log("sadsa ", result.value)
-        if(result.value){
-          swal.fire({title:"Form Project Di Tambah!", text:"Form Project berhasil di tambahkan", type:"success"})
-          .then(function(){ 
-              window.location.href = '/formgeneratornative/forms/showAllForms/'+<?php echo $form_projects_id ?>;
-          });
-        }
+      swal.fire({title:"Form Project Di Tambah!", text:"Form Project berhasil di tambahkan", type:"success"})
+      .then(function(){ 
+          window.location.href = '/formgeneratornative/forms/showAllForms/'+<?php echo $form_projects_id ?>;
+      });
     })
   }
   

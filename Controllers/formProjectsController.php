@@ -29,13 +29,33 @@ class formProjectsController extends Controller{
                 "scope"=>$_POST["scope"], "token_type"=>$_POST["token_type"], "created"=>$_POST["created"]);
             file_put_contents($projectPath."/token.json", json_encode($tokenFile));
 
-            $formProject->create($_POST["nama_project"], $projectPath.'oauth.json', $projectPath.'token.json', $_SESSION['user']['id']);
+            $projectAuthPath = "../public/file/".$_SESSION['user']['id']."/".$_POST["nama_project"]."/auth"."/";
+
+            // mkdir("1/test/", 0777, true);
+            if(!empty($_FILES["json_identifier"]['tmp_name'])){
+                mkdir($projectAuthPath, 0777, true);
+                $jsonIdentifierFile = file_get_contents($_FILES["json_identifier"]['tmp_name']);
+                file_put_contents($projectAuthPath."/auth.json", json_encode($jsonIdentifierFile));
+                header('Content-Type: application/json');
+                
+                $form_auth_path = $projectAuthPath."auth.json";
+                print_r($form_auth_path);
+            }
+            $formProject->create($_POST["nama_project"], $projectPath.'oauth.json', $projectPath.'token.json', $_POST["form_type"], $form_auth_path, $_SESSION['user']['id']);
             header("Location: " . WEBROOT . "formProject/index");
-            
         }else{
             header('Input Empty!', true, 500);
             die("Input Empty!");
         }
+    }
+
+    function getMenu($id){
+        // session_start();
+        require(ROOT . 'Models/Form.php');
+        $form= new Form();
+        $d["formProject"] = $form->getMenu($id);;
+        $_SESSION['edit_id_project'] = $id;
+        echo json_encode($d);
     }
 
     function edit($id){
@@ -54,10 +74,11 @@ class formProjectsController extends Controller{
     function update($id){
         require(ROOT . 'Models/FormProject.php');
         $formProject= new FormProject();
-        $projectPath = "../public/file/1/".$_POST["nama_project_edit"]."/";
+        $projectPath = "../public/file/".$_SESSION['user']['id']."/".$_POST["nama_project_edit"]."/";
 
         if (!empty($_POST["nama_project_edit"])){
             $tokenPath["formProject"] = $formProject->getToken($id);
+            $showAllFormProjects = $formProject->showAllFormProjects($id);
             rename("../public/".substr($tokenPath["formProject"]["project_oauth_file"], 0, -11), $projectPath);
 
             if(!empty($_FILES["oauth_edit"]['tmp_name'])){
@@ -71,7 +92,20 @@ class formProjectsController extends Controller{
             fclose($f);
             // file_put_contents($projectPath."/token.json", json_encode($tokenFile));
 
-            $formProject->edit($id, $_POST["nama_project_edit"], $projectPath.'oauth.json', $projectPath.'token.json');
+            $projectAuthPath = $projectPath."auth";
+
+            // mkdir("1/test/", 0777, true);
+            if(!empty($_FILES["json_identifier"]['tmp_name'])){
+                mkdir($projectAuthPath, 0777, true);
+                $jsonIdentifierFile = file_get_contents($_FILES["json_identifier"]['tmp_name']);
+                file_put_contents($projectAuthPath."/auth.json", $jsonIdentifierFile);
+                
+                $form_auth_path = $projectAuthPath."/auth.json";
+            }else if($_POST["form_type_edit"] == 'With Auth Google Drive API and Identifier'){
+                $form_auth_path = $projectAuthPath."/auth.json";
+            }
+
+            $formProject->edit($id, $_POST["nama_project_edit"], $projectPath.'oauth.json', $projectPath.'token.json', $_POST["form_type_edit"], $form_auth_path);
             header("Location: " . WEBROOT . "formProjects/index");
             // echo json_encode($tokenPath["formProject"]["project_oauth_file"]);
         }else{
@@ -85,8 +119,7 @@ class formProjectsController extends Controller{
 
         $formProject = new FormProject();
         $oauthPath["formProject"] = $formProject->getToken($id);
-        if ($formProject->delete($id))
-        {
+        if ($formProject->delete($id)){
             $dir = substr($oauthPath["formProject"]["project_oauth_file"], 0, -11);
             $it = new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS);
             $files = new RecursiveIteratorIterator($it,
@@ -99,21 +132,8 @@ class formProjectsController extends Controller{
                 }
             }
             rmdir($dir);
-            
-            // if (is_dir($dir)) {
-            //     $objects = scandir($dir);
-            //     foreach ($objects as $object) {
-            //       if ($object != "." && $object != "..") {
-            //         if (filetype($dir."/".$object) == "dir") 
-            //            rrmdir($dir."/".$object); 
-            //         else unlink   ($dir."/".$object);
-            //       }
-            //     }
-            //     reset($objects);
-            //     rmdir($dir);
-            //   }
-            header("Location: " . WEBROOT . "formProjects/index");
         }
+        header("Location: " . WEBROOT . "formProjects/index");
     }
 
     function getOAuth(){

@@ -482,3 +482,18 @@ button.close {
 	transition: all .4s;
 }
 
+.down-button{
+	border: none !important;
+	background: none !important;
+	cursor: pointer !important;
+    margin: 0 !important;
+	padding: 0 !important;
+}
+
+.up-button{
+	border: none !important;
+	background: none !important;
+	cursor: pointer !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
