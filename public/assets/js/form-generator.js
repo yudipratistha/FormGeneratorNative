@@ -1,7 +1,6 @@
 $(document).ready(function() {
     if($("#target").length){
         if ($("#build").children().children().children().length <= 1) $("#build").children().children().append("<div id='emptydiv'><div class='empty-field'><i class='fa fa-plus'></i></div></div>")
-        console.log($("#build").children().children().children().children())
         if($("div").find('#legend').length){
             $("div").find('#legend').attr({"class":"component", "data-toggle":"popover", "title":"", "trigger":"manual", "data-content":"\
                 <form class='form'>\
@@ -14,7 +13,7 @@ $(document).ready(function() {
                 </form>", "data-html":"true", "data-original-title":"Form Settings"
             });
             if(typeof form_name !== 'undefined') $("legend").attr({"class":"valtype legend-border-title", "data-valtype":"form-title", "data-form-name":"form-name",  "form-name":form_name});
-            else $("legend").attr({"class":"valtype legend-border-title", "data-valtype":"form-title", "data-form-name":"form-name", "form-name":"form_master.."});
+            else $("legend").attr({"class":"valtype legend-border-title", "data-valtype":"form-title", "data-form-name":"form-name", "form-name":'form_name'});
         }
         if($("input[type=text]").length){
             $("#target .form-group").children().children("input[type=text]").parent().parent().attr({"class":"form-group component", "data-type":"text", "data-toggle":"popover", "title":"Field Settings - Text Input", "trigger":"manual", "data-content":"\

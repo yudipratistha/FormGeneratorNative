@@ -79,7 +79,7 @@
 </div>
 
 <script>
-  var form_name= '<?php echo $form['form_name']; ?>'
+  var form_name = '<?php echo $form['form_name'];?>';
   // update data form project
   function update_form(){
     swal.fire({
@@ -92,12 +92,6 @@
                 <input type="hidden" value="" name="form_name" id="form_name">\
                 <input type="hidden" value="" name="convert_php" id="convert_php">\
                 <input type="hidden" value="" name="attr_form" id="attr_form">\
-                <select class="swal2-select" id="form-type" name="form_type"> \
-                  <option value="" selected="" disabled="">Select an option</option>\
-                  <option <?php if($form['form_type'] == "With Auth Google Drive API") echo"selected";?> value="With Auth Google Drive API" >With Auth Google Drive API</option> \
-                  <option <?php if($form['form_type'] == "With Auth Google Drive API and Identifier") echo"selected";?> value="With Auth Google Drive API and Identifier" >With Auth Google Drive API and Identifier</option>\
-                  <option <?php if($form['form_type'] == "Without Auth Google Drive") echo"selected";?> value="Without Auth Google Drive" >Without Auth Google Drive</option>\
-                </select>\
              </form>',
       showCancelButton: true,
       confirmButtonText: "Update",

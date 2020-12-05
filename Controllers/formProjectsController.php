@@ -19,7 +19,7 @@ class formProjectsController extends Controller{
         if (!empty($_POST["nama_project"])){
             require(ROOT . 'Models/FormProject.php');
             $formProject= new FormProject();
-            $projectPath = "../public/file/1/".$_POST["nama_project"]."/";
+            $projectPath = "../public/file/".$_SESSION['user']['id']."/".$_POST["nama_project"]."/";
 
             mkdir($projectPath, 0777, true);
             $oauthFile = file_get_contents($_FILES["oauth"]['tmp_name']);

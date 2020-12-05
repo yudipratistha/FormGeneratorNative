@@ -4,7 +4,6 @@
 
     <title>Form Generator</title>
 
-    <!-- <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" rel="stylesheet"> -->
     <link href="http://localhost/formgeneratornative/public/assets/css/bootstrap.min.css" rel="stylesheet">
     <link href="http://localhost/formgeneratornative/public/assets/css/dataTables.bootstrap4.min.css" rel="stylesheet">
     <link href="http://localhost/formgeneratornative/public/assets/css/select2.min.css" rel="stylesheet">
