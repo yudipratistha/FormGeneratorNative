@@ -155,7 +155,7 @@ class formsController extends Controller{
         }
         
         
-        if (!file_exists('../public/zip_file/'.$user_path)) $this->deleteDirectory('../public/zip_file/'.$user_path); mkdir('../public/zip_file/'.$user_path, 0777, true);
+        if (!file_exists('../public/zip_file/'.$user_path)) mkdir('../public/zip_file/'.$user_path, 0777, true); $this->deleteDirectory('../public/zip_file/'.$user_path);
         $project_path = $user_path.'/'.str_replace(' ', '_', $project['nama_project']).'/';
         $share_path = $user_path.'/'.str_replace(' ', '_', $project['nama_project']).'_share';
         if (!file_exists('../public/zip_file/'.$project_path)) mkdir('../public/zip_file/'.$project_path, 0777, true);
