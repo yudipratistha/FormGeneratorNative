@@ -110,7 +110,7 @@
         getAttr();
         genPHP();
       },
-      preConfirm: (result) => {  
+      preConfirm: () => {  
         var form = $("#tambahForm").get(0);
 
         return $.ajax({
@@ -122,17 +122,21 @@
           data: new FormData(form), 
           success: function(data) {
             var request = 'success';
+            value = 'true';
           },
             error: function(xhr, status, error){
-                swal.fire({title:"Form Project Gagal Di Tambah!", text: xhr.responseText, type:"error"});
+                swal.fire({title:"New Form Data Failed Added!", text: xhr.responseText, type:"error"});
             }
         });       
       }          
     }).then((result) => {
-      swal.fire({title:"Form Project Di Tambah!", text:"Form Project berhasil di tambahkan", type:"success"})
-      .then(function(){ 
-          window.location.href = '/formgeneratornative/forms/showAllForms/'+<?php echo $form_projects_id ?>;
-      });
+      console.log(result)
+      if(value){
+        swal.fire({title:"New Form Data Added!", text:"Successfuly add new Form data!", type:"success"})
+        .then(function(){ 
+            window.location.href = '/formgeneratornative/forms/showAllForms/'+<?php echo $form_projects_id ?>;
+        });
+      }
     })
   }
   

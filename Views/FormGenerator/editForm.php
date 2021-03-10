@@ -79,7 +79,7 @@
 </div>
 
 <script>
-  var form_name= '<?php echo $form['form_name']; ?>'
+  var form_name = '<?php echo $form['form_name'];?>';
   // update data form project
   function update_form(){
     swal.fire({
@@ -92,12 +92,6 @@
                 <input type="hidden" value="" name="form_name" id="form_name">\
                 <input type="hidden" value="" name="convert_php" id="convert_php">\
                 <input type="hidden" value="" name="attr_form" id="attr_form">\
-                <select class="swal2-select" id="form-type" name="form_type"> \
-                  <option value="" selected="" disabled="">Select an option</option>\
-                  <option <?php if($form['form_type'] == "With Auth Google Drive API") echo"selected";?> value="With Auth Google Drive API" >With Auth Google Drive API</option> \
-                  <option <?php if($form['form_type'] == "With Auth Google Drive API and Identifier") echo"selected";?> value="With Auth Google Drive API and Identifier" >With Auth Google Drive API and Identifier</option>\
-                  <option <?php if($form['form_type'] == "Without Auth Google Drive") echo"selected";?> value="Without Auth Google Drive" >Without Auth Google Drive</option>\
-                </select>\
              </form>',
       showCancelButton: true,
       confirmButtonText: "Update",
@@ -107,47 +101,38 @@
         getFormName();
         getTitle();
         getAttr();
-        genPHP();
-        var typeUpload = '<input id="json-identifier-upload" type="file" name="json_identifier" aria-label="Upload your profile picture" class="swal2-file" style="display: flex;" placeholder="">';
-        if($('#form-type').val() == 'With Auth Google Drive API and Identifier') $('#tambahFormOption').append(typeUpload);
-        $('#form-type').change(function() {
-            $('#json-identifier-upload').remove();
-            $('#swal2-validation-message').remove();
-            if($('#form-type').val() == 'With Auth Google Drive API and Identifier') $('#tambahFormOption').append(typeUpload);
-        });         
+        genPHP();        
       },
       preConfirm: (login) => {  
         let selected = $('#form-type :selected').val() !== '';
         var form = $("#tambahFormOption").get(0);
         console.log("tesss ", form)
-        if (!selected) {
-            swal.showValidationMessage('Please select an option!');
-        }else{
-          // form_id = $('#form_id').val();
-          // link = ;
-          // link = link.replace(':id', form_id);
-          return $.ajax({
-              type: "POST", 
-              url: "/formgeneratornative/formGenerator/update/"+$('#form_id').val() ,
-              processData: false,
-              contentType: false,
-              cache: false,
-              // data: $("#tambahForm, #tambahFormOption").serialize(), 
-              data: new FormData(form), 
-              success: function(data) {
-                  // swal.fire({title:"Data Project Di Ubah!", text:"Form Project berhasil di Ubah", type:"success"})
-                  // .then(function(){ 
-                  //     window.location.href = "{{ url('/form', $form->form_projects_id)}}";
-                  // });
-                  // $('.confirm').addClass('sweet-alert-success');
-              },
-              error: function(data){
-                  swal.fire({title:"Form Project Gagal Di Ubah!", text:"Form Project gagal di Ubah", type:"error"});
-              }
-          }); 
-        }                
+
+        // form_id = $('#form_id').val();
+        // link = ;
+        // link = link.replace(':id', form_id);
+        return $.ajax({
+            type: "POST", 
+            url: "/formgeneratornative/formGenerator/update/"+$('#form_id').val() ,
+            processData: false,
+            contentType: false,
+            cache: false,
+            // data: $("#tambahForm, #tambahFormOption").serialize(), 
+            data: new FormData(form), 
+            success: function(data) {
+                // swal.fire({title:"Data Project Di Ubah!", text:"Form Project berhasil di Ubah", type:"success"})
+                // .then(function(){ 
+                //     window.location.href = "{{ url('/form', $form->form_projects_id)}}";
+                // });
+                // $('.confirm').addClass('sweet-alert-success');
+            },
+            error: function(data){
+                swal.fire({title:"Form Project Gagal Di Ubah!", text:"Form Project gagal di Ubah", type:"error"});
+            }
+        });               
       }          
     }).then((result) => {
+      console.log(result)
         if(result.value){
           swal.fire({title:"Update Form Success!", text:"Update form success running", type:"success"})
           .then(function(){ 

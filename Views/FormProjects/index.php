@@ -60,13 +60,14 @@
                                 <select class="form-control" id="project-auth-type" name="form_type">
                                     <option value="" selected="selected" disabled="">Select an option</option>
                                     <option value="With Auth Google Drive API">With Auth Google Drive API</option> 
-                                    <option value="With Auth Google Drive API and Identifier">With Auth Google Drive API and Identifier</option>
+                                    <!-- <option value="With Auth Google Drive API and Identifier">With Auth Google Drive API and Identifier</option> -->
                                     <option value="Without Auth Google Drive">Without Auth Google Drive</option>
                                 </select>
                             </div> 
                             <div class="form-group form-alert">
                                 <label class="form-label" >Upload OAuth</label>
                                 <input type="file" value="" class="form-control input-md" name="oauth" id="oauth" accept="application/JSON">
+                                <button type="button" class="form-control mt-1 btn btn-outline-info" onclick="window.open('https://console.developers.google.com', '_blank'); return false;">Get OAuth</button>
                             </div> 
                             <div class="form-group">
                                 <label for="usr">access_token:</label>
@@ -127,17 +128,18 @@
                                 <input type="text" class="form-control" id="nama_project_edit" name="nama_project_edit" placeholder="Ex. Form Mahasiswa" >
                             </div>   
                             <div class="form-group" id="project-auth-type-group-edit">
-                                <label for="form_type">Select Authentication Type:</label>
+                                <label for="project-auth-type-edit">Select Authentication Type:</label>
                                 <select class="form-control" id="project-auth-type-edit" name="form_type_edit">
                                     <option value="" selected="selected" disabled="">Select an option</option>
-                                    <option value="With Auth Google Drive API">With Auth Google Drive API</option> 
-                                    <option value="With Auth Google Drive API and Identifier">With Auth Google Drive API and Identifier</option>
-                                    <option value="Without Auth Google Drive">Without Auth Google Drive</option>
+                                    <option value="With Auth Google Drive API" >With Auth Google Drive API</option>
+                                    <!-- <option value="With Auth Google Drive API and Identifier" >With Auth Google Drive API and Identifier</option> -->
+                                    <option value="Without Auth Google Drive" >Without Auth Google Drive</option>
                                 </select>
                             </div> 
                             <div class="form-group form-alert">
                                 <label class="form-label" >Upload OAuth</label>
                                 <input type="file" class="form-control input-md" name="oauth_edit" id="oauth_edit" accept="application/JSON">
+                                <button type="button" class="form-control mt-1 btn btn-outline-info" onclick="window.open('https://console.developers.google.com', '_blank'); return false;">Get OAuth</button>
                             </div> 
                             <div class="form-group">
                                 <label for="usr">access_token:</label>
@@ -454,7 +456,6 @@
             method: "GET",
 			dataType: 'json',
 			success: function(data){
-                console.log(data.formProject.id)
                 // console.log(data[0])
                 // console.log(data[])
                 // data_token = jQuery.parseJSON(data.data_token);

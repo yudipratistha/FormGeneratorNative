@@ -155,15 +155,15 @@ class formsController extends Controller{
         }
         
         
-        $this->deleteDirectory('../public/zip_file/'.$user_path);
-        if (!file_exists('../public/zip_file/'.$user_path)) mkdir('../public/zip_file/'.$user_path, 0777, true);
-        $project_path = $user_path.$project['nama_project'].'/';
-        $share_path = $user_path.$project['nama_project'];
+        if (!file_exists('../public/zip_file/'.$user_path)) mkdir('../public/zip_file/'.$user_path, 0777, true); $this->deleteDirectory('../public/zip_file/'.$user_path);
+        $project_path = $user_path.'/'.str_replace(' ', '_', $project['nama_project']).'/';
+        $share_path = $user_path.'/'.str_replace(' ', '_', $project['nama_project']).'_share';
         if (!file_exists('../public/zip_file/'.$project_path)) mkdir('../public/zip_file/'.$project_path, 0777, true);
         if (!file_exists('../public/zip_file/'.$share_path)) mkdir('../public/zip_file/'.$share_path, 0777, true);
         if (!file_exists('../public/zip_file/'.$project_path."/google/secret/")) mkdir('../public/zip_file/'.$project_path."/google/secret/", 0777, true);
         if (!file_exists('../public/zip_file/'.$share_path."/google/secret/")) mkdir('../public/zip_file/'.$share_path."/google/secret/", 0777, true);
         if (!file_exists('../public/zip_file/'.$project_path."/google/secret/synchronize")) mkdir('../public/zip_file/'.$project_path."/google/secret/synchronize", 0777, true);
+        // 
         $storage_path1 = '../public/google/';
         $storage_path3 = '../public/synchronize/';
         $storage_path2 = '../public/zip_file/' . $project_path;
@@ -186,18 +186,18 @@ class formsController extends Controller{
         $f=fopen("../public/zip_file/".$share_path."/".$filename,'w+');
         fwrite($f, $sidebar);
         fclose($f);
-        $f=fopen("../public/zip_file/".$project_path.$filename,'w+');
-        fwrite($f, $sidebar);
-        fclose($f);
+        // $f=fopen("../public/zip_file/".$project_path.$filename,'w+');
+        // fwrite($f, $sidebar);
+        // fclose($f);
         
         $index = '<?php header("Location: '.$forms[0]['form_name'].'.php"); ?>';
         $filename = "index.php";
         $f=fopen("../public/zip_file/".$share_path."/".$filename,'w+');
         fwrite($f, $index);
         fclose($f);
-        $f=fopen("../public/zip_file/".$project_path.$filename,'w+');
-        fwrite($f, $index);
-        fclose($f);
+        // $f=fopen("../public/zip_file/".$project_path.$filename,'w+');
+        // fwrite($f, $index);
+        // fclose($f);
 
         if(!empty($data['inputCheckbox'])){
             $sql = $this->createMysql(str_replace(' ', '_', $project['nama_project']), $forms);
@@ -224,7 +224,7 @@ class formsController extends Controller{
         $zip->close();
 
         $this->copyDirectory($storage_path3, $storage_path2);
-        copy($project['project_token_file'], "../public/zip_file/".$share_path."/google/secret/synchronize/token.json");
+        copy($project['project_token_file'], "../public/zip_file/".$project_path."/google/secret/synchronize/token.json");
 
         $prepend = '<?php ';
 
@@ -244,16 +244,16 @@ class formsController extends Controller{
         $fileContents = file_get_contents($file);
         file_put_contents($file, $prepend . $fileContents);
 
-        $zip_file = str_replace(' ', '_', $project['nama_project'].'.zip');
+        $zip_file = '../public/zip_file/'.$project_path.str_replace(' ', '_', $project['nama_project'].'.zip');
         $zip = new \ZipArchive();
-        $zip->open('../public/'.$zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+        $zip->open($zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
         $path = realpath('../public/zip_file/'.$project_path);
         $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
+        
         foreach ($files as $name => $file){
+            $filePath     = $file->getRealPath();
+            $relativePath = str_replace(' ', '_', $project['nama_project']).'/'. substr($filePath, strlen($path));
             if (!$file->isDir()) {
-                $filePath     = $file->getRealPath();
-                $relativePath = str_replace(' ', '_', $project['nama_project']).'/'. substr($filePath, strlen($path));
-                header('Content-Type: application/json');
                 $zip->addFile($filePath, $relativePath);
             }
         }
@@ -266,10 +266,10 @@ class formsController extends Controller{
         header('Expires: 0');
         header('Cache-Control: must-revalidate');
         header('Pragma: public');
-        header('Content-Length: ' . filesize(realpath('../public/'.$zip_file)));
+        header('Content-Length: ' . filesize(realpath($zip_file)));
         ob_clean();
         flush();
-        readfile(realpath('../public/'.$zip_file));
+        readfile(realpath($zip_file));
 
         // Search Folder Sync
         $folderNameSync = "Sync";
@@ -392,7 +392,7 @@ class formsController extends Controller{
         }
 
         foreach($forms as $i => $form){
-            $form_name = str_replace(' ', '_', $form['form_title']);
+            $form_name = str_replace(' ', '_', $form['form_name']);
           
             $optParams = array(
                 'pageSize' => 1,
@@ -486,9 +486,9 @@ class formsController extends Controller{
         $f=fopen("../public/zip_file/".$share_path."/".$filename,'w+');
         fwrite($f, $layout);
         fclose($f);
-        $f=fopen("../public/zip_file/".$project_path.$filename,'w+');
-        fwrite($f, $layout);
-        fclose($f);
+        // $f=fopen("../public/zip_file/".$project_path.$filename,'w+');
+        // fwrite($f, $layout);
+        // fclose($f);
     }
 
     public function create_sidebar($forms, $project_name){
@@ -666,6 +666,7 @@ class formsController extends Controller{
             $php = $php.    '    if($status !== false){';
             $php = $php.    '        $about = $service->about->get(array(\'fields\' => \'*\'));';
             $php = $php.    '        $_SESSION["email_login"] = $email_login = $about->user->emailAddress;';
+            $php = $php.    '        $_SESSION["name_login"] = $name_login = $about->user->displayName;';
             $php = $php.    '    }';
             $php = $php.    '}';
             $php = $php.    'if(empty($_SESSION[\'upload_token\'])){ ';

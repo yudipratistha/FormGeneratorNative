@@ -1,0 +1,41 @@
+[ 
+{ 
+"id":1,
+"nama_instansi":"Dinas Pendidikan"
+},
+{ 
+"id":2,
+"nama_instansi":"Dinas Kominfo"
+},
+{ 
+"id":3,
+"nama_instansi":"Dinas Peternakan dan Kesehatan Hewan"
+},
+{ 
+"id":4,
+"nama_instansi":"Dinas Perkebunan"
+},
+{ 
+"id":5,
+"nama_instansi":"Dinas Catatan Sipil"
+},
+{ 
+"id":6,
+"nama_instansi":"Dinas Kesehatan"
+},
+{ 
+"id":7,
+"nama_instansi":"Dinas Pariwisata"
+},
+{ 
+"id":8,
+"nama_instansi":"Dinas Kebudayaan"
+},
+{ 
+"id":9,
+"nama_instansi":"Kantor Desa Dangin Puri Kaja"
+},
+{ 
+"id":10,
+"nama_instansi":"Kantor Desa Dangin Puri Klod"
+}]

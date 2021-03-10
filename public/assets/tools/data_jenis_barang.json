@@ -1,0 +1,21 @@
+[ 
+{ 
+"id":1,
+"jenis_barang":"Mie Instant"
+},
+{ 
+"id":2,
+"jenis_barang":"Detergen"
+},
+{ 
+"id":3,
+"jenis_barang":"Bola Lampu"
+},
+{ 
+"id":4,
+"jenis_barang":"Baterai"
+},
+{ 
+"id":5,
+"jenis_barang":"Sabun Cuci Piring"
+}]
