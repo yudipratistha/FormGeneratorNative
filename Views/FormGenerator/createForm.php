@@ -12,13 +12,13 @@
                   <fieldset>
                     <div id="text-input" class="form-group component input-field">
                       <!-- Text input-->
-                      <div class="input-type" for="input01" data-valtype='label'>Text input</div>
+                      <div class="input-type" for="input01" data-valtype='label'><span class="fa fa-font"></span> Text input</div>
                     </div>
                     <div id="number" class="form-group component input-field">
-                      <div class="input-type"  data-valtype="label">Number</div>
+                      <div class="input-type"  data-valtype="label"><span class="fa fa-list-ol"></span> Number</div>
                     </div>
                     <div id="checkboxes" class="form-group component input-field">
-                      <div class="input-type"  data-valtype="label">Checkboxes</div>
+                      <div class="input-type"  data-valtype="label"><span class="fa fa-check-square-o"></span> Checkboxes</div>
                     </div>
 
                     <div id="radio-buttons" class="form-group component input-field">
