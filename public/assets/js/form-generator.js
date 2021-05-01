@@ -332,7 +332,7 @@ $(document).ready(function() {
                 });
                 if (mu_mouseX > tar_pos.left && mu_mouseX < tar_pos.left + $target.width() && mu_mouseY > tar_pos.top && mu_mouseY < tar_pos.top + $target.height() + $temp.height() / 2) {
                     if (type === "main") {
-                        if($this.attr("id") === "text-input"){
+                        if($this.attr("id") === "text-input"){                            
                             formInput = '<div class="form-group component" data-type="text" data-toggle="popover" title="Field Settings - Text Input" trigger="manual" data-content="\
                             <form class=\'form\'>\
                             <div class=\'form-group col-md-12\'>\
@@ -685,6 +685,9 @@ $(document).ready(function() {
             var val;
 
             if (valID === "#placeholder") {
+                console.log(console.log($active_component))
+                $active_component.addClass("component-click")
+            // #F4F9E5
                 val = $(e).attr("placeholder");
                 $(".popover " + valID).val(val);
             } else if (valID === "#value") {

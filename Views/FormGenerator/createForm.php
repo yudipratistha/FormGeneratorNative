@@ -15,20 +15,20 @@
                       <div class="input-type" for="input01" data-valtype='label'><span class="fa fa-font"></span> Text input</div>
                     </div>
                     <div id="number" class="form-group component input-field">
-                      <div class="input-type"  data-valtype="label"><span class="fa fa-list-ol"></span> Number</div>
+                      <div class="input-type"  data-valtype="label"><strong>#</strong> Number</div>
                     </div>
                     <div id="checkboxes" class="form-group component input-field">
                       <div class="input-type"  data-valtype="label"><span class="fa fa-check-square-o"></span> Checkboxes</div>
                     </div>
 
                     <div id="radio-buttons" class="form-group component input-field">
-                      <div class="input-type"  data-valtype="label">Radio buttons</div>
+                      <div class="input-type"  data-valtype="label"><span class="fa fa-circle-o"></span> Radio buttons</div>
                     </div>
                     <div id="select-basic" class="form-group component input-field">
-                      <div class="input-type"  data-valtype="label">Select Basic</div>
+                      <div class="input-type"  data-valtype="label"><span class="fa fa-list-ul"></span> Select Basic</div>
                     </div>
                     <div id="file-upload" class="form-group component input-field">
-                      <div class="input-type"  for="input01" data-valtype='label'>File Upload</div>
+                      <div class="input-type"  for="input01" data-valtype='label'><span class="fa fa-upload"></span> File Upload</div>
                     </div>
                   </fieldset>
                 </form>
@@ -37,16 +37,16 @@
                 <form class="form-horizontal" id="components">
                   <fieldset>
                     <div id="table-modal" class="form-group component input-field">
-                      <div class="input-type"  for="input01" data-valtype='label'>Table Modal</div>
+                      <div class="input-type"  for="input01" data-valtype='label'><span class="fa fa-list-alt" aria-hidden="true"></span> Table Modal</div>
                     </div>
                     <div id="date" class="form-group component input-field">
-                      <div class="input-type"  data-valtype="label">Date</div>
+                      <div class="input-type"  data-valtype="label"><span class="fa fa-calendar"></span> Date</div>
                     </div>
                     <div id="time" class="form-group component input-field">
-                      <div class="input-type"  data-valtype="label">Time</div>
+                      <div class="input-type"  data-valtype="label"><span class="fa fa-clock-o"></span> Time</div>
                     </div>
                     <div id="date-time" class="form-group component input-field">
-                      <div class="input-type"  data-valtype="label">Date Time</div>
+                      <div class="input-type"  data-valtype="label"><span class="fa fa-calendar-clock-o"></span> Date Time</div>
                     </div>
                     <div id="button" class="form-group component input-field">
                       <div class="input-type"  for="input01" data-valtype='label'>Button</div>

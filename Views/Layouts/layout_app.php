@@ -10,7 +10,8 @@
     <!-- sweetalert css-->
     <link href="http://localhost/formgeneratornative/public/assets/css/sweetalert2.css" rel="stylesheet" />
     <link href="http://localhost/formgeneratornative/public/assets/css/feathericons/style.css" rel="stylesheet">
-    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+    <link href="http://localhost/formgeneratornative/public/assets/css/font-awesome.min.css" rel="stylesheet" />
     <link href="http://localhost/formgeneratornative/public/assets/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
     <link href="http://localhost/formgeneratornative/public/assets/css/style.css" rel="stylesheet">
 
