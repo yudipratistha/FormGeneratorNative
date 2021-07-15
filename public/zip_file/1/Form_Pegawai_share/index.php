@@ -1,1 +1,0 @@
-<?php header("Location: form_data_pegawai.php"); ?>
