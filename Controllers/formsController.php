@@ -1,4 +1,5 @@
 <?php
+
 class formsController extends Controller{
     public function __construct(){
         require(ROOT . 'Models/Form.php');

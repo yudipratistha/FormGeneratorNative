@@ -1,0 +1,1 @@
+<?php header("Location: master_data_mahasiswa.php"); ?>
