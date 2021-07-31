@@ -11,7 +11,6 @@ class formsController extends Controller{
 
     function showAllForms($id){
         $forms = new Form();
-
         $d['forms'] = $forms->showAllForms($id) + $forms->projectName($id);
         $this->set($d);
         $this->render("index");
@@ -36,8 +35,7 @@ class formsController extends Controller{
 
     function delete($id){
         $form = new Form();
-        if ($form->delete($id))
-        {
+        if ($form->delete($id)){
             echo "success";
         }
     }
@@ -196,9 +194,6 @@ class formsController extends Controller{
         $f=fopen("../public/zip_file/".$share_path."/".$filename,'w+');
         fwrite($f, $index);
         fclose($f);
-        // $f=fopen("../public/zip_file/".$project_path.$filename,'w+');
-        // fwrite($f, $index);
-        // fclose($f);
 
         if(!empty($data['inputCheckbox'])){
             $sql = $this->createMysql(str_replace(' ', '_', $project['nama_project']), $forms);
