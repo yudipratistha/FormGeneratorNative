@@ -8,7 +8,7 @@ class formsController extends Controller{
         if(!isset($_SESSION["user"])) header("Location: /formgeneratornative/auth/login");
     }
 
-    function showAllForms($id){
+    function show_All_Forms($id){
         $forms = new Form();
         $d['forms'] = $forms->showAllForms($id) + $forms->projectName($id);
         $this->set($d);
