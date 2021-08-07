@@ -10,6 +10,7 @@
                             <th>No.</th>
                             <th ><input name="select_all" value="1" id="select_all" type="checkbox"> Export</th>
                             <th>Form Name</th>
+                            <th>Sub Form</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -22,6 +23,7 @@
                                     echo '    <td>'.++$number.'</td>';
                                     echo '    <td><input name="checkform[]" value="'.$form[0].'" type="checkbox"> </td>';
                                     echo '    <td>'.$form['form_title'].'</td>';
+                                    echo '    <td>asda</td>';
                                     echo '    <td>';
                                     echo '        <center>';
                                     echo '            <span data-tooltip="tooltip" data-placement="top" title="" data-original-title="Preview Form"><a class="icon-green" href="/formgeneratornative/forms/previewForm/'.$form[0].'"><i class="fe fe fe-eye"></i></a></span>';
@@ -198,6 +200,7 @@ function export_form(formProjName){
                 { "width": "5%" },
                 { "orderable": false, "width": "10%" },
                 null,
+                { "orderable": false, "width": "13%" },
                 { "orderable": false, "width": "13%" }
             ]
         } );
