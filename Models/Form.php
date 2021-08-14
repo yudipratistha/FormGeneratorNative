@@ -21,6 +21,13 @@ class Form extends Model{
         return $req->fetch();
     }
 
+    public function countSubForm($id){
+        $sql = "SELECT COUNT(*) FROM sub_forms WHERE form_id =". $id;
+        $req = Database::getBdd()->prepare($sql);
+        $req->execute();
+        return $req->fetch();
+    }
+
     public function countIndexMenu($id){
         $sql = "SELECT COUNT(form_menu_index) AS count_index FROM forms WHERE form_projects_id = $id";
         $req = Database::getBdd()->prepare($sql);

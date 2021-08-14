@@ -81,24 +81,24 @@
 
 <div class="float-action-form">
   <div class="container item-right">
-      <button type="button" onclick="tambah_data_form()" class="btn btn-info">Save</button>
+      <button type="button" onclick="create_sub_form()" class="btn btn-info">Save</button>
   </div>
 </div>
 
 <script>
 
   //create form project
-	function tambah_data_form(){
+	function create_sub_form(){
     swal.fire({
-      title: "Create this form?",
+      title: "Create this sub form?",
       text: "Apakah ",
       type: "warning",
       html: '<form id="tambahForm" action="" method="POST" enctype="multipart/form-data">\
-                <input type="hidden" value="" name="form_title" id="form_title">\
-                <input type="hidden" value="" name="form_name" id="form_name">\
+                <input type="hidden" value="" name="sub_form_title" id="form_title">\
+                <input type="hidden" value="" name="sub_form_name" id="form_name">\
                 <input type="hidden" value="" name="attr_form" id="attr_form">\
                 <input type="hidden" value="" name="convert_php" id="convert_php">\
-                <input type="hidden" value="<?php echo $form_projects_id ?>" name="form_projects_id" id="form_projects_id">\
+                <input type="hidden" value="<?php echo $form_id ?>" name="form_id" id="form_id">\
              </form>',
       showCancelButton: true,
       confirmButtonText: "Save",
@@ -115,7 +115,7 @@
 
         return $.ajax({
           type: "POST", 
-          url: "/formgeneratornative/formGenerator/create/",
+          url: "/formgeneratornative/subFormGenerator/create/",
           processData: false,
           contentType: false,
           cache: false,
@@ -134,7 +134,7 @@
       if(value){
         swal.fire({title:"New Form Data Added!", text:"Successfuly add new Form data!", type:"success"})
         .then(function(){ 
-            window.location.href = '/formgeneratornative/forms/showAllForms/'+<?php echo $form_projects_id ?>;
+            window.location.href = '/formgeneratornative/subforms/showAllSubForms/'+<?php echo $form_id ?>;
         });
       }
     })

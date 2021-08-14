@@ -9,7 +9,7 @@ class formsController extends Controller{
         if(!isset($_SESSION["user"])) header("Location: /formgeneratornative/auth/login");
     }
 
-    function show_All_Forms($id){
+    function showAllForms($id){
         $forms = new Form();
         $d['forms'] = $forms->showAllForms($id) + $forms->projectName($id);
         $this->set($d);
@@ -119,7 +119,7 @@ class formsController extends Controller{
         parse_str($request, $data);
         $formQuery = new Form();
         
-        if(empty($data['checkform'])) return header("Location: " . WEBROOT . 'forms/showAllForms/'.strtok($request, '?'));
+        if(empty($data['checkform'])) return header("Location: " . WEBROOT . 'forms/show-All-Forms/'.strtok($request, '?'));
         foreach($data['checkform'] as $i => $checkform_id){          
             // $checkform_id = json_encode($checkform_id);
             if($i==0)$form = 'id = '. $checkform_id;
