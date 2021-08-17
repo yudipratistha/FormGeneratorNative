@@ -17,14 +17,18 @@
                     </thead>
                     <tbody>
                         <?php 
-                        // print_r($forms );
                             foreach ($forms as $number => $form){
                                 if(isset($form['form_title'])){
                                     echo '<tr>';
                                     echo '    <td>'.++$number.'</td>';
                                     echo '    <td><input name="checkform[]" value="'.$form[0].'" type="checkbox"> </td>';
                                     echo '    <td>'.$form['form_title'].'</td>';
-                                    echo '    <td>asda</td>';
+                                    echo '    <td>';
+                                    echo '        <center>';
+                                    echo              $form['sub_forms_count'];
+                                    echo '            <span data-tooltip="tooltip" data-placement="top" title="" data-original-title="Sub Form"><a class="icon-green" href="/formgeneratornative/subForms/showAllSubForms/'.$form[0].'"><i class="fe fe fe-eye"></i></a></span>';
+                                    echo '        </center>';
+                                    echo '    </td>';
                                     echo '    <td>';
                                     echo '        <center>';
                                     echo '            <span data-tooltip="tooltip" data-placement="top" title="" data-original-title="Preview Form"><a class="icon-green" href="/formgeneratornative/forms/previewForm/'.$form[0].'"><i class="fe fe fe-eye"></i></a></span>';

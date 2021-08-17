@@ -1,7 +1,7 @@
 <?php
 class Form extends Model{
     public function showAllForms($id){
-        $sql = "SELECT * FROM forms INNER JOIN form_projects ON forms.`form_projects_id` = form_projects.`id` WHERE form_projects.`id` =". $id;
+        $sql = "SELECT forms.`id`, form_name, form_title, COUNT(sub_forms.`id`) AS sub_forms_count FROM sub_forms RIGHT JOIN forms ON sub_forms.`form_id` = forms.`id` INNER JOIN form_projects ON forms.`form_projects_id` = form_projects.`id` WHERE form_projects.`id` = ". $id ." GROUP BY forms.`id`";
         $req = Database::getBdd()->prepare($sql);
         $req->execute();
         return $req->fetchAll();
@@ -22,7 +22,7 @@ class Form extends Model{
     }
 
     public function countSubForm($id){
-        $sql = "SELECT COUNT(*) FROM sub_forms WHERE form_id =". $id;
+        $sql = "SELECT COUNT(sub_forms.`id`) FROM sub_forms INNER JOIN forms ON sub_forms.`form_id` = forms.`id` WHERE forms.`id`=". $id;
         $req = Database::getBdd()->prepare($sql);
         $req->execute();
         return $req->fetch();

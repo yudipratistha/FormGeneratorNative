@@ -14,7 +14,6 @@
                     </thead>
                     <tbody>
                         <?php 
-                        // print_r($forms );
                             foreach ($sub_forms as $number => $sub_form){
                                 if(isset($sub_form['sub_form_title'])){
                                     echo '<tr>';

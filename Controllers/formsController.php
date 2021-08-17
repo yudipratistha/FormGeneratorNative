@@ -11,7 +11,9 @@ class formsController extends Controller{
 
     function showAllForms($id){
         $forms = new Form();
-        $d['forms'] = $forms->showAllForms($id) + $forms->projectName($id);
+        $d['forms'] = array_merge($forms->showAllForms($id), $forms->projectName($id));
+        // header('Content-Type: application/json');
+        //     echo json_encode($allForms);
         $this->set($d);
         $this->render("index");
     }

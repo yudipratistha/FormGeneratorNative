@@ -11,7 +11,7 @@ class subFormsController extends Controller{
 
     function showAllSubForms($id){
         $sub_forms = new SubForm();
-        $d['sub_forms'] = $sub_forms->showAllSubForms($id) + $sub_forms->getFormName($id);;
+        $d['sub_forms'] = $sub_forms->showAllSubForms($id);
         $this->set($d);
         $this->render("index");
     }
