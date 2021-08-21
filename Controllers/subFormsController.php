@@ -16,29 +16,20 @@ class subFormsController extends Controller{
         $this->render("index");
     }
 
-//    function previewForm($id){
-//        $forms = new Form();
-//
-//        $d['form'] = $forms->showForm($id);
-//        $this->set($d);
-//        $this->render("previewForm");
-//    }
-//
-//    function updateProjectMenu(){
-//        $form = new form();
-//
-//        foreach($_POST['form_menu_id'] as $i => $id){
-//            $form->updateprojectMenu($id, $_POST['form_menu_index'][$i]);
-//        }
-//        header("Location: " . WEBROOT . "formProject/index");
-//    }
-//
-//    function delete($id){
-//        $form = new Form();
-//        if ($form->delete($id)){
-//            echo "success";
-//        }
-//    }
+   function previewSubForm($id){
+       $sub_form = new SubForm();
+
+       $d['sub_form'] = $sub_form->showSubForm($id);
+       $this->set($d);
+       $this->render("previewSubForm");
+   }
+
+   function delete($id){
+       $sub_form = new SubForm();
+       if ($sub_form->delete($id)){
+           echo "success";
+       }
+   }
 //
 //    public function create_layout($request){
 //        $layout = $this->createPhpSubmit($request);

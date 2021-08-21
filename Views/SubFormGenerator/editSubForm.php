@@ -63,7 +63,7 @@
         <div id="target">
           <div class="clearfix">
               <div id="build">
-                    <?php echo $form['form_export']; ?>
+                    <?php echo $sub_form['sub_form_export']; ?>
               </div>
           </div>
         </div>
@@ -80,17 +80,17 @@
 </div>
 
 <script>
-  var form_name = '<?php echo $form['form_name'];?>';
+  var form_name = '<?php echo $sub_form['sub_form_name'];?>';
   // update data form project
   function update_form(){
     swal.fire({
-      title: "Update Form?",
+      title: "Update Sub Form?",
       type: "warning",
-      html: '<p>Do you want to update the form?</p>\
+      html: '<p>Do you want to update the sub form?</p>\
               <form id="tambahFormOption" action="" method="POST" enctype="multipart/form-data">\
-                <input type="hidden" value="<?php echo $form['id']; ?>" name="form_id" id="form_id">\
-                <input type="hidden" value="" name="form_title" id="form_title">\
-                <input type="hidden" value="" name="form_name" id="form_name">\
+                <input type="hidden" value="<?php echo $sub_form['id']; ?>" name="sub_form_id" id="sub_form_id">\
+                <input type="hidden" value="" name="sub_form_title" id="form_title">\
+                <input type="hidden" value="" name="sub_form_name" id="form_name">\
                 <input type="hidden" value="" name="convert_php" id="convert_php">\
                 <input type="hidden" value="" name="attr_form" id="attr_form">\
              </form>',
@@ -108,24 +108,14 @@
         let selected = $('#form-type :selected').val() !== '';
         var form = $("#tambahFormOption").get(0);
         console.log("tesss ", form)
-
-        // form_id = $('#form_id').val();
-        // link = ;
-        // link = link.replace(':id', form_id);
         return $.ajax({
             type: "POST", 
-            url: "/formgeneratornative/formGenerator/update/"+$('#form_id').val() ,
+            url: "/formgeneratornative/subFormGenerator/update/"+$('#sub_form_id').val() ,
             processData: false,
             contentType: false,
             cache: false,
-            // data: $("#tambahForm, #tambahFormOption").serialize(), 
             data: new FormData(form), 
             success: function(data) {
-                // swal.fire({title:"Data Project Di Ubah!", text:"Form Project berhasil di Ubah", type:"success"})
-                // .then(function(){ 
-                //     window.location.href = "{{ url('/form', $form->form_projects_id)}}";
-                // });
-                // $('.confirm').addClass('sweet-alert-success');
             },
             error: function(data){
                 swal.fire({title:"Form Project Gagal Di Ubah!", text:"Form Project gagal di Ubah", type:"error"});
@@ -135,9 +125,9 @@
     }).then((result) => {
       console.log(result)
         if(result.value){
-          swal.fire({title:"Update Form Success!", text:"Update form success running", type:"success"})
+          swal.fire({title:"Update Sub Form Success!", text:"Update sub form success running", type:"success"})
           .then(function(){ 
-            window.location.href = '/formgeneratornative/forms/showAllForms/'+<?php echo $form['form_projects_id'] ?>;
+            window.location.href = '/formgeneratornative/subForms/showAllSubForms/'+<?php echo $sub_form['form_id'] ?>;
           });
         }
       })

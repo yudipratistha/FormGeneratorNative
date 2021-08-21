@@ -78,7 +78,6 @@
     <!-- /container -->
   </div>
 </div>
-
 <div class="float-action-form">
   <div class="container item-right">
       <button type="button" onclick="create_sub_form()" class="btn btn-info">Save</button>
@@ -86,7 +85,6 @@
 </div>
 
 <script>
-
   //create form project
 	function create_sub_form(){
     swal.fire({
@@ -98,12 +96,14 @@
                 <input type="hidden" value="" name="sub_form_name" id="form_name">\
                 <input type="hidden" value="" name="attr_form" id="attr_form">\
                 <input type="hidden" value="" name="convert_php" id="convert_php">\
-                <input type="hidden" value="<?php echo $form_id ?>" name="form_id" id="form_id">\
+                <input type="hidden" value=\'"<?php echo $form_data[0]['form_export'] ?>"\' name="main_form" id="main_form">\
+                <input type="hidden" value="<?php echo $form_data[0]['id'] ?>" name="form_id" id="form_id">\
              </form>',
       showCancelButton: true,
       confirmButtonText: "Save",
       showLoaderOnConfirm: true,
       onOpen: function() {
+        console.log($("input[id=main_form]").val()); 
         getTitle();
         getFormName();
         getTitle();
@@ -125,19 +125,20 @@
             value = 'true';
           },
             error: function(xhr, status, error){
-                swal.fire({title:"New Form Data Failed Added!", text: xhr.responseText, type:"error"});
+                swal.fire({title:"New Sub Form Data Failed Added!", text: xhr.responseText, type:"error"});
             }
         });       
       }          
     }).then((result) => {
       console.log(result)
       if(value){
-        swal.fire({title:"New Form Data Added!", text:"Successfuly add new Form data!", type:"success"})
+        swal.fire({title:"New Sub Form Data Added!", text:"Successfuly add new sub form data!", type:"success"})
         .then(function(){ 
-            window.location.href = '/formgeneratornative/subforms/showAllSubForms/'+<?php echo $form_id ?>;
+            window.location.href = '/formgeneratornative/subforms/showAllSubForms/'+<?php echo $form_data[0]['id'] ?>;
         });
       }
     })
   }
+  
   
 </script>

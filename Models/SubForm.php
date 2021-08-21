@@ -1,7 +1,7 @@
 <?php
 class SubForm extends Model{
     public function showAllSubForms($id){
-        $sql = "SELECT * FROM sub_forms INNER JOIN forms ON sub_forms.`form_id` = forms.`id` WHERE forms.`id` =". $id;
+        $sql = "SELECT * FROM sub_forms RIGHT JOIN forms ON sub_forms.`form_id` = forms.`id` WHERE forms.`id` = ". $id;
         $req = Database::getBdd()->prepare($sql);
         $req->execute();
         return $req->fetchAll();
@@ -9,6 +9,13 @@ class SubForm extends Model{
 
     public function getFormName($id){
         $sql = "SELECT id, form_name FROM forms WHERE id =". $id;
+        $req = Database::getBdd()->prepare($sql);
+        $req->execute();
+        return $req->fetchAll();
+    }
+
+    public function getMainFormConvert($id){
+        $sql = "SELECT id, form_export FROM forms WHERE forms.`id` =". $id;
         $req = Database::getBdd()->prepare($sql);
         $req->execute();
         return $req->fetchAll();
@@ -30,30 +37,30 @@ class SubForm extends Model{
         ]);
     }
 
-    public function showForm($id){
-        $sql = "SELECT * FROM forms WHERE id =" . $id;
+    public function showSubForm($id){
+        $sql = "SELECT * FROM sub_forms WHERE id =" . $id;
         $req = Database::getBdd()->prepare($sql);
         $req->execute();
         return $req->fetch();
     }
 
 
-    public function update($id, $form_title, $form_name, $convert_php, $attr_form){
-        $sql = "UPDATE forms SET form_title = :form_title, form_name = :form_name, form_export = :form_export, form_attr = :form_attr, updated_at = :updated_at WHERE id = :id";
+    public function update($id, $sub_form_title, $sub_form_name, $convert_php, $attr_form){
+        $sql = "UPDATE sub_forms SET sub_form_title = :sub_form_title, sub_form_name = :sub_form_name, sub_form_export = :sub_form_export, sub_form_attr = :sub_form_attr, updated_at = :updated_at WHERE id = :id";
         $req = Database::getBdd()->prepare($sql);
 
         return $req->execute([
             'id' => $id,
             'sub_form_title' => $sub_form_title,
             'sub_form_name' => $sub_form_name,
-            'sub_form_export' => $sub_form_export,
-            'sub_form_attr' => $sub_form_attr,
+            'sub_form_export' => $convert_php,
+            'sub_form_attr' => $attr_form,
             'updated_at' => date('Y-m-d H:i:s')
         ]);
     }
 
     public function delete($id){
-        $sql = 'DELETE FROM forms WHERE id = ?';
+        $sql = 'DELETE FROM sub_forms WHERE id = ?';
         $req = Database::getBdd()->prepare($sql);
         return $req->execute([$id]);
     }
