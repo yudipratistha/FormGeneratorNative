@@ -23,7 +23,7 @@
                                     echo '        <center>';
                                     echo '            <span data-tooltip="tooltip" data-placement="top" title="" data-original-title="Preview Sub Form"><a class="icon-green" href="/formgeneratornative/subForms/previewSubForm/'.$sub_form[0].'"><i class="fe fe fe-eye"></i></a></span>';
                                     echo '            <span data-tooltip="tooltip" data-placement="top" title="" data-original-title="Edit Sub Form"><a class="icon-green" href="/formgeneratornative/subFormGenerator/editSubForm/'.$sub_form[0].'"><i class="fe fe-edit"></i></a></span>';
-                                    echo '            <span data-tooltip="tooltip" data-placement="top" title="" data-original-title="Delete Sub Form"><a class="icon-red" href="javascript:delete_sub_form('.$sub_form[0].', '."'$sub_form[sub_form_title]'".')"><i class="fe fe-trash-2"></i></a></span>';
+                                    echo '            <span data-tooltip="tooltip" data-placement="top" title="" data-original-title="Delete Sub Form"><a class="icon-red" href="javascript:delete_sub_form('.$sub_form[0].', '."'$sub_form[sub_form_title]'".', '."'$sub_form[sub_form_name]'".')"><i class="fe fe-trash-2"></i></a></span>';
                                     echo '        </center>';
                                     echo '    </td>';
                                     echo '</tr>';  
@@ -41,47 +41,38 @@
         </div>
     </div>
 </div>
- <!-- Export Modal -->
-<div class="modal" id="export-modal">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Export Project</h4>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>     
-            <div class="modal-body">
-                Export this project?
-            </div>   
-            <div class="modal-footer">
-                <button id="btn-export" type="button" class="btn btn-danger" onClick="document.getElementById('check-export-form').submit();">Export</button>
-            </div>  
-        </div>
-    </div>
-</div> 
+
 <script>
 
     //delete data
-    function delete_sub_form(sub_form_id, sub_form_title){
-        
+    function delete_sub_form(sub_form_id, sub_form_title, sub_form_name){
 		swal.fire({
 			title: "Delete "+sub_form_title+"?",
-			text: ""+sub_form_title+" will deleted on your sub form list!",
+			text: "",
 			type: "warning",
+            html: '<p>'+sub_form_title+' will deleted on your sub form list!</p>\
+              <form id="delete_sub_form" action="" method="POST" enctype="multipart/form-data">\
+                <input type="hidden" value="<?php echo array_column($sub_forms, 'id')[0];?>" name="main_form_id" id="main_form_id">\
+                <input type="hidden" value="" name="delete_main_form_sub_form" id="delete_main_form_sub_form">\
+                <input type="hidden" value="" name="delete_main_form_attr_sub_form" id="delete_main_form_attr_sub_form">\
+             </form>',
 			showCancelButton: true,
 			confirmButtonClass: "btn-danger",
 			confirmButtonText: "Delete",
-            closeOnConfirm: true,
+            // closeOnConfirm: true,
+            showLoaderOnConfirm: true,
+            onOpen: function() {
+                deleteSubFormMainForm('<?php echo $sub_forms[0]["form_export"] ?>', sub_form_name, '<?php echo $sub_forms[0]["form_attr"] ?>');
+            },
             preConfirm: (login) => {
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    }
-                });
+                var form = $("#delete_sub_form").get(0);
                 $.ajax({
-                    type: "DELETE", 
+                    type: "POST", 
                     url: "/formgeneratornative/subForms/delete/"+ sub_form_id,
-                    datatype : "json", 
-                    data:{id:sub_form_id},
+                    processData: false,
+                    contentType: false,
+                    cache: false,
+                    data:new FormData(form),
                     success: function(data) {
                         if(data=="success"){
                             swal.fire({title:"Sub Form Deleted!", text:"This form has been deleted on your sub form list", type:"success"})

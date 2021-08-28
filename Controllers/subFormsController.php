@@ -3,8 +3,6 @@ class subFormsController extends Controller{
     public function __construct(){
         require(ROOT . 'Models/SubForm.php');
         require(ROOT . 'Models/Form.php');
-        require(ROOT . 'Models/FormProject.php');
-        require __DIR__ . '../../vendor/autoload.php';
         session_start();
         if(!isset($_SESSION["user"])) header("Location: /formgeneratornative/auth/login");
     }
@@ -26,22 +24,12 @@ class subFormsController extends Controller{
 
    function delete($id){
        $sub_form = new SubForm();
-       if ($sub_form->delete($id)){
+       $form = new Form();
+       if ($sub_form->delete($id) && $form->updateMainFormSubForm($_POST["main_form_id"], $_POST["delete_main_form_sub_form"], $_POST["delete_main_form_attr_sub_form"])){
            echo "success";
+       }else{
+           echo "Error";
        }
    }
-//
-//    public function create_layout($request){
-//        $layout = $this->createPhpSubmit($request);
-//
-//
-//        return $layout;
-//    }
-//
-//    public function createPhpSubmit($request){
-//        $php = "\n\n\n";
-//
-//        return $php;
-//    }
 }
 ?>

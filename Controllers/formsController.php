@@ -4,6 +4,7 @@ class formsController extends Controller{
     public function __construct(){
         require(ROOT . 'Models/Form.php');
         require(ROOT . 'Models/FormProject.php');
+        require(ROOT . 'Models/SubForm.php');
         require __DIR__ . '../../vendor/autoload.php';
         session_start();
         if(!isset($_SESSION["user"])) header("Location: /formgeneratornative/auth/login");
@@ -100,7 +101,7 @@ class formsController extends Controller{
     }
         
     function hashDirectory($directory){
-        if (! is_dir($directory)){ return false; }
+        if (!is_dir($directory)){ return false; }
     
         $files = array();
         $dir = dir($directory);
@@ -135,6 +136,8 @@ class formsController extends Controller{
 
         $client = new Google_Client();
         $service = new Google_Service_Drive($client);
+        // header('Content-Type: application/json');
+        // print_r($project);
         $oauth_file = json_decode(file_get_contents(__DIR__ . '../../public/'.$project['project_oauth_file']), true);
         $token_file = json_decode(file_get_contents(__DIR__ . '../../public/'.$project['project_token_file']), true);
         

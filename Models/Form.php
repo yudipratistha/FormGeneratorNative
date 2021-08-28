@@ -8,7 +8,7 @@ class Form extends Model{
     }
     
     public function projectName($id){
-        $sql = "SELECT id, nama_project FROM form_projects WHERE id =". $id;
+        $sql = "SELECT id AS project_id, nama_project FROM form_projects WHERE id =". $id;
         $req = Database::getBdd()->prepare($sql);
         $req->execute();
         return $req->fetchAll();
@@ -16,13 +16,6 @@ class Form extends Model{
 
     public function getProject($id){
         $sql = "SELECT * FROM form_projects WHERE id =". $id;
-        $req = Database::getBdd()->prepare($sql);
-        $req->execute();
-        return $req->fetch();
-    }
-
-    public function countSubForm($id){
-        $sql = "SELECT COUNT(sub_forms.`id`) FROM sub_forms INNER JOIN forms ON sub_forms.`form_id` = forms.`id` WHERE forms.`id`=". $id;
         $req = Database::getBdd()->prepare($sql);
         $req->execute();
         return $req->fetch();
@@ -95,6 +88,26 @@ class Form extends Model{
             'form_name' => $form_name,
             'form_export' => $convert_php,
             'form_attr' => $attr_form,
+            'updated_at' => date('Y-m-d H:i:s')
+        ]);
+    }
+
+    public function getMainFormConvert($id){
+        $sql = "SELECT id AS form_id, form_export, form_attr FROM forms WHERE forms.`id` =". $id;
+        $req = Database::getBdd()->prepare($sql);
+        $req->execute();
+        return $req->fetchAll();
+    }
+
+    public function updateMainFormSubForm($id, $main_form, $main_form_attr){
+        $sql = "UPDATE forms SET form_export = :main_form, form_attr = :main_form_attr, updated_at = :updated_at WHERE id = :id";
+
+        $req = Database::getBdd()->prepare($sql);
+
+        return $req->execute([
+            'id' => $id,
+            'main_form' => $main_form,
+            'main_form_attr' => $main_form_attr,
             'updated_at' => date('Y-m-d H:i:s')
         ]);
     }

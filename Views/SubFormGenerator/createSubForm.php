@@ -96,19 +96,20 @@
                 <input type="hidden" value="" name="sub_form_name" id="form_name">\
                 <input type="hidden" value="" name="attr_form" id="attr_form">\
                 <input type="hidden" value="" name="convert_php" id="convert_php">\
-                <input type="hidden" value=\'"<?php echo $form_data[0]['form_export'] ?>"\' name="main_form" id="main_form">\
-                <input type="hidden" value="<?php echo $form_data[0]['id'] ?>" name="form_id" id="form_id">\
+                <input type="hidden" value="" name="main_form" id="main_form">\
+                <input type="hidden" value="" name="main_form_attr" id="main_form_attr">\
+                <input type="hidden" value="<?php echo $form_data[0]['form_id'] ?>" name="form_id" id="form_id">\
              </form>',
       showCancelButton: true,
       confirmButtonText: "Save",
       showLoaderOnConfirm: true,
       onOpen: function() {
-        console.log($("input[id=main_form]").val()); 
         getTitle();
         getFormName();
         getTitle();
         getAttr();
         genPHP();
+        addSubForm('<?php echo $form_data[0]['form_export'] ?>', '<?php echo $form_data[0]['form_attr'] ?>');
       },
       preConfirm: () => {  
         var form = $("#tambahForm").get(0);
@@ -130,11 +131,11 @@
         });       
       }          
     }).then((result) => {
-      console.log(result)
+      // console.log(result)
       if(value){
         swal.fire({title:"New Sub Form Data Added!", text:"Successfuly add new sub form data!", type:"success"})
         .then(function(){ 
-            window.location.href = '/formgeneratornative/subforms/showAllSubForms/'+<?php echo $form_data[0]['id'] ?>;
+            window.location.href = '/formgeneratornative/subforms/showAllSubForms/'+ <?php echo $form_data[0]['form_id'] ?>;
         });
       }
     })

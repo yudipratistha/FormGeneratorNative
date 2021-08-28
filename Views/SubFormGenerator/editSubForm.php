@@ -88,11 +88,14 @@
       type: "warning",
       html: '<p>Do you want to update the sub form?</p>\
               <form id="tambahFormOption" action="" method="POST" enctype="multipart/form-data">\
-                <input type="hidden" value="<?php echo $sub_form['id']; ?>" name="sub_form_id" id="sub_form_id">\
+                <input type="hidden" value="<?php echo $sub_form['sub_form_id']; ?>" name="sub_form_id" id="sub_form_id">\
                 <input type="hidden" value="" name="sub_form_title" id="form_title">\
                 <input type="hidden" value="" name="sub_form_name" id="form_name">\
                 <input type="hidden" value="" name="convert_php" id="convert_php">\
                 <input type="hidden" value="" name="attr_form" id="attr_form">\
+                <input type="hidden" value="<?php echo $sub_form['form_id']; ?>" name="form_id" id="form_id">\
+                <input type="hidden" value="" name="main_form_update" id="main_form_update">\
+                <input type="hidden" value="" name="main_form_attr_update" id="main_form_attr_update">\
              </form>',
       showCancelButton: true,
       confirmButtonText: "Update",
@@ -102,7 +105,8 @@
         getFormName();
         getTitle();
         getAttr();
-        genPHP();        
+        genPHP();
+        updateSubForm('<?php echo $sub_form['form_export'] ?>', '<?php echo $sub_form['sub_form_name'] ?>', '<?php echo $sub_form['form_attr'] ?>');
       },
       preConfirm: (login) => {  
         let selected = $('#form-type :selected').val() !== '';
@@ -123,7 +127,6 @@
         });               
       }          
     }).then((result) => {
-      console.log(result)
         if(result.value){
           swal.fire({title:"Update Sub Form Success!", text:"Update sub form success running", type:"success"})
           .then(function(){ 

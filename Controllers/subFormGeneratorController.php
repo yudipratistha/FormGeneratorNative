@@ -2,14 +2,15 @@
 
 class subFormGeneratorController extends Controller{
     public function __construct(){
+        require(ROOT . 'Models/Form.php');
         require(ROOT . 'Models/SubForm.php');
         session_start();
         if(!isset($_SESSION["user"])) header("Location: /formgeneratornative/auth/login");
     }
 
     function createSubForm($id){
-        $sub_form= new SubForm();
-        $d["form_data"] = $sub_form->getMainFormConvert($id);
+        $form= new Form();
+        $d["form_data"] = $form->getMainFormConvert($id);
         
         $this->set($d);
         $this->render("createSubForm");
@@ -19,6 +20,9 @@ class subFormGeneratorController extends Controller{
         if (!empty($_POST["sub_form_title"])){
             $sub_form= new SubForm();
             $sub_form->create($_POST["sub_form_title"], $_POST["sub_form_name"], $_POST["convert_php"], $_POST["attr_form"], $_POST['form_id']);
+
+            $form = new Form();
+            $form->updateMainFormSubForm($_POST['form_id'], $_POST["main_form"], $_POST["main_form_attr"]);
 
         }else{
             header('Content-Type: application/json');
@@ -30,7 +34,8 @@ class subFormGeneratorController extends Controller{
 
     function editSubForm($id){
         $sub_form= new SubForm();
-        $d["sub_form"] = $sub_form->showSubForm($id);
+        $form = new Form();
+        $d["sub_form"] = array_merge($sub_form->showSubForm($id), $form->getMainFormConvert($id));
 
         $this->set($d);
         $this->render("editSubForm");
@@ -39,10 +44,10 @@ class subFormGeneratorController extends Controller{
     function update($id){
         if (!empty($_POST["sub_form_title"])){
             $sub_form= new SubForm();
-            // $showSubForm = $sub_form->showSubForm($id);
-            // $data_form = $sub_form->getForm($showSubForm["form_projects_id"]);
+            $sub_form->update($id, $_POST["sub_form_title"], $_POST["sub_form_name"], $_POST["convert_php"], $_POST["attr_form"]);
 
-            $sub_form->update($id, $_POST["sub_form_title"], $_POST["sub_form_name"], $_POST["convert_php"], $_POST["attr_form"], $_POST['sub_form_id']);
+            $form = new Form();
+            $form->updateMainFormSubForm($_POST['form_id'], $_POST["main_form_update"], $_POST["main_form_attr_update"]);
 
             header("Location: " . WEBROOT . "forms/index");
         }else{

@@ -73,10 +73,11 @@
         $('input:checkbox').not(this).prop('checked', this.checked);
     });
 
-//export form
-function export_form(formProjName){
+    //export form
+    function export_form(formProjName){
         exportid = $("#check-export-form").serialize();
         console.log(exportid)
+
         swal.fire({
             title: "Export Form?",
             text: "Do you want to export this project?",
@@ -90,7 +91,7 @@ function export_form(formProjName){
             preConfirm: (inputCheckbox) => {
                 return $.ajax({
                     type: "get",
-                    url: '/formgeneratornative/forms/exportPhpProject/'+<?php echo array_column($forms, 'id')[0];?>+"?"+exportid,
+                    url: '/formgeneratornative/forms/exportPhpProject/'+<?php echo array_column($forms, 'project_id')[0];?>+"?"+exportid,
                     data:{inputCheckbox:`${inputCheckbox}`},
                     // dataType: "zip",
                     xhrFields: {
@@ -123,8 +124,6 @@ function export_form(formProjName){
 
     //delete data
     function delete_form(form_id, form_title){
-        link = "{{route('form.destroy', ':id')}}";
-        link = link.replace(':id', form_id);
         
 		swal.fire({
 			title: "Delete "+form_title+"?",
@@ -135,11 +134,6 @@ function export_form(formProjName){
 			confirmButtonText: "Delete",
             closeOnConfirm: true,
             preConfirm: (login) => {
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    }
-                });
                 $.ajax({
                     type: "DELETE", 
                     url: "/formgeneratornative/forms/delete/"+ form_id,

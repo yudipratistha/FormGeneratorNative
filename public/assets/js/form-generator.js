@@ -989,6 +989,7 @@ $(document).ready(function() {
 var getTitle = function() {
     var $title = $("legend").first().text();
     $("#form_title").val($title.replace());
+    return $title;
 }
 
 //get form name
@@ -996,6 +997,7 @@ var getFormName = function() {
     var $formName = $("legend").attr('form-name');
     console.log($formName.replace(/ /g,"_"))
     $("#form_name").val($formName.replace(/ /g,"_"));
+    return $formName;
 }
 
   //get attribute form
@@ -1004,20 +1006,37 @@ var getAttr = function() {
     i = 0;
     $("#build, .valtype").each(function(index, value){
         nameAttr = $(this).attr('name');
+        
         if(!!$(this).attr('name')){
+            
+
             if($(this).attr('name').substring($(this).attr('name').length - 2) === "[]"){
                 var duplicate = false;
                 var attrs = $(this).attr('name').substring(7, $(this).attr('name').length-3);
+                
                 $.each($value_input, function (index, value) {
                     if(value === attrs) duplicate= true;
                 });
+                
+                if(!duplicate) $value_input[i++] = attrs;
+            }else if($(this).attr('name').substring($(this).attr('name').length - 12) === "[attr_count]"){
+                var duplicate = false;
+                var attrs = $(this).attr('name').substring(7, $(this).attr('name').length - 13);
+                
+                $.each($value_input, function (index, value) {
+                    if(value === attrs) duplicate= true;
+                });
+                
                 if(!duplicate) $value_input[i++] = attrs;
             }else{
                 $value_input[i++] = $(this).attr('name').substring(7, $(this).attr('name').length - 1);
             }
+            
         }
     });
+    console.log($value_input);
     $("#attr_form").val($value_input);
+    return $value_input;
 }
 
 //generate php
@@ -1051,4 +1070,71 @@ var genPHP = function() {
     $($temptxt).find("#attr").attr({"id": null});
     // console.log("test get html ", $temptxt.html().replace(/\n \ \ \ \ \ | \ |\n/g, ""))
     $("#convert_php").val($temptxt.html().replace(/\n \ \ \ \ \ | \ |\n/g, ""));
+}
+
+function addSubForm(mainForm, mainFormAttr){
+    var main_form = $.parseHTML(mainForm);
+    var table_subform = '';
+    table_subform = table_subform +'    <div class=form-group> ';
+    table_subform = table_subform +'        <input type=hidden class="valtype" name="values[subform_'+ getFormName().replace(/ /g,"_") +']" value="subform_'+ getFormName().replace(/ /g,"_") +'"> ';
+    table_subform = table_subform +'        <input type=hidden name="values[subform_'+ getFormName().replace(/ /g,"_") +'][attr_count]" value="'+ i +'"> ';
+    table_subform = table_subform +'        <label class="col-md-6 control-label">'+ getTitle() +'</label> ';
+    table_subform = table_subform +'        <div class="col-md-6 table-responsive"> ';
+    table_subform = table_subform +"            <table id=example class='table table-bordered'> ";
+    table_subform = table_subform +'                <thead class=thead-dark> ';
+    $.each(getAttr(), function (index, attr) {
+        table_subform = table_subform +'                    <th>'+ attr +'</th> ';
+    });
+    table_subform = table_subform +'                    <th>action</th> ';
+    table_subform = table_subform +'                </thead> ';
+    table_subform = table_subform +'                <tbody id=subform-'+ getFormName().replace(/ /g,"_") +'>  ';
+    table_subform = table_subform +'                </tbody> ';
+    table_subform = table_subform +'            </table> ';
+    table_subform = table_subform +'            <button class="btn-xs btn-info" type=button id=tab-><a>Tambah '+ getFormName().replace(/_/g," ") +'</a></button> ';
+    table_subform = table_subform +'        </div> ';
+    table_subform = table_subform +'    </div> ';
+    table_subform = table_subform +'</div>';
+
+    $(main_form).find("input[type!=button]:last").parent().parent().after(table_subform);
+
+    $("#main_form").val(main_form[0].outerHTML.replace(/\n \ \ \ \ \ | \ |\n/g, ""));
+    console.log(main_form[0].outerHTML.replace(/\n \ \ \ \ \ | \ |\n/g, ""))
+    $("#main_form_attr").val(mainFormAttr + ",subform-"+ getFormName().replace(/ /g,"_"));
+}
+
+function updateSubForm(mainForm, subFormName, mainFormAttr){
+    var main_form = $.parseHTML(mainForm);
+    var table_subform = '';
+
+    table_subform = table_subform +'    <div class=form-group> ';
+    table_subform = table_subform +'        <input type=hidden class="valtype" name="values[subform_'+ getFormName().replace(/ /g,"_") +']" value="subform_'+ getFormName().replace(/ /g,"_") +'"> ';
+    table_subform = table_subform +'        <input type=hidden name="values[subform_'+ getFormName().replace(/ /g,"_") +'][attr_count]" value="'+ i +'"> ';
+    table_subform = table_subform +'        <label class="col-md-6 control-label">'+ getTitle() +'</label> ';
+    table_subform = table_subform +'        <div class="col-md-6 table-responsive"> ';
+    table_subform = table_subform +"            <table id=example class='table table-bordered'> ";
+    table_subform = table_subform +'                <thead class=thead-dark> ';
+    $.each(getAttr(), function (index, attr) {
+        table_subform = table_subform +'                    <th>'+ attr +'</th> ';
+    });
+    table_subform = table_subform +'                    <th>action</th> ';
+    table_subform = table_subform +'                </thead> ';
+    table_subform = table_subform +'                <tbody id=subform_'+ getFormName().replace(/ /g,"_") +'>  ';
+    table_subform = table_subform +'                </tbody> ';
+    table_subform = table_subform +'            </table> ';
+    table_subform = table_subform +'            <button class="btn-xs btn-info" type=button id=tab-><a>Tambah '+ getFormName().replace(/_/g," ") +'</a></button> ';
+    table_subform = table_subform +'        </div> ';
+    table_subform = table_subform +'    </div> ';
+    table_subform = table_subform +'</div>';
+
+    mainFormUpdate = $(main_form).find("#subform-"+ subFormName).parent().parent().parent().replaceWith(table_subform.replace(/\n \ \ \ \ \ \ | \ |\n/g, ""));
+    $("#main_form_update").val(main_form[0].outerHTML);
+    $("#main_form_attr_update").val(mainFormAttr.replace("subform-"+ subFormName, "subform-"+ getFormName().replace(/ /g,"_")));
+}
+
+function deleteSubFormMainForm(mainForm, subFormName, mainFormAttr){
+    var main_form = $.parseHTML(mainForm);
+    $(main_form).find("#subform-"+ subFormName).parent().parent().parent().remove();
+
+    $("#delete_main_form_sub_form").val(main_form[0].outerHTML);
+    $("#delete_main_form_attr_sub_form").val(mainFormAttr.replace(",subform-"+ subFormName, ""));
 }
