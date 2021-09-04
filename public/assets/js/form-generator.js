@@ -1118,7 +1118,7 @@ function updateSubForm(mainForm, subFormName, mainFormAttr){
     });
     table_subform = table_subform +'                    <th>action</th> ';
     table_subform = table_subform +'                </thead> ';
-    table_subform = table_subform +'                <tbody id=subform_'+ getFormName().replace(/ /g,"_") +'>  ';
+    table_subform = table_subform +'                <tbody id=subform-'+ getFormName().replace(/ /g,"_") +'>  ';
     table_subform = table_subform +'                </tbody> ';
     table_subform = table_subform +'            </table> ';
     table_subform = table_subform +'            <button class="btn-xs btn-info" type=button id=tab-><a>Tambah '+ getFormName().replace(/_/g," ") +'</a></button> ';

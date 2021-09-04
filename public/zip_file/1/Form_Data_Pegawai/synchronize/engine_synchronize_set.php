@@ -1,4 +1,4 @@
-<?php $project_name="Form_Data_Pegawai"; $tokenPath ="../google/secret/synchronize/token.json";$form_attr["data"][0]["folder"] = "form_data_diri";$form_attr["data"][0]["attribute"][0] = "nomor_induk_pegawai";$form_attr["data"][0]["attribute"][1] = "tanggal_lahir";$form_attr["data"][0]["attribute"][2] = "nama_pegawai";$form_attr["data"][0]["attribute"][3] = "jenis_kelamin_pegawai";$form_attr["data"][0]["attribute"][4] = "foto_pegawai";$form_attr["data"][0]["attribute"][5] = "subform-form_name";if(!isset($_POST["server_name"])){ ?><script>var form_attr = <?php echo json_encode($form_attr); ?>;</script> <?php } ?>
+<?php $project_name="Form_Data_Pegawai"; $tokenPath ="../google/secret/synchronize/token.json";if(!isset($_POST["server_name"])){ ?><script>var form_attr = <?php echo json_encode($form_attr); ?>;</script> <?php } ?>
 
 <?php 
 $token = json_decode(file_get_contents($tokenPath));
