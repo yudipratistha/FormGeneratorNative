@@ -47,7 +47,7 @@ class Form extends Model{
     }
 
     public function getForm($query){
-        $sql = "SELECT forms.`id` AS form_id, forms.`form_title`, forms.`form_name`, forms.`form_export`, forms.`form_attr`, sub_forms.`id` AS sub_form_id, sub_forms.`sub_form_name`, sub_forms.`sub_form_title`, sub_forms.`sub_form_export`, sub_forms.`sub_form_attr` FROM sub_forms RIGHT JOIN forms ON sub_forms.`form_id` = forms.`id` WHERE forms.`id` = $query ORDER BY form_menu_index ASC";
+        $sql = "SELECT forms.`id` AS form_id, forms.`form_title`, forms.`form_name`, forms.`form_export`, forms.`form_attr`, forms.`form_menu_index`, forms.`form_projects_id`, sub_forms.`id` AS sub_form_id, sub_forms.`sub_form_name`, sub_forms.`sub_form_title`, sub_forms.`sub_form_export`, sub_forms.`sub_form_attr` FROM sub_forms RIGHT JOIN forms ON sub_forms.`form_id` = forms.`id` WHERE $query ORDER BY form_menu_index ASC";
         $req = Database::getBdd()->prepare($sql);
         $req->execute();
         return $req->fetchAll();

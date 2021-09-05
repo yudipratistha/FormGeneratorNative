@@ -125,8 +125,8 @@ class formsController extends Controller{
         if(empty($data['checkform'])) return header("Location: " . WEBROOT . 'forms/show-All-Forms/'.strtok($request, '?'));
         foreach($data['checkform'] as $i => $checkform_id){          
             // $checkform_id = json_encode($checkform_id);
-            if($i==0)$form = 'id = '. $checkform_id;
-            else$form = $form.' OR id = '. $checkform_id;
+            if($i==0)$form = 'forms.`id` = '. $checkform_id;
+            else$form = $form.' OR forms.`id` = '. $checkform_id;
         }
         $forms = $formQuery->getForm($form);
 
@@ -182,7 +182,7 @@ class formsController extends Controller{
 
         $project_name = str_replace(' ', '_', $project['nama_project']);
         foreach($forms as $i => $form){
-            $this->export($form['id'], $share_path, $project_path);
+            $this->export($form['form_id'], $share_path, $project_path);
         } 
         
         $sidebar = $this->create_sidebar($forms, $project['nama_project']);
@@ -238,7 +238,15 @@ class formsController extends Controller{
                 $prepend = $prepend.'$form_attr["data"]['.$i.']["attribute"]['.$j.'] = "'.$forminput.'";';
             }
         }
-        
+        foreach($forms as $i => $form){
+            $prepend = $prepend.'$form_attr["data"]['.$i.']["folder"] = "'.str_replace(' ', '_', $form['sub_form_name']).'";';
+            $prepend = $prepend.'$form_attr["data"]['.$i.']["folder"]["type"] = "'.str_replace(' ', '_', $form['form_name']).'";';
+            $subFormInputs= $form['sub_form_attr'];
+            foreach($subFormInputs as $j => $subFormInput){
+                $prepend = $prepend.'$form_attr["data"]['.$i.']["attribute"]['.$j.'] = "'.$subFormInput.'";';
+            }
+            $prepend = $prepend.'$form_attr["data"]['.$i.']["attribute"]['.++$j.'] = "'.$form['form_name'].'_id";';
+        }
         $prepend = $prepend.'if(!isset($_POST["server_name"])){ ?>';
         $prepend = $prepend.'<script>var form_attr = <?php echo json_encode($form_attr); ?>;</script> <?php } ?>';
         $file = '../public/zip_file/'.$project_path.'synchronize/engine_synchronize_set.php';
@@ -437,7 +445,7 @@ class formsController extends Controller{
     public function export($id, $share_path, $project_path){
         $formQuery = new Form();
         $projects = new FormProject();
-        $form = $formQuery->getForm('id = '.$id);
+        $form = $formQuery->getForm('forms.`id` = '.$id);
         $project = $projects->showFormProject($form[0]['form_projects_id']);
         // print_r($form[0]['form_projects_id']);
         $client = new Google_Client();
