@@ -241,7 +241,9 @@ class formsController extends Controller{
         foreach($forms as $i => $form){
             $prepend = $prepend.'$form_attr["data"]['.$i.']["folder"] = "'.str_replace(' ', '_', $form['sub_form_name']).'";';
             $prepend = $prepend.'$form_attr["data"]['.$i.']["folder"]["type"] = "'.str_replace(' ', '_', $form['form_name']).'";';
-            $subFormInputs= $form['sub_form_attr'];
+            $subFormInputs= explode(',', $form['sub_form_attr']);
+            // header('Content-type: application/json');
+            // echo json_encode($subFormInputs);
             foreach($subFormInputs as $j => $subFormInput){
                 $prepend = $prepend.'$form_attr["data"]['.$i.']["attribute"]['.$j.'] = "'.$subFormInput.'";';
             }
@@ -268,17 +270,17 @@ class formsController extends Controller{
         }
         $zip->close();
 
-        header('Content-Description: File Transfer');
-        header('Content-Type: application/force-download');
-        header("Content-Disposition: attachment; filename=\"" . basename($zip_file) . "\";");
-        header('Content-Transfer-Encoding: binary');
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate');
-        header('Pragma: public');
-        header('Content-Length: ' . filesize(realpath($zip_file)));
-        ob_clean();
-        flush();
-        readfile(realpath($zip_file));
+        // header('Content-Description: File Transfer');
+        // header('Content-Type: application/force-download');
+        // header("Content-Disposition: attachment; filename=\"" . basename($zip_file) . "\";");
+        // header('Content-Transfer-Encoding: binary');
+        // header('Expires: 0');
+        // header('Cache-Control: must-revalidate');
+        // header('Pragma: public');
+        // header('Content-Length: ' . filesize(realpath($zip_file)));
+        // ob_clean();
+        // flush();
+        // readfile(realpath($zip_file));
 
         // Search Folder Sync
         $folderNameSync = "Sync";
@@ -474,8 +476,9 @@ class formsController extends Controller{
         $request['project_name'] = $project['nama_project'];
         $request['form_name'] = $form[0]['form_name'];
         $request['form_export'] = $form[0]['form_export'];
+        $request['form_id'] = $id;
         $request['project_auth_type'] = $project['project_auth_type'];
-        $request['project_auth_path'] = $form[0]['project_auth_path'];
+        $request['project_auth_path'] = $project['project_auth_path'];
         $request = (object)$request;
         
         if($request->project_auth_type == 'Without Auth Google Drive'){
@@ -501,7 +504,8 @@ class formsController extends Controller{
     }
 
     public function create_sidebar($forms, $project_name){
-        $sidebar = $sidebar.'<html>';
+        $sidebar = '';
+        $sidebar = $sidebar.'<php>';
         $sidebar = $sidebar.'    <head>';
         $sidebar = $sidebar.'        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">';
         $sidebar = $sidebar.'        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">';
@@ -561,8 +565,16 @@ class formsController extends Controller{
         $layout = $this->createPhpSubmit($request);
         $layout = $layout.'                    <?php include "sidebar.php"; ?>';
         $layout = $layout.'                    <div class="container border border-top-0 mt-5 shadow-sm">';
-        $layout = $layout.                         $request->form_export;
+        $layout = $layout.'                         <div class="tab-content">';
+        $layout = $layout.'                             <div role="tabpanel" class="tab-pane active" id="form-'.$request->form_name.'">';
+        $layout = $layout.                          $request->form_export;
         $layout = $layout.'                    </div>';
+        $subform = new SubForm();
+        $subforms = $subform->getSubForms($request->form_id);
+        
+        foreach($subforms as $subform){
+            $layout = $layout.$this->createSubForm($request, $subform);
+        }
         $layout = $layout.'                </div>';
         $layout = $layout.'            </main>';
         $layout = $layout.'        </div>';
@@ -593,7 +605,7 @@ class formsController extends Controller{
         $layout = $layout.'        });';
         $layout = $layout.'    </script>';
         $layout = $layout.'    <?php } ?>';
-        $layout = $layout.'</html>';
+        $layout = $layout.'</php>';
 
         return $layout;
     }
@@ -912,6 +924,112 @@ class formsController extends Controller{
         $php = $php.    '}';
 
         $php = $php.'?> ';
+        return $php;
+    }
+
+    public function createSubForm($request, $subform){
+        $php = '';
+        $php = $php.'<?php $sub_folder_name = \''. $subform->sub_form_name .'\'; ?> ';
+        $php = $php.'<div role="tabpanel" class="tab-pane subform" id=subform-'.$subform->sub_form_name.'> ';
+        
+        $php = $php. $subform->sub_form_export;
+
+        // $subform_inputs = SubFormInput::where('sub_form_id', $subform->id)->get();
+        // foreach($subform_inputs as $subform_input){
+        // }
+        
+        // $n = $subform->php_key;
+
+        $php = $php.'    <div class="form-group card-title" style="margin-bottom:30px;"> ';
+        $php = $php.'        <button id=btn-submit-subform-'.$n.' class="col-md-12 btn btn-success btn-block">Submit</button> ';
+        $php = $php.'        <button type="button" class="col-md-12 btn btn-info btn-block tab-'.$request->form_name.'"><a>Back to Main Form</a></button> ';
+        // $php = $php.'        <script> ';
+        // $php = $php.'        var subform_'.$n.'_data = 0; ';
+        // $php = $php.'        var prev_is_file = 0; ';
+        // $php = $php.'        $("#btn-submit-subform-'.$n.'").click(function() { ';
+        // $php = $php.'            var subform_id = "subform-'.$n.'-" + subform_'.$n.'_data; ';
+        // $php = $php.'            $("#card-input-'.$n.'").find("tbody").append("<tr id=" + subform_id + "></tr>"); ';
+        // $php = $php.'            $("#subform-'.$subform->sub_form_name.'").find(".subform-input").each(function(index) { ';
+        // $php = $php.'                if(index % 2 == 0) { ';
+        // $php = $php.'                    var value=""; ';
+        // $php = $php.'                    var key = $(this).parent().parent().attr("data-key"); ';
+        // $php = $php.'                    if($(this).hasClass("radio-validation")){ ';
+        // $php = $php.'                        $(this).find(":input").each(function(index) { ';
+        // $php = $php.'                            if($(this).is(":checked")) value = $(this).val(); ';
+        // $php = $php.'                        }); ';
+        // $php = $php.'                    } ';
+        // $php = $php.'                    else if($(this).hasClass("checkbox-validation")){ ';
+        // $php = $php.'                        value=""; ';
+        // $php = $php.'                        $(this).find(":input").each(function(index) { ';
+        // $php = $php.'                            if($(this).is(":checked")){ ';
+        // $php = $php.'                                value=value+$(this).val()+","; ';
+        // $php = $php.'                            } ';
+        // $php = $php.'                        }); ';
+        // $php = $php.'                        value = value.slice(0, -1); ';
+        // $php = $php.'                    } ';
+        // $php = $php.'                    else if($(this).attr("type") == "datetime-local"){ ';
+        // $php = $php.'                        value = this.value.split("T").join(" "); ';
+        // $php = $php.'                    } ';
+        // $php = $php.'                    else var value = this.value; ';
+        // $php = $php.'                    $("#" + subform_id).append("<td>" + value + "</td>"); ';
+        // $php = $php.'                    if($(this).attr("type") != "file") $("#" + subform_id).append("<input type=hidden name=input_value['.$n.'][] value=" + value + ">"); ';
+        // $php = $php.'                    else{ ';
+        // $php = $php.'                        $("#" + subform_id).append("<input id=file-"+ subform_id + "-" + key  +" style=\'position: absolute; display: none;\' type=file name=input_value['.$n.']["+key+"][] multiple>"); ';
+        // $php = $php.'                        let file = document.getElementById(key); ';
+        // $php = $php.'                        let back = document.getElementById("file-"+ subform_id + "-" + key); ';
+        // $php = $php.'                        let files = file.files; ';
+        // $php = $php.'                        let dt = new DataTransfer(); ';
+        // $php = $php.'                        var file_name; ';
+        // $php = $php.'                        for(let i=0; i<files.length; i++) { ';
+        // $php = $php.'                            let f = files[i]; ';
+        // $php = $php.'                            dt.items.add( ';
+        // $php = $php.'                            new File( ';
+        // $php = $php.'                                [f.slice(0, f.size, f.type)], ';
+        // $php = $php.'                                f.name ';
+        // $php = $php.'                            )); ';
+        // $php = $php.'                            file_name = f.name; ';
+        // $php = $php.'                        } ';
+        // $php = $php.'                        if(file_name === undefined){ $("#file-"+ subform_id + "-" + key ).remove(); file_name = ""; } ';
+        // $php = $php.'                        $("#'.$subform->sub_form_name.'").append("<input type=hidden name=input_value['.$n.'][] value=" + file_name + ">"); ';
+        // $php = $php.'                        prev_is_file = 1; ';
+        // $php = $php.'                        back.files = dt.files; ';
+        // $php = $php.'                    } ';
+        // $php = $php.'                    $(this).val(""); ';
+        // $php = $php.'                } else { ';
+        // $php = $php.'                    if(prev_is_file==1){ ';
+        // $php = $php.'                        var file_input_name = "input_value['.$n.']["+ this.value +"][]";  ';
+        // $php = $php.'                        $(this).prev().attr("name", file_input_name); ';
+        // $php = $php.'                        $("#'.$subform->sub_form_name.'").append("<input type=hidden name=input_label['.$n.'][] value=" + this.value + ">"); ';
+        // $php = $php.'                        prev_is_file = 0; ';
+        // $php = $php.'                    } ';
+        // $php = $php.'                    else $("#" + subform_id).append("<input type=hidden name=input_label['.$n.'][] value=" + this.value + ">"); ';
+        // $php = $php.'                } ';
+        // $php = $php.'            }); ';
+        // $php = $php.'            var delete_row_id = "delete-row-'.$n.'" + subform_'.$n.'_data; ';
+        // $php = $php.'            $("#" + subform_id).append("<td><center><a href=\'javascript:void(0)\' id=" + delete_row_id + " data-tr=" + subform_id + "><i class=\'fa fa-trash\' style=\'color:#b21f2d; font-size:20px;\'></i></a></center></td>"); ';
+        // $php = $php.'            $("#" + delete_row_id).click(function() { ';
+        // $php = $php.'                var tr_id = $(this).attr("data-tr"); ';
+        // $php = $php.'                $("#" + tr_id).remove(); ';
+        // $php = $php.'                subform_'.$n.'_data--; ';
+        // $php = $php.'                if(subform_'.$n.'_data == 0) $("#subform-'.$n.'").val(""); ';
+        // $php = $php.'                else $("#subform-'.$n.'").val(subform_'.$n.'_data + " Row Data"); ';
+        // $php = $php.'                alert("Data Deleted"); ';
+        // $php = $php.'            }); ';
+        // $php = $php.'            subform_'.$n.'_data++; ';
+        // $php = $php.'            $("#subform-'.$n.'").val(subform_'.$n.'_data + " Row Data"); ';
+        // $php = $php.'            alert("Data Added to Main Form"); ';
+        // $php = $php.'        }); ';
+        // $php = $php.'        </script> ';
+        // $php = $php.'        <script> ';
+        // $php = $php.'        $("#tab-'.$subform->sub_form_name.'").click(function(e) { ';
+        // $php = $php.'            e.preventDefault(); ';
+        // $php = $php.'            $("#form-'.$request->form_name.'").removeClass("active"); ';
+        // $php = $php.'            $("#subform-'.$subform->sub_form_name.'").addClass("active"); ';
+        // $php = $php.'        }); ';
+        // $php = $php.'        </script> ';
+        $php = $php.'    </div> ';
+        $php = $php.'</div> ';
+
         return $php;
     }
 }

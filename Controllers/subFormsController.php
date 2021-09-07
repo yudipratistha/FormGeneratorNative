@@ -9,7 +9,7 @@ class subFormsController extends Controller{
 
     function showAllSubForms($id){
         $sub_forms = new SubForm();
-        $d['sub_forms'] = $sub_forms->showAllSubForms($id);
+        $d['sub_forms'] = $sub_forms->getSubForms($id);
         $this->set($d);
         $this->render("index");
     }
