@@ -231,15 +231,19 @@ class formsController extends Controller{
 
         $prepend = $prepend.'$project_name="'.str_replace(' ', '_', $project['nama_project']).'"; ';
         $prepend = $prepend.'$tokenPath ="../google/secret/synchronize/token.json";';
-        foreach($forms as $i => $form){
-            $prepend = $prepend.'$form_attr["data"]['.$i.']["folder"] = "'.str_replace(' ', '_', $form['form_name']).'";';
+
+        $i=0;
+        foreach($forms as $form){
+            $prepend = $prepend.'$form_attr["data"]['.$i.']["folder"]["name"] = "'.str_replace(' ', '_', $form['form_name']).'";';
+            $prepend = $prepend.'$form_attr["data"]['.$i.']["folder"]["type"] = 0;';
             $formInputs = explode(',', $form['form_attr']);
             foreach($formInputs as $j => $forminput){
                 $prepend = $prepend.'$form_attr["data"]['.$i.']["attribute"]['.$j.'] = "'.$forminput.'";';
             }
+            $i++;
         }
-        foreach($forms as $i => $form){
-            $prepend = $prepend.'$form_attr["data"]['.$i.']["folder"] = "'.str_replace(' ', '_', $form['sub_form_name']).'";';
+        foreach($forms as $form){
+            $prepend = $prepend.'$form_attr["data"]['.$i.']["folder"]["name"] = "'.str_replace(' ', '_', $form['sub_form_name']).'";';
             $prepend = $prepend.'$form_attr["data"]['.$i.']["folder"]["type"] = "'.str_replace(' ', '_', $form['form_name']).'";';
             $subFormInputs= explode(',', $form['sub_form_attr']);
             // header('Content-type: application/json');
@@ -248,6 +252,7 @@ class formsController extends Controller{
                 $prepend = $prepend.'$form_attr["data"]['.$i.']["attribute"]['.$j.'] = "'.$subFormInput.'";';
             }
             $prepend = $prepend.'$form_attr["data"]['.$i.']["attribute"]['.++$j.'] = "'.$form['form_name'].'_id";';
+            $i++;
         }
         $prepend = $prepend.'if(!isset($_POST["server_name"])){ ?>';
         $prepend = $prepend.'<script>var form_attr = <?php echo json_encode($form_attr); ?>;</script> <?php } ?>';
@@ -576,8 +581,6 @@ class formsController extends Controller{
         foreach($subforms as $subform){
             $layout = $layout.$this->createSubForm($request, $subform);
         }
-        $layout = $layout.'                </div>';
-        $layout = $layout.'            </main>';
         $layout = $layout.'        </div>';
         $layout = $layout.'    </body>';
         $layout = $layout.'    <script type="text/javascript">';

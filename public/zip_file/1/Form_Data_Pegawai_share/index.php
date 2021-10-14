@@ -1,1 +1,1 @@
-<?php header("Location: form_test.php"); ?>
+<?php header("Location: form_data_pegawai.php"); ?>
