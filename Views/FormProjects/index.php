@@ -211,6 +211,7 @@
 </div>
 
 <script>
+    $('#example').DataTable();
     $('#project-auth-type, #project-auth-type-edit').change(function() {
         $('#json-identifier-upload').remove();
         $('#swal2-validation-message').remove();

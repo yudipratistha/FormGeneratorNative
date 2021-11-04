@@ -898,24 +898,24 @@ $(document).ready(function() {
                         $active_component.find('script').remove();
                         $($active_component.find('#table-modal')).append('\
                         <script>\
-                            $(\'.table\').DataTable();\
-                            $(\'.tm-radio-'+$(".popover #attr").val()+'\').on(\'click\', function(event){\
+                            $(".table").DataTable();\
+                            $(".tm-radio-'+$(".popover #attr").val()+'").on("click", function(event){\
                                 var tds =  new Array();\
                                 var class_name = this.className;\
-                                var row = $(this).parent().closest(\'tr\');\
-                                row.find(\'td\').each (function() {\
+                                var row = $(this).parent().closest("tr");\
+                                row.find("td").each (function() {\
                                     var count = $(this).children().length;\
                                     if(count == 0) tds.push($(this).html());\
                                 });\
-                                var tds_string = tds.join(\', \');\
-                                $(\'#\'+class_name).val(tds_string);\
+                                var tds_string = tds.join(", ");\
+                                $("#"+class_name).val(tds_string);\
                             });\
-                            $(\'.readonly\').on(\'keydown paste\', function(e){e.preventDefault();});\
-                            $(\'#btn-delete-selected-'+$(".popover #attr").val()+'\').click(function() {\
-                                $(\'.tm-radio-'+$(".popover #attr").val()+'\').prop(\'checked\', false);\
-                                $(\'#tm-radio-'+$(".popover #attr").val()+'\').val(\'\');\
+                            $(".readonly").on("keydown paste", function(e){e.preventDefault();});\
+                            $("#btn-delete-selected-'+$(".popover #attr").val()+'").click(function() {\
+                                $(".tm-radio-'+$(".popover #attr").val()+'").prop("checked", false);\
+                                $("#tm-radio-'+$(".popover #attr").val()+'").val("");\
                             });\
-                        </script>');
+                        ');
                     }
                     if(!!$($active_component.find('.modal')).attr("id")){
                         $($active_component.find('.modal')).attr("id", "table-modal-"+$(e).val()+"");
@@ -931,7 +931,7 @@ $(document).ready(function() {
                                     format: \'DD/MM/YYYY HH:mm\'\
                                 });\
                             });\
-                        </script>');
+                        <\/script>');
                     }
                     $($active_component.find('input')).attr("name", "values["+$(e).val()+"]");
                 } else if (vartype === "radios") {
@@ -1039,6 +1039,14 @@ var getAttr = function() {
     return $value_input;
 }
 
+function upperCase(str) {
+    return str.split(' ').map(function (e) {
+        return e.replace(/([a-z])/, function (match, value) {
+            return value.toUpperCase();
+        })
+    }).join(' ');
+}
+
 //generate php
 var genPHP = function() {
     var $temptxt = $("<div>").html($("#build").html());
@@ -1076,11 +1084,10 @@ function addSubForm(mainForm, mainFormAttr){
     var main_form = $.parseHTML(mainForm);
     var table_subform = '';
     table_subform = table_subform +'    <div class=form-group> ';
-    table_subform = table_subform +'        <input type=hidden class="valtype" name="values[subform_'+ getFormName().replace(/ /g,"_") +']" value="subform_'+ getFormName().replace(/ /g,"_") +'"> ';
-    table_subform = table_subform +'        <input type=hidden name="values[subform_'+ getFormName().replace(/ /g,"_") +'][attr_count]" value="'+ i +'"> ';
+    table_subform = table_subform +'        <input type=hidden class="valtype" name="values[subform-'+ getFormName().replace(/ /g,"_") +'][main_form]" value="subform_'+ getFormName().replace(/ /g,"_") +'"> ';
     table_subform = table_subform +'        <label class="col-md-6 control-label">'+ getTitle() +'</label> ';
     table_subform = table_subform +'        <div class="col-md-6 table-responsive"> ';
-    table_subform = table_subform +"            <table id=example class='table table-bordered'> ";
+    table_subform = table_subform +'            <table id=datatable-subform-'+ getFormName().replace(/ /g,"_") +' class=\'table table-bordered\'> ';
     table_subform = table_subform +'                <thead class=thead-dark> ';
     $.each(getAttr(), function (index, attr) {
         table_subform = table_subform +'                    <th>'+ attr +'</th> ';
@@ -1090,7 +1097,7 @@ function addSubForm(mainForm, mainFormAttr){
     table_subform = table_subform +'                <tbody id=subform-'+ getFormName().replace(/ /g,"_") +'>  ';
     table_subform = table_subform +'                </tbody> ';
     table_subform = table_subform +'            </table> ';
-    table_subform = table_subform +'            <button class="btn-xs btn-info" type=button id=tab-subform-'+ getFormName().replace(/ /g,"_") +'><a>Tambah '+ getFormName().replace(/_/g," ") +'</a></button> ';
+    table_subform = table_subform +'            <button id="tab-subform-'+ getFormName().replace(/ /g,"_") +'" type="button" class="btn btn-outline-primary btn-sm"><span class="btn-inner--icon"><i class="fa fa-plus"></i></span> '+ upperCase(getFormName().replace(/_/g," ")) +'</button> ';
     table_subform = table_subform +'        </div> ';
     table_subform = table_subform +'    </div> ';
     table_subform = table_subform +'</div>';
@@ -1107,11 +1114,10 @@ function updateSubForm(mainForm, subFormName, mainFormAttr){
     var table_subform = '';
 
     table_subform = table_subform +'    <div class=form-group> ';
-    table_subform = table_subform +'        <input type=hidden class="valtype" name="values[subform_'+ getFormName().replace(/ /g,"_") +']" value="subform_'+ getFormName().replace(/ /g,"_") +'"> ';
-    table_subform = table_subform +'        <input type=hidden name="values[subform_'+ getFormName().replace(/ /g,"_") +'][attr_count]" value="'+ i +'"> ';
+    table_subform = table_subform +'        <input type=hidden class="valtype" name="values[subform-'+ getFormName().replace(/ /g,"_") +'][main_form]" value="subform_'+ getFormName().replace(/ /g,"_") +'"> ';
     table_subform = table_subform +'        <label class="col-md-6 control-label">'+ getTitle() +'</label> ';
     table_subform = table_subform +'        <div class="col-md-6 table-responsive"> ';
-    table_subform = table_subform +"            <table id=example class='table table-bordered'> ";
+    table_subform = table_subform +'            <table id=datatable-subform-'+ getFormName().replace(/ /g,"_") +' class=\'table table-bordered\'> ';
     table_subform = table_subform +'                <thead class=thead-dark> ';
     $.each(getAttr(), function (index, attr) {
         table_subform = table_subform +'                    <th>'+ attr +'</th> ';
@@ -1121,7 +1127,7 @@ function updateSubForm(mainForm, subFormName, mainFormAttr){
     table_subform = table_subform +'                <tbody id=subform-'+ getFormName().replace(/ /g,"_") +'>  ';
     table_subform = table_subform +'                </tbody> ';
     table_subform = table_subform +'            </table> ';
-    table_subform = table_subform +'            <button class="btn-xs btn-info" type=button id=tab-subform-'+ getFormName().replace(/ /g,"_") +'><a>Tambah '+ getFormName().replace(/_/g," ") +'</a></button> ';
+    table_subform = table_subform +'            <button id="tab-subform-'+ getFormName().replace(/ /g,"_") +'" type="button" class="btn btn-outline-primary btn-sm"><span class="btn-inner--icon"><i class="fa fa-plus"></i></span> '+ upperCase(getFormName().replace(/_/g," ")) +'</button> ';
     table_subform = table_subform +'        </div> ';
     table_subform = table_subform +'    </div> ';
     table_subform = table_subform +'</div>';

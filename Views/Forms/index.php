@@ -43,7 +43,7 @@
                     </tbody>
                 </table>
             </form>
-            <a href="/formgeneratornative/formGenerator/createForm/<?php echo array_column($forms, 'id')[0];?>">
+            <a href="/formgeneratornative/formGenerator/createForm/<?php echo array_column($forms, 'project_id')[0];?>">
                 <button  class="float btn btn-icon btn-add btn-info mt-1 mb-1" data-tooltip="tooltip" data-placement="left" title="" data-original-title="Build Form">
                     <span class="btn-inner--icon"><i class="fe fe-plus"></i></span>
                 </button>
@@ -69,6 +69,7 @@
     </div>
 </div> 
 <script>
+    $('#example').DataTable();
     $("#select_all").click(function(){
         $('input:checkbox').not(this).prop('checked', this.checked);
     });
