@@ -170,13 +170,15 @@ class formsController extends Controller{
         // 
         $storage_path1 = '../public/google/';
         $storage_path3 = '../public/synchronize/';
+        $storage_path6 = '../public/view_data/';
         $storage_path2 = '../public/zip_file/' . $project_path;
         $storage_path4 = '../public/zip_file/' . $share_path;
         $storage_path5 = '../public/zip_file/' . $user_path;
 
         $this->copyDirectory($storage_path1, $storage_path2);
         $this->copyDirectory($storage_path1, $storage_path4);
-
+        $this->copyDirectory($storage_path6, $storage_path2);
+        
         copy($project['project_oauth_file'], "../public/zip_file/".$project_path."/google/secret/oauth.json");
         copy($project['project_oauth_file'], "../public/zip_file/".$share_path."/google/secret/oauth.json");
 
@@ -200,10 +202,22 @@ class formsController extends Controller{
         // fwrite($f, $sidebar);
         // fclose($f);
         
-        $index = '<?php header("Location: '.$forms[0]['form_name'].'.php"); ?>';
+        $index_share = '<?php header("Location: '.$forms[0]['form_name'].'.php"); ?>';
         $filename = "index.php";
         $f=fopen("../public/zip_file/".$share_path."/".$filename,'w+');
-        fwrite($f, $index);
+        fwrite($f, $index_share);
+        fclose($f);
+
+        $index_project_view_data = '<?php header("Location: view_data.php?form-project='.strtolower(str_replace(' ', '-',$project['nama_project'])).'&form='.strtolower(str_replace('_', '-',$forms[0]['form_name'])).'&status=Sync"); ?>';
+        $filename_project_view_data = "index.php";
+        $f=fopen("../public/zip_file/".$project_path."/view_data/". $filename_project_view_data,'w+');
+        fwrite($f, $index_project_view_data);
+        fclose($f);
+
+        $index_project = '<?php header("Location: view_data/view_data.php?form-project='.strtolower(str_replace(' ', '-',$project['nama_project'])).'&form='.strtolower(str_replace('_', '-',$forms[0]['form_name'])).'&status=Sync"); ?>';
+        $filename_project = "index.php";
+        $f=fopen("../public/zip_file/".$project_path."/". $filename_project,'w+');
+        fwrite($f, $index_project);
         fclose($f);
 
         if(!empty($data['inputCheckbox'])){
@@ -517,68 +531,52 @@ class formsController extends Controller{
 
     public function create_admin_sidebar($forms, $project_name){
         $admin_sidebar = '';
-        $admin_sidebar = $admin_sidebar.'<php>';
-        $admin_sidebar = $admin_sidebar.'    <head>';
-        $admin_sidebar = $admin_sidebar.'        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">';
-        $admin_sidebar = $admin_sidebar.'        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">';
-        $admin_sidebar = $admin_sidebar.'        <link rel="stylesheet" href="google/css/admin_sidebar.css">';
-        $admin_sidebar = $admin_sidebar.'        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.11/dist/css/select2.min.css">';
-        $admin_sidebar = $admin_sidebar.'        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css">';
-        $admin_sidebar = $admin_sidebar.'        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>';
-        $admin_sidebar = $admin_sidebar.'        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>';
-        $admin_sidebar = $admin_sidebar.'        <script src="https://cdn.jsdelivr.net/npm/select2@4.0.11/dist/js/select2.min.js"></script>';
-        $admin_sidebar = $admin_sidebar.'        <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>';
-        $admin_sidebar = $admin_sidebar.'        <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>';
-        $admin_sidebar = $admin_sidebar.'    </head>';
-        $admin_sidebar = $admin_sidebar.'    <body>';
-        $admin_sidebar = $admin_sidebar.'        <div class="page-wrapper chiller-theme toggled">';
-        $admin_sidebar = $admin_sidebar.'            <a id="show-admin_sidebar" class="btn btn-sm btn-light"><i class="fa fa-bars"></i></a>';
-        $admin_sidebar = $admin_sidebar.'            <nav id="admin_sidebar" class="admin_sidebar-wrapper">';
-        $admin_sidebar = $admin_sidebar.'                <div class="admin_sidebar-content">';
-        $admin_sidebar = $admin_sidebar.'                    <div class="admin_sidebar-brand">';
-        $admin_sidebar = $admin_sidebar.'                        <a href="#">'.$project_name.'</a>';
-        $admin_sidebar = $admin_sidebar.'                        <div id="close-admin_sidebar">';
-        $admin_sidebar = $admin_sidebar.'                            <i class="fa fa-times"></i>';
-        $admin_sidebar = $admin_sidebar.'                        </div>';
-        $admin_sidebar = $admin_sidebar.'                    </div>';
-        $admin_sidebar = $admin_sidebar.'                    <div class="admin_sidebar-header">';
-        $admin_sidebar = $admin_sidebar.'                        <div class="user-info">';
-        $admin_sidebar = $admin_sidebar.'                            <span class="user-name"><?php echo $_SESSION["name_login"]; ?></span>';
-        $admin_sidebar = $admin_sidebar.'                            <span class="user-role"><?php echo $_SESSION["email_login"]; ?></span>';
-        $admin_sidebar = $admin_sidebar.'                        </div>';
-        $admin_sidebar = $admin_sidebar.'                    </div>';
-        $admin_sidebar = $admin_sidebar.'                    <div class="admin_sidebar-menu">';
-        $admin_sidebar = $admin_sidebar.'                        <ul>';
-        $admin_sidebar = $admin_sidebar.'                            <li class="header-menu">';
-        $admin_sidebar = $admin_sidebar.'                                <span>Menu View Data</span>';
-        $admin_sidebar = $admin_sidebar.'                            </li>';
+        $admin_sidebar = $admin_sidebar.'<html>';
+        $admin_sidebar = $admin_sidebar.'   <head>';
+        $admin_sidebar = $admin_sidebar.'       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">';
+        $admin_sidebar = $admin_sidebar.'       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">';
+        $admin_sidebar = $admin_sidebar.'       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.11/dist/css/select2.min.css">';
+        $admin_sidebar = $admin_sidebar.'       <link rel="stylesheet" href="../google/css/sidebar.css">';
+        $admin_sidebar = $admin_sidebar.'       <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">';
+        $admin_sidebar = $admin_sidebar.'       <link rel="stylesheet" href="https://cdn.datatables.net/select/1.2.1/css/select.dataTables.min.css">';
+        $admin_sidebar = $admin_sidebar.'       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>';
+        $admin_sidebar = $admin_sidebar.'       <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>';
+        $admin_sidebar = $admin_sidebar.'       <script src="https://cdn.datatables.net/select/1.2.1/js/dataTables.select.min.js"></script>';
+        $admin_sidebar = $admin_sidebar.'       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>';
+        $admin_sidebar = $admin_sidebar.'       <script src="https://cdn.jsdelivr.net/npm/select2@4.0.11/dist/js/select2.min.js"></script>';
+        $admin_sidebar = $admin_sidebar.'   </head>';
+        $admin_sidebar = $admin_sidebar.'   <body>';
+        $admin_sidebar = $admin_sidebar.'       <div class="page-wrapper chiller-theme toggled"> <a id="show-sidebar" class="btn btn-sm btn-light"><i class="fa fa-bars"></i></a>';
+		$admin_sidebar = $admin_sidebar.'           <nav id="sidebar" class="sidebar-wrapper">';
+        $admin_sidebar = $admin_sidebar.'               <div class="sidebar-content">';
+        $admin_sidebar = $admin_sidebar.'                   <div class="sidebar-brand"> <a href="#">'.$project_name.'</a>';
+        $admin_sidebar = $admin_sidebar.'                   <div id="close-sidebar"> <i class="fa fa-times"></i> </div>';
+        $admin_sidebar = $admin_sidebar.'               </div>';
+        $admin_sidebar = $admin_sidebar.'               <div class="sidebar-header">';
+        $admin_sidebar = $admin_sidebar.'                   <div class="user-info"> <span class="user-name"><?php echo $_SESSION["name_login_admin"]; ?></span> <span class="user-role"><?php echo $_SESSION["email_login_admin"]; ?></span> </div>';
+        $admin_sidebar = $admin_sidebar.'               </div>';
+        $admin_sidebar = $admin_sidebar.'               <div class="sidebar-menu">';
+        $admin_sidebar = $admin_sidebar.'                   <ul>';
+        $admin_sidebar = $admin_sidebar.'                       <li class="header-menu"> <span>Menu View Data</span> </li>';
         foreach($forms as $form){
-            $admin_sidebar = $admin_sidebar.'                            <li class="admin_sidebar-content">';
+            $admin_sidebar = $admin_sidebar.'                            <li class="sidebar-content">';
             $admin_sidebar = $admin_sidebar.'                                <a class="active" href="../view_data/view_data.php?form-project='.strtolower(str_replace(' ', '-', $project_name)).'&form='.strtolower(str_replace('_', '-', $form['form_name'])).'&status=Sync">';
             $admin_sidebar = $admin_sidebar.'                                    <i class="fa fa-folder"></i>';
             $admin_sidebar = $admin_sidebar.'                                    <span>'.$form['form_title'].'</span>';
             $admin_sidebar = $admin_sidebar.'                                </a>';
             $admin_sidebar = $admin_sidebar.'                            </li>';
         }
-        $admin_sidebar = $admin_sidebar.'                            </li>';
-        $admin_sidebar = $admin_sidebar.'                            <li class="header-menu">';
-        $admin_sidebar = $admin_sidebar.'                                <span>Menu Synchronize</span>';
-        $admin_sidebar = $admin_sidebar.'                            </li>';
-        $admin_sidebar = $admin_sidebar.'                            <li class="admin_sidebar-content">';
-        $admin_sidebar = $admin_sidebar.'                                <a class=" href="../synchronize/engine_synchronize_set.php">';
-        $admin_sidebar = $admin_sidebar.'                                    <i class="fa fa-folder"></i>';
-        $admin_sidebar = $admin_sidebar.'                                    <span>Syncronize Setter</span>';
-        $admin_sidebar = $admin_sidebar.'                                </a>';
-        $admin_sidebar = $admin_sidebar.'                            </li>';
-        $admin_sidebar = $admin_sidebar.'                        </ul>';
-        $admin_sidebar = $admin_sidebar.'                    </div>';
-        $admin_sidebar = $admin_sidebar.'                </div>';
-        $admin_sidebar = $admin_sidebar.'                <div class="admin_sidebar-footer">';
-        $admin_sidebar = $admin_sidebar.'                    <a href="?logout=yes"><i class="fa fa-power-off"></i></a>';
-        $admin_sidebar = $admin_sidebar.'                </div>';
-        $admin_sidebar = $admin_sidebar.'            </nav>';
-        $admin_sidebar = $admin_sidebar.'            <main class="page-content">';
-        $admin_sidebar = $admin_sidebar.'                <div class="container-fluid">';
+        $admin_sidebar = $admin_sidebar.'                       <li class="header-menu"> <span>Menu Synchronize</span> </li>';
+        $admin_sidebar = $admin_sidebar.'                       <li class="sidebar-content">';
+        $admin_sidebar = $admin_sidebar.'                           <a href="../synchronize/engine_synchronize_set.php"> <i class="fa fa-folder"></i> <span>Syncronize Setter</span> </a>';
+        $admin_sidebar = $admin_sidebar.'                       </li>';
+        $admin_sidebar = $admin_sidebar.'                   </ul>';
+        $admin_sidebar = $admin_sidebar.'               </div>';
+        $admin_sidebar = $admin_sidebar.'           </div>';
+        $admin_sidebar = $admin_sidebar.'           <div class="sidebar-footer"> <a href="?logout=yes"><i class="fa fa-power-off"></i></a> </div>';
+		$admin_sidebar = $admin_sidebar.'           </nav>';
+		$admin_sidebar = $admin_sidebar.'           <main class="page-content">';
+        $admin_sidebar = $admin_sidebar.'               <div class="container-fluid">';
 
         return $admin_sidebar;
     }

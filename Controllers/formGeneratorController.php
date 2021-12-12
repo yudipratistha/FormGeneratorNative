@@ -56,5 +56,23 @@ class formGeneratorController extends Controller{
             die("Input Empty!");
         }
     }
+
+    function getAllForms($id){
+        // session_start();
+        require(ROOT . 'Models/Form.php');
+        $forms= new Form();
+        $d['allForms'] = $forms->showAllForms($id);
+        $_SESSION['edit_id_project'] = $id;
+        echo json_encode($d);
+    }
+
+    function importForm($id){
+        // session_start();
+        require(ROOT . 'Models/Form.php');
+        $form= new Form();
+        $d['form'] = $form->showForm($id);
+        // $_SESSION['edit_id_project'] = $id;
+        echo json_encode($d);
+    }
 }
 ?>

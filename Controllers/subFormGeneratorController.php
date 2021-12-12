@@ -57,5 +57,23 @@ class subFormGeneratorController extends Controller{
             die("Input Empty!");
         }
     }
+
+    function getAllSubForms($id){
+        // session_start();
+        // require(ROOT . 'Models/SubForm.php');
+        $sub_forms= new SubForm();
+        $d['allSubForms'] = $sub_forms->getSubForms($id);
+        $_SESSION['edit_id_form'] = $id;
+        echo json_encode($d);
+    }
+
+    function importSubForm($id){
+        // session_start();
+        // require(ROOT . 'Models/SubForm.php');
+        $sub_forms= new SubForm();
+        $d['subForm'] = $sub_forms->showSubForm($id);
+        // $_SESSION['edit_id_project'] = $id;
+        echo json_encode($d);
+    }
 }
 ?>

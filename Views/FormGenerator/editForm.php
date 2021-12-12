@@ -80,6 +80,7 @@
 </div>
 
 <script>
+  add_class_input_form();
   var form_name = '<?php echo $form['form_name'];?>';
   // update data form project
   function update_form(){

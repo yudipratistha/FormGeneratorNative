@@ -1,4 +1,4 @@
-<title>Form Generator</title>
+<title>Sub Form Generator</title>
 <div class="container">
   <div class="clearfix">
     <div class="row">
@@ -80,11 +80,44 @@
 </div>
 <div class="float-action-form">
   <div class="container item-right">
+      <button type="button" onclick="show_import_sub_form(<?php echo $form_data[0]['form_id'] ?>)" id="import-form" class="btn btn-info">Import Form</button>
       <button type="button" onclick="create_sub_form()" class="btn btn-info">Save</button>
   </div>
 </div>
 
+<!-- Modal Import Sub Form-->
+<div class="modal fade" id="show-import-subform" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header-blue">
+                <h2 class="modal-title" id="largeModalLabel" style="color:white">Import Sub Form</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" style="color:white">&times;</span>
+                </button>
+            </div>
+            <form id="updateProjectMenu" enctype="multipart/form-data" action="" method="PUT">
+                <div class="col-md-12 mt-2">
+                    <table id="example" class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Select Sub Form</th>
+                                <th>Sub Form Name</th>
+                            </tr>
+                        </thead>
+                        <tbody id="all-subforms">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="import_sub_form()" class="btn btn-green-gradient">Import Form</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
+  add_class_input_form();
   //create form project
 	function create_sub_form(){
     swal.fire({
@@ -141,5 +174,44 @@
     })
   }
   
-  
+  function show_import_sub_form(form_id){
+    $.ajax({
+      url: "/formgeneratornative/subformgenerator/getAllSubForms/" + form_id ,
+      method: "GET",
+			dataType: 'json',
+			success: function(data){
+        console.log("asdsad", data.allSubForms)
+        $('#all-subforms').children().remove();
+          Object.keys(data.allSubForms).forEach(function(key, index) {
+              $('#all-subforms').append('<tr> <td><input type="radio" value="'+data.allSubForms[key].sub_form_id+'" name="subform_id"></td>\
+              <td>'+data.allSubForms[key].sub_form_title+'</td></tr>');
+          });
+      },
+        error: function(data){
+            // data_token = jQuery.parseJSON(data);
+            console.log("asdsad", data.allSubForms)
+        }
+    });
+    $('#show-import-subform').modal('show');
+  };
+
+  function import_sub_form(form_id){
+    console.log($('input[name="subform_id"]:checked').val());
+    $.ajax({
+      url: "/formgeneratornative/subformgenerator/importSubForm/" + $('input[name="subform_id"]:checked').val() ,
+      method: "GET",
+			dataType: 'json',
+			success: function(data){
+        html = $.parseHTML(data.subForm.sub_form_export);
+        $("#build").children().children().remove();
+        $("#build").children().append($(html).html())
+        add_class_input_form();
+        $("#build").children().children().find("#emptydiv").remove();
+        $('#show-import-subform').modal('hide');
+      },
+      error: function(data){
+      }
+    });
+      
+  };
 </script>

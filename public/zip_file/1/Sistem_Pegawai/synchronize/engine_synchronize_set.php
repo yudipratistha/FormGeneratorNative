@@ -1,32 +1,40 @@
 <?php $project_name="Sistem_Pegawai"; $tokenPath ="../google/secret/synchronize/token.json";$form_attr["data"][0]["folder"]["name"] = "form_data_pegawai";$form_attr["data"][0]["folder"]["type"] = 0;$form_attr["data"][0]["attribute"][0] = "nomor_induk_pegawai";$form_attr["data"][0]["attribute"][1] = "tanggal_lahir";$form_attr["data"][0]["attribute"][2] = "nama_pegawai";$form_attr["data"][0]["attribute"][3] = "jenis_kelamin_pegawai";$form_attr["data"][0]["attribute"][4] = "attr";$form_attr["data"][0]["attribute"][5] = "foto_pegawai";$form_attr["data"][0]["attribute"][6] = "subform-data_diri";$form_attr["data"][1]["folder"]["name"] = "data_diri";$form_attr["data"][1]["folder"]["type"] = "form_data_pegawai";$form_attr["data"][1]["attribute"][0] = "attr";$form_attr["data"][1]["attribute"][1] = "txt";$form_attr["data"][1]["attribute"][2] = "rb";$form_attr["data"][1]["attribute"][3] = "dt";$form_attr["data"][1]["attribute"][4] = "fl";$form_attr["data"][1]["attribute"][5] = "form_data_pegawai_id";if(!isset($_POST["server_name"])){ ?><script>var form_attr = <?php echo json_encode($form_attr); ?>;</script> <?php } ?>
 
+
 <?php 
 $token = json_decode(file_get_contents($tokenPath));
+session_start();
 
-if(isset($_POST["folder"])){ 
+if (isset($_REQUEST['logout'])) {
+    unset($_SESSION['upload_token_admin']);
+    unset($_SESSION['email_login_admin']);
+    unset($_SESSION["server_name"]);
+    unset($_SESSION["username"]);
+    unset($_SESSION["password"]);
+    unset($_SESSION["database_name"]);
+    header("Location: " . "../view_data");
+    exit;
+}
+else if(isset($_POST["folder"])){ 
     $folders = $_POST["folder"]; 
     $tables = $_POST["table"]; 
     $attributes = $_POST["attribute"]; 
     $project_name = $_POST["project_folder_name"];  
-    $server = $_POST["server_name"]; 
-    $user = $_POST["username"]; 
-    $pass = $_POST["password"]; 
-    $db = $_POST["database_name"]; 
     $prependWithoutDirectDb = '<?php ';
     $prependWithoutDirectDb = $prependWithoutDirectDb.'$tokenPath=("'.$tokenPath.'"); ';
     $prependWithoutDirectDb = $prependWithoutDirectDb.'$project_name="'.$project_name.'"; ';
-    $prependWithoutDirectDb = $prependWithoutDirectDb.'$server="'.$server.'"; ';
-    $prependWithoutDirectDb = $prependWithoutDirectDb.'$user="'.$user.'"; ';
-    $prependWithoutDirectDb = $prependWithoutDirectDb.'$pass="'.$pass.'"; ';
-    $prependWithoutDirectDb = $prependWithoutDirectDb.'$db="'.$db.'"; ';
+    $prependWithoutDirectDb = $prependWithoutDirectDb.'$server="'.$_SESSION["server_name"].'"; ';
+    $prependWithoutDirectDb = $prependWithoutDirectDb.'$user="'.$_SESSION["username"].'"; ';
+    $prependWithoutDirectDb = $prependWithoutDirectDb.'$pass="'.$_SESSION["password"].'"; ';
+    $prependWithoutDirectDb = $prependWithoutDirectDb.'$db="'.$_SESSION["database_name"].'"; ';
     foreach($folders as $i => $folder){
         $prependWithoutDirectDb = $prependWithoutDirectDb.'$syncs['.$i.']["folder"]="'.$folders[$i].'"; ';
         $prependWithoutDirectDb = $prependWithoutDirectDb.'$syncs['.$i.']["table"]="'.$tables[$i].'"; ';
         $prependDirectDb = '<?php ';
-        $prependDirectDb = $prependDirectDb.'$server="'.$server.'"; ';
-        $prependDirectDb = $prependDirectDb.'$user="'.$user.'"; ';
-        $prependDirectDb = $prependDirectDb.'$pass="'.$pass.'"; ';
-        $prependDirectDb = $prependDirectDb.'$db="'.$db.'"; ';
+        $prependDirectDb = $prependDirectDb.'$server="'.$_SESSION["server_name"].'"; ';
+        $prependDirectDb = $prependDirectDb.'$user="'.$_SESSION["username"].'"; ';
+        $prependDirectDb = $prependDirectDb.'$pass="'.$_SESSION["password"].'"; ';
+        $prependDirectDb = $prependDirectDb.'$db="'.$_SESSION["database_name"].'"; ';
         $prependDirectDb = $prependDirectDb.'$table_name="'.$tables[$i].'"; ';
 
         foreach($attributes[$tables[$i]] as $j => $attribute){
@@ -51,24 +59,25 @@ if(isset($_POST["folder"])){
     exit;
 }
 else if(isset($_POST["server_name"])){ 
-    $server = $_POST["server_name"]; 
-    $user = $_POST["username"]; 
-    $pass = $_POST["password"]; 
-    $db = $_POST["database_name"]; 
+    $_SESSION["server_name"] = $_POST["server_name"];
+    $_SESSION["username"] = $_POST["username"];
+    $_SESSION["password"] = $_POST["password"];
+    $_SESSION["database_name"] = $_POST["database_name"]; 
+    // echo ("mysql:host=".$_SESSION['server_name']."dbname=".$_SESSION['database_name'].'",'. $_SESSION['username'] . $_SESSION['password']);
     try {
-        $conn = new PDO("mysql:host=$server;dbname=$db", $user, $pass);
+        $conn = new PDO("mysql:host=".$_SESSION['server_name']."; dbname=".$_SESSION['database_name'], $_SESSION['username'], $_SESSION['password']);
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $query = $conn->prepare("SELECT table_name, column_name
             FROM information_schema.columns 
-            WHERE table_schema = '$db' AND column_key != 'PRI' ");
+            WHERE table_schema = '".$_POST["database_name"]."' AND column_key != 'PRI' ");
         $query->execute();
         $result['column'] = $query -> fetchAll(); 
         $query = $conn->prepare("SELECT table_name
         FROM information_schema.tables 
-        WHERE table_schema = '$db'");
+        WHERE table_schema = '".$_POST["database_name"]."'");
         $query->execute();
         $result['table'] = $query -> fetchAll();
-        $result['message'] = "Connected to database: ".$db;
+        $result['message'] = "Connected to database: ".$_POST["database_name"];
         $result['success'] = 1;
         echo json_encode($result);
     }
@@ -82,16 +91,7 @@ else if(isset($_POST["server_name"])){
 else{ 
 ?> 
 
-<html>
-    <head>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    </head>
-    
-    <body>
+    <?php include "../sidebar-admin.php"; ?> 
         <div class="container" style="padding-bottom:200px;">
             <div class="row">
                 <div class="col-md-12" style="margin-top:20px;margin-bottom:20px">
@@ -115,19 +115,19 @@ else{
                             <hr>
                             <div class="form-group">
                                 <label for="usr">Server Name</label>
-                                <input class="form-control required2 required3" type="text" name="server_name" placeholder="" required> 
+                                <input class="form-control required2 required3" type="text" name="server_name" placeholder="" value="<?php if(isset($_SESSION['server_name'])) echo $_SESSION['server_name'];?>"  required> 
                             </div>
                             <div class="form-group">
                                 <label for="usr">Username</label>
-                                <input class="form-control required2 required3" type="text" name="username" placeholder="" required> 
+                                <input class="form-control required2 required3" type="text" name="username" placeholder="" value="<?php if(isset($_SESSION['username'])) echo $_SESSION['username'];?>" required> 
                             </div>
                             <div class="form-group">
                                 <label for="usr">Password</label>
-                                <input class="form-control" type="password" name="password" placeholder=""> 
+                                <input class="form-control" type="password" name="password" placeholder="" value="<?php if(isset($_SESSION['password'])) echo $_SESSION['password'];?>"> 
                             </div>
                             <div class="form-group">
                                 <label for="usr">Database Name</label>
-                                <input class="form-control required2 required3" type="text" name="database_name" placeholder="" required> 
+                                <input class="form-control required2 required3" type="text" name="database_name" placeholder="" value="<?php if(isset($_SESSION['database_name'])) echo $_SESSION['database_name'];?>" required> 
                             </div>
                             <input readonly="readonly" value="<?php echo $project_name ?>" type="hidden" name="project_folder_name"> 
                             <hr style="margin-top: 71px;">
@@ -335,7 +335,7 @@ else{
                     $('.sync-from').append('<option value="">-- Select Folder --</option>')
                     
                     $.each(form_attr['data'], function(i, item) {
-                        $('.sync-from').append('<option>'+ item["folder"] + '</option>')
+                        $('.sync-from').append('<option>'+ item["folder"]["name"] + '</option>')
                     });
                     append = updateOption();
                     $("#form-save-settings").show();
@@ -401,7 +401,7 @@ else{
                         });
 
                         $.each(folder, function(i, item) {
-                            if(selected_folder == item['folder']){
+                            if(selected_folder == item['folder']['name']){
                                 $.each(item['attribute'], function(j, attribute) { 
                                     clicked_button.parent().parent().parent().find(".sync-attr-from").append('<option>'+ attribute+ '</option>');
                                 }); 
@@ -464,5 +464,27 @@ else{
             })  
         }
     });
-    
+    $('a[href="../' + window.location.pathname.split('/').slice(2).join('/') + '"]').parent().addClass("active");
+    $('.sidebar-content > a').click(function() {
+        $('.sidebar-content').removeClass('active');
+        
+        $(this).parent().addClass("active");
+    });
+    $(".sidebar-dropdown > a").click(function() {
+        $(".sidebar-submenu").slideUp(200);
+        if($(this).parent().hasClass("active")) {
+            $(".sidebar-dropdown").removeClass("active");
+            $(this).parent().removeClass("active");
+        } else {
+            $(".sidebar-dropdown").removeClass("active");
+            $(this).next(".sidebar-submenu").slideDown(200);
+            $(this).parent().addClass("active");
+        }
+    });
+    $("#close-sidebar").click(function() {
+        $(".page-wrapper").removeClass("toggled");
+    });
+    $("#show-sidebar").click(function() {
+        $(".page-wrapper").addClass("toggled");
+    });
 </script>

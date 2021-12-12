@@ -1,4 +1,4 @@
-<title>Form Generator</title>
+<title>Sub Form Generator</title>
 <div class="container">
   <div class="clearfix">
     <div class="row">
@@ -80,6 +80,7 @@
 </div>
 
 <script>
+  add_class_input_form();
   var form_name = '<?php echo $sub_form['sub_form_name'];?>';
   // update data form project
   function update_form(){

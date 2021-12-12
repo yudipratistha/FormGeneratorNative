@@ -81,12 +81,45 @@
 
 <div class="float-action-form">
   <div class="container item-right">
+      <button type="button" onclick="show_import_form(<?php echo $form_projects_id ?>)" id="import-form" class="btn btn-info">Import Form</button>
       <button type="button" onclick="tambah_data_form()" class="btn btn-info">Save</button>
   </div>
 </div>
 
-<script>
+<!-- Modal Import Form-->
+<div class="modal fade" id="show-import-form" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header-blue">
+                <h2 class="modal-title" id="largeModalLabel" style="color:white">Import Form</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" style="color:white">&times;</span>
+                </button>
+            </div>
+            <form id="updateProjectMenu" enctype="multipart/form-data" action="" method="PUT">
+                <div class="col-md-12 mt-2">
+                    <table id="example" class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Select Form</th>
+                                <th>Form Name</th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody id="all-forms">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="import_form()" class="btn btn-green-gradient">Import Form</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
+<script>
+  add_class_input_form();
   //create form project
 	function tambah_data_form(){
     swal.fire({
@@ -140,4 +173,50 @@
     })
   }
   
+  function show_import_form(form_project_id){
+    $.ajax({
+      url: "/formgeneratornative/formgenerator/getAllForms/" + form_project_id ,
+      method: "GET",
+			dataType: 'json',
+			success: function(data){
+        console.log("asdsad", data.allForms)
+        $('#all-forms').children().remove();
+          Object.keys(data.allForms).forEach(function(key, index) {
+              $('#all-forms').append('<tr> <td><input type="radio" value="'+data.allForms[key].id+'" name="form_id"></td>\
+              <td>'+data.allForms[key].form_title+'</td></tr>');
+          });
+      },
+        error: function(data){
+            // data_token = jQuery.parseJSON(data);
+            console.log("asdsad", data.allForms)
+        }
+    });
+    $('#show-import-form').modal('show');
+  };
+
+  function import_form(form_id){
+    console.log($('input[name="form_id"]:checked').val());
+    $.ajax({
+      url: "/formgeneratornative/formgenerator/importForm/" + $('input[name="form_id"]:checked').val() ,
+      method: "GET",
+			dataType: 'json',
+			success: function(data){
+        html = $.parseHTML(data.form.form_export);
+        // $(html).find("form").remove();
+        console.log($(html).find("table[id*='subform-']").parent().parent());
+        $(html).find("table[id*='subform-']").parent().parent().remove();
+        console.log($(html));
+        $("#build").children().children().remove();
+        $("#build").children().append($(html).html())
+        add_class_input_form();
+        $("#build").children().children().find("#emptydiv").remove();
+        $('#show-import-form').modal('hide');
+      },
+      error: function(data){
+          // data_token = jQuery.parseJSON(data);
+          // console.log("asdsad", data.allForms)
+      }
+    });
+      
+  };
 </script>

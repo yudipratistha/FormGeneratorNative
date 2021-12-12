@@ -1,245 +1,5 @@
 $(document).ready(function() {
-    if($("#target").length){
-        if ($("#build").children().children().children().length <= 1) $("#build").children().children().append("<div id='emptydiv'><div class='empty-field'><i class='fa fa-plus'></i></div></div>")
-        if($("div").find('#legend').length){
-            $("div").find('#legend').attr({"class":"component", "data-toggle":"popover", "title":"", "trigger":"manual", "data-content":"\
-                <form class='form'>\
-                <div class='form-group col-md-12'>\
-                    <label class='control-label'>Title</label> <input class='form-control' type='text' name='form-title' id='form-title'>\
-                    <label class='control-label'>Form Name</label> <input class='form-control' type='text' name='form-name' id='form-name'>\
-                    <hr/>\
-                    <button class='btn btn-info'>Save</button><button class='btn btn-default'>Cancel</button>\
-                </div>\
-                </form>", "data-html":"true", "data-original-title":"Form Settings"
-            });
-            if(typeof form_name !== 'undefined') $("legend").attr({"class":"valtype legend-border-title", "data-valtype":"form-title", "data-form-name":"form-name",  "form-name":form_name});
-            else $("legend").attr({"class":"valtype legend-border-title", "data-valtype":"form-title", "data-form-name":"form-name", "form-name":'form_name'});
-        }
-        if($("input[type=text]").length){
-            $("#target .form-group").children().children("input[type=text]").parent().parent().attr({"class":"form-group component", "data-type":"text", "data-toggle":"popover", "title":"Field Settings - Text Input", "trigger":"manual", "data-content":"\
-                <form class=\'form\'>\
-                <div class=\'form-group col-md-12\'>\
-                <label class=\'control-label\'>Label Text</label> <input class=\'form-control\' type=\'text\' name=\'label\' id=\'label\'>\
-                <label class=\'control-label\'>Placeholder</label> <input type=\'text\' name=\'placeholder\' id=\'placeholder\' class=\'form-control\'>\
-                <label class=\'control-label\'>Attribute</label> <input class=\'form-control\' type=\'text\' name=\'attr\' id=\'attr\'>\
-                <label class=\'control-label\'>Help Text</label> <input type=\'text\' name=\'help\' id=\'help\' class=\'form-control\'>\
-                <label class=\'control-label\'>Required</label><br>\
-                <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required No' name='required' id='required' checked=''><label class='form-check-label' for='required'>Required No</label></div>\
-                <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required Yes' name='required' id='requiredyes'><label class='form-check-label'  for='requiredyes'>Required Yes</label></div>\
-                <hr/>\
-                <button class=\'btn btn-info\'>Save</button><button id=\'delete\' class=\'btn btn-danger\'>Delete</button><button class=\'btn btn-default\'>Cancel</button>\
-                </div>\
-                </form>", "data-html":"true"});
-                $("#target .form-group").children().children("input[type=text]").attr({"id":"attr", "class":"form-control input-md valtype", "data-valtype":"placeholder"});
-        }
-        if($("input[type=number]").length){
-            $("#target .form-group").children().children("input[type=number]").parent().parent().attr({"class":"form-group component", "data-type":"text", "data-toggle":"popover", "title":"Field Settings - Number", "trigger":"manual", "data-content":"\
-                <form class=\'form\'>\
-                <div class=\'form-group col-md-12\'>\
-                <label class=\'control-label\'>Label Text</label> <input class=\'form-control\' type=\'text\' name=\'label\' id=\'label\'>\
-                <label class=\'control-label\'>Placeholder</label> <input type=\'text\' name=\'placeholder\' id=\'placeholder\' class=\'form-control\'>\
-                <label class=\'control-label\'>Attribute</label> <input class=\'form-control\' type=\'text\' name=\'attr\' id=\'attr\'>\
-                <label class=\'control-label\'>Help Text</label> <input type=\'text\' name=\'help\' id=\'help\' class=\'form-control\'>\
-                <label class=\'control-label\'>Required</label><br>\
-                <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required No' name='required' id='required' checked=''><label class='form-check-label' for='required'>Required No</label></div>\
-                <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required Yes' name='required' id='requiredyes'><label class='form-check-label'  for='requiredyes'>Required Yes</label></div>\
-                <hr/>\
-                <button class=\'btn btn-info\'>Save</button><button id=\'delete\' class=\'btn btn-danger\'>Delete</button><button class=\'btn btn-default\'>Cancel</button>\
-                </div>\
-                </form>", "data-html":"true"});
-                $("#target .form-group").children().children("input[type=number]").attr({"id":"attr", "class":"form-control input-md valtype", "data-valtype":"placeholder"});
-        }
-        if($("input[type=checkbox]").length){
-            $("#target .form-group").children().children().children().children("input[type=checkbox]").parent().parent().parent().parent().attr({"class":"form-group component", "data-type":"text", "data-toggle":"popover", "title":"Field Settings - Checkboxes", "trigger":"manual", "data-content":"\
-                <form class=\'form\'>\
-                <div class=\'form-group col-md-12\'>\
-                <label class=\'control-label\'>Label Text</label> <input class=\'form-control\' type=\'text\' name=\'label\' id=\'label\'>\
-                <label class=\'control-label\'>Group Name Attribute</label> <input class=\'form-control\' type=\'text\' name=\'name\' id=\'name\'>\
-                <label class=\'control-label\'>Help Text</label> <input type=\'text\' name=\'help\' id=\'help\' class=\'form-control\'>\
-                <label class=\'control-label\'>Required</label><br>\
-                <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required No' name='required' id='required' checked=''><label class='form-check-label' for='required'>Required No</label></div>\
-                <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required Yes' name='required' id='requiredyes'><label class='form-check-label'  for='requiredyes'>Required Yes</label></div>\
-                <label class=\'control-label\'>Layout</label><br>\
-                <div class=\'form-check form-check-inline\'><input type=\'radio\' class=\'form-check-input\' value=\'Inline No\' name=\'inline\' id=\'form-check\' checked=\'\'><label class=\'form-check-label\' for=\'form-check\'>Inline No</label></div>\
-                <div class=\'form-check form-check-inline\'><input type=\'radio\' class=\'form-check-input\' value=\'Inline Yes\' name=\'inline\' id=\'form-check-inlineyes\'><label class=\'form-check-label\'  for=\'form-check-inlineyes\'>Inline Yes</label></div>\
-                <label class=\'control-label\'>Options:</label><div><button id=\'add-option\' class=\'btn btn-success\'>add</button></div>\
-                <hr/>\
-                <button class=\'btn btn-info\'>Save</button><button id=\'delete\' class=\'btn btn-danger\'>Delete</button><button class=\'btn btn-default\'>Cancel</button>\
-                </div>\
-                </form>", "data-html":"true"
-            });
-            $("#target .form-group").children().children().children().children("input[type=checkbox]").parent().parent().parent().attr({"class":"col-md-6 valtype", "data-valtype":"checkboxes"});
-            $("#target .form-group").children().children().children().children("input[type=checkbox]").attr({"class":"valtype form-check-input", "type":"checkbox"});
-        }
-        if($("input[type=radio]").length){
-            $("#target .form-group").children().children().children().children("input[type=radio]").parent().parent().parent().parent().attr({"class":"form-group component", "data-toggle":"popover", "title":"Multiple Radios", "trigger":"manual",
-                "data-content":"\
-                <form class=\'form\'>\
-                    <div class=\'form-group col-md-12\'>\
-                    <label class=\'control-label\'>Label Text</label> <input class=\'form-control\' type=\'text\' name=\'label\' id=\'label\'>\
-                    <label class=\'control-label\'>Group Name Attribute</label> <input class=\'form-control\' type=\'text\' name=\'name\' id=\'name\'>\
-                    <label class=\'control-label\'>Help Text</label> <input type=\'text\' name=\'help\' id=\'help\' class=\'form-control\'>\
-                    <label class=\'control-label\'>Required</label><br>\
-                    <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required No' name='required' id='required' checked=''><label class='form-check-label' for='required'>Required No</label></div>\
-                    <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required Yes' name='required' id='requiredyes'><label class='form-check-label'  for='requiredyes'>Required Yes</label></div>\
-                    <label class=\'control-label\'>Layout</label><br>\
-                    <div class=\'form-check form-check-inline\'><input type=\'radio\' class=\'form-check-input\' value=\'Inline No\' name=\'inline\' id=\'form-check\' checked=\'\'><label class=\'form-check-label\' for=\'form-check\'>Inline No</label></div>\
-                    <div class=\'form-check form-check-inline\'><input type=\'radio\' class=\'form-check-input\' value=\'Inline Yes\' name=\'inline\' id=\'form-check-inlineyes\'><label class=\'form-check-label\'  for=\'form-check-inlineyes\'>Inline Yes</label></div>\
-                    <label class=\'control-label\'>Options:</label><div><button id=\'add-option\' class=\'btn btn-success\'>add</button></div>\
-                    <hr/>\
-                    <button class=\'btn btn-info\'>Save</button><button id=\'delete\' class=\'btn btn-danger\'>Delete</button><button class=\'btn btn-default\'>Cancel</button>\
-                    </div>\
-                </form>", "data-html":"true"
-            });
-            $("#target .form-group").children().children().children().children("input[type=radio]").parent().parent().parent().attr({"class":"col-md-6 valtype", "data-valtype":"radios"});
-            $("#target .form-group").children().children().children().children("input[type=radio]").attr({"class":"valtype form-check-input", "type":"radio"});
-        }
-        if($("input[type=file]").length){
-            $("#target .form-group").children().children("input[type=file]").parent().parent().attr({"class":"form-group component", "data-type":"text", "data-toggle":"popover", "title":"Field Settings - Text Input", "trigger":"manual", "data-content":"\
-                <form class=\'form\'>\
-                <div class=\'form-group col-md-12\'>\
-                <label class=\'control-label\'>Label Text</label> <input class=\'form-control\' type=\'text\' name=\'label\' id=\'label\'>\
-                <label class=\'control-label\'>Attribute</label> <input class=\'form-control\' type=\'text\' name=\'attr\' id=\'attr\'>\
-                <label class=\'control-label\'>Help Text</label> <input type=\'text\' name=\'help\' id=\'help\' class=\'form-control\'>\
-                <label class=\'control-label\'>Required</label><br>\
-                <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required No' name='required' id='required' checked=''><label class='form-check-label' for='required'>Required No</label></div>\
-                <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required Yes' name='required' id='requiredyes'><label class='form-check-label'  for='requiredyes'>Required Yes</label></div>\
-                <hr/>\
-                <button class=\'btn btn-info\'>Save</button><button id=\'delete\' class=\'btn btn-danger\'>Delete</button><button class=\'btn btn-default\'>Cancel</button>\
-                </div>\
-                </form>", "data-html":"true"
-            });
-            $("#target .form-group").children().children("input[type=file]").attr({"id":"attr", "value":"file_1", "class":"form-control input-md valtype", "type":"file", "data-valtype":"value"});
-        }
-        if($("input[type=tablemodal]").length){
-            $("#target .form-group").children().children("input[type=tablemodal]").parent().parent().attr({"class":"form-group component", "data-type":"text", "data-toggle":"popover", "title":"Field Settings - Table Modal", "trigger":"manual", "data-content":"\
-                <form class=\'form\'>\
-                <div class=\'form-group col-md-12\'>\
-                <label class=\'control-label\'>Label Text</label> <input class=\'form-control\' type=\'text\' name=\'label\' id=\'label\'>\
-                <label class=\'control-label\'>Placeholder</label> <input type=\'text\' name=\'placeholder\' id=\'placeholder\' class=\'form-control\'>\
-                <label class=\'control-label\'>Attribute</label> <input class=\'form-control\' type=\'text\' name=\'attr\' id=\'attr\'>\
-                <label class=\'control-label\'>Help Text</label> <input type=\'text\' name=\'help\' id=\'help\' class=\'form-control\'>\
-                <label class=\'control-label\'>Required</label><br>\
-                <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required No' name='required' id='required' checked=''><label class='form-check-label' for='required'>Required No</label></div>\
-                <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required Yes' name='required' id='requiredyes'><label class='form-check-label'  for='requiredyes'>Required Yes</label></div>\
-                <label class=\'control-label\'>Upload Json Data</label> <input class=\'form-control\' type=\'file\' name=\'json_upload\' id=\'json_upload\'>\
-                <hr/>\
-                <button class=\'btn btn-info\'>Save</button><button id=\'delete\' class=\'btn btn-danger\'>Delete</button><button class=\'btn btn-default\'>Cancel</button>\
-                </div>\
-                </form>", "data-html":"true"
-            });
-            $("#target .form-group").children().children("input[type=tablemodal]").attr({"data-toggle":"modal", "type":"tablemodal", "class":"form-control input-md valtype", "data-valtype":"placeholder" });
-            $("#target #table-modal").attr({"class":"col-md-6 valtype", "data-valtype":"table-modal"});
-        }
-        if($("#target .form-group").children().children("button").parent().parent().length){
-            $("#target .form-group").children().children("button").parent().parent().attr({"class":"form-group component", "rel":"popover", "title":"Search Input", "trigger":"manual",
-                "data-content":"\
-                <form class='form'>\
-                    <div class=\'form-group col-md-12\'>\
-                    <label class=\'control-label\'>Button Text</label> <input class=\'form-control\' type=\'text\' name=\'label\' id=\'button\'>\
-                    <label class=\'control-label\' id=\'\'>Type: </label>\
-                    <select class=\'form-control input-md\' id=\'color\'>\
-                        <option id=\'btn-default\'>Default</option>\
-                        <option id=\'btn-primary\'>Primary</option>\
-                        <option id=\'btn-info\'>Info</option>\
-                        <option id=\'btn-success\'>Success</option>\
-                        <option id=\'btn-warning\'>Warning</option>\
-                        <option id=\'btn-danger\'>Danger</option>\
-                        <option id=\'btn-inverse\'>Inverse</option>\
-                    </select>\
-                    <hr/>\
-                    <button class=\'btn btn-info\'>Save</button><button id=\'delete\' class=\'btn btn-danger\'>Delete</button><button class=\'btn btn-default\'>Cancel</button>\
-                    </div>\
-                </form>", "data-html":"true"
-            });
-            $("#target .form-group").children().children("button").parent().attr({"class":"col-md-6 valtype", "data-valtype":"button"});
-        }
-        if($("select").length){
-            $("#target .form-group").children().children("select").parent().parent().attr({
-                "class":"form-group component", "rel":"popover", "title":"Field Settings - Select", "trigger":"manual",
-                "data-content":"\
-                <form class=\'form\'>\
-                <div class=\'form-group col-md-12\'>\
-                    <label class=\'control-label\'>Label Text</label> <input class=\'form-control\' type=\'text\' name=\'label\' id=\'label\'>\
-                    <label class=\'control-label\'>Attribute</label> <input class=\'form-control\' type=\'text\' name=\'attr\' id=\'attr\'>\
-                    <label class=\'control-label\'>Help Text</label> <input type=\'text\' name=\'help\' id=\'help\' class=\'form-control\'>\
-                    <label class=\'control-label\'>Required</label><br>\
-                    <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required No' name='required' id='required' checked=''><label class='form-check-label' for='required'>Required No</label></div>\
-                    <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required Yes' name='required' id='requiredyes'><label class='form-check-label'  for='requiredyes'>Required Yes</label></div>\
-                    <label class=\'control-label\'>Options:</label><div><button id=\'add-option\' class=\'btn btn-success\'>add</button></div>\
-                    <hr/>\
-                    <button class=\'btn btn-info\'>Save</button><button id=\'delete\' class=\'btn btn-danger\'>Delete</button><button class=\'btn btn-default\'>Cancel</button>\
-                </div>\
-                </form>", "data-html":"true"
-            });
-            $("#target .form-group").children().children("select").attr({"class":"form-control valtype", "data-valtype":"option"});
-        }
-        if($("input[type=date]").length){
-            $("#target .form-group").children().children().children("input[type=date]").parent().parent().parent().attr({
-                "class":"form-group component", "rel":"popover", "title":"Field Settings - Date", "trigger":"manual",
-                    "data-content":"\
-                    <form class=\'form\'>\
-                        <div class=\'form-group col-md-12\'>\
-                            <label class=\'control-label\'>Label Text</label> <input class=\'form-control\' type=\'text\' name=\'label\' id=\'label\'>\
-                            <label class=\'control-label\'>Attribute</label> <input class=\'form-control\' type=\'text\' name=\'attr\' id=\'attr\'>\
-                            <label class=\'control-label\'>Help Text</label> <input type=\'text\' name=\'help\' id=\'help\' class=\'form-control\'>\
-                            <label class=\'control-label\'>Required</label><br>\
-                            <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required No' name='required' id='required' checked=''><label class='form-check-label' for='required'>Required No</label></div>\
-                            <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required Yes' name='required' id='requiredyes'><label class='form-check-label'  for='requiredyes'>Required Yes</label></div>\
-                            <hr/>\
-                            <button class=\'btn btn-info\'>Save</button><button id=\'delete\' class=\'btn btn-danger\'>Delete</button><button class=\'btn btn-default\'>Cancel</button>\
-                        </div>\
-                    </form>", "data-html":"true"
-            });
-            $("#target .form-group").children().children().children("input[type=date]").attr({"class":"form-control input-md valtype", "data-valtype":"date"});
-        }
-        if($("input[type=time]").length){
-            $("#target .form-group").children().children().children("input[type=time]").parent().parent().parent().attr({
-                "class":"form-group component", "rel":"popover", "title":"Field Settings - Time", "trigger":"manual",
-                    "data-content":"\
-                    <form class=\'form\'>\
-                        <div class=\'form-group col-md-12\'>\
-                            <label class=\'control-label\'>Label Text</label> <input class=\'form-control\' type=\'text\' name=\'label\' id=\'label\'>\
-                            <label class=\'control-label\'>Attribute</label> <input class=\'form-control\' type=\'text\' name=\'attr\' id=\'attr\'>\
-                            <label class=\'control-label\'>Help Text</label> <input type=\'text\' name=\'help\' id=\'help\' class=\'form-control\'>\
-                            <label class=\'control-label\'>Required</label><br>\
-                            <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required No' name='required' id='required' checked=''><label class='form-check-label' for='required'>Required No</label></div>\
-                            <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required Yes' name='required' id='requiredyes'><label class='form-check-label'  for='requiredyes'>Required Yes</label></div>\
-                            <label class=\'control-label\'>Help Text</label> <input type=\'text\' name=\'help\' id=\'help\' class=\'form-control\'>\
-                            <hr/>\
-                            <button class=\'btn btn-info\'>Save</button><button id=\'delete\' class=\'btn btn-danger\'>Delete</button><button class=\'btn btn-default\'>Cancel</button>\
-                        </div>\
-                    </form>", "data-html":"true"
-            });
-            $("#target .form-group").children().children().children("input[type=time]").attr({"class":"form-control valtype"});
-        }
-        if($("input[type=datetime]").length){
-            $("#target .form-group").children().children().children("input[type=datetime]").parent().parent().parent().attr({
-                "class":"form-group form-group component", "rel":"popover", "title":"Field Settings - Datetime", "trigger":"manual",
-                    "data-content":"\
-                    <form class=\'form\'>\
-                        <div class=\'form-group col-md-12\'>\
-                            <label class=\'control-label\'>Label Text</label> <input class=\'form-control\' type=\'text\' name=\'label\' id=\'label\'>\
-                            <label class=\'control-label\'>Attribute</label> <input class=\'form-control\' type=\'text\' name=\'attr\' id=\'attr\'>\
-                            <label class=\'control-label\'>Help Text</label> <input type=\'text\' name=\'help\' id=\'help\' class=\'form-control\'>\
-                            <label class=\'control-label\'>Required</label><br>\
-                            <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required No' name='required' id='required' checked=''><label class='form-check-label' for='required'>Required No</label></div>\
-                            <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required Yes' name='required' id='requiredyes'><label class='form-check-label'  for='requiredyes'>Required Yes</label></div>\
-                            <label class=\'control-label\'>Help Text</label> <input type=\'text\' name=\'help\' id=\'help\' class=\'form-control\'>\
-                            <hr/>\
-                            <button class=\'btn btn-info\'>Save</button><button id=\'delete\' class=\'btn btn-danger\'>Delete</button><button class=\'btn btn-default\'>Cancel</button>\
-                        </div>\
-                    </form>", "data-html":"true"
-            });
-            $("#target .form-group").children().children().children("input[type=datetime]").attr({"class":"form-control datetimepicker-input valtype"});
-            $("#target #datetimepicker2").children(".input-group-append").attr({"class":"input-group-append valtype"});
-        }
-        $('#example_length').parent().parent().remove();
-        $('#example_info').parent().parent().remove();
-        $(".control-label").attr({"class":"col-md-6 control-label valtype", "data-valtype":'label'});
-        $(".help-block").attr({"class":"help-block valtype", "data-valtype":'help'});
-    }
-
+    
     $("form").delegate(".component", "mousedown", function(md) {
         $(".popover").remove();
 
@@ -640,8 +400,8 @@ $(document).ready(function() {
                     });
                     tops = [];
                 }
-                if ($("#build").children().children().children().length > 2) $("#build").find('#emptydiv').remove()
-                else if ($("#build").children().children().children().length <= 1) $("#build").children().children().append("<div id='emptydiv'><div class='empty-field'><i class='fa fa-plus'></i></div></div>")
+                if ($("#build").children().children().children().children().length > 2) $("#build").find('#emptydiv').remove()
+                else if ($("#build").children().children().children().children().length <= 1) $("#build").children().children().append("<div id='emptydiv'><div class='empty-field'><i class='fa fa-plus'></i></div></div>")
                 //clean up & add popover
                 $target.css("background-color", "#fff");
                 $(document).undelegate("body", "mousemove");
@@ -671,7 +431,12 @@ $(document).ready(function() {
     //popover on click event
     $("#target").delegate(".component", "click", function(e) {
         e.preventDefault();
-        $(".popover").hide();
+        
+        if ($('.show').length) {
+            $('.popover').popover('hide');
+        }
+        $("[data-toggle='popover']").popover('dispose');
+        $('.popover').remove();
         var $active_component = $(this);
         $active_component.popover("show");
         var valtypes = $active_component.find(".valtype");
@@ -683,7 +448,6 @@ $(document).ready(function() {
             var valRequired = $(e).attr("required");
             var valLayout = $active_component.find(".form-check, .form-check-inline").attr("class");
             var val;
-
             if (valID === "#placeholder") {
                 console.log(console.log($active_component))
                 $active_component.addClass("component-click")
@@ -833,7 +597,6 @@ $(document).ready(function() {
                 $(".popover #attr").val(substrVal);
             }
             if(valRequired === "required"){
-                console.log("require")
                 $(".popover " + "#"+valRequired+"yes").attr("checked", "checked")
             }
             if(valLayout === "form-check" || valLayout === "form-check-inline"){
@@ -984,6 +747,252 @@ $(document).ready(function() {
         });
     });  
 });
+
+function add_class_input_form(){
+    console.log("asas");
+    // $(document).ready(function() {
+        if($("#target").length){
+            if ($("#build").children().children().children().length <= 1) $("#build").children().children().append("<div id='emptydiv'><div class='empty-field'><i class='fa fa-plus'></i></div></div>")
+            if($("div").find('#legend').length){
+                $("div").find('#legend').attr({"class":"component", "data-toggle":"popover", "title":"", "trigger":"manual", "data-content":"\
+                    <form class='form'>\
+                    <div class='form-group col-md-12'>\
+                        <label class='control-label'>Title</label> <input class='form-control' type='text' name='form-title' id='form-title'>\
+                        <label class='control-label'>Form Name</label> <input class='form-control' type='text' name='form-name' id='form-name'>\
+                        <hr/>\
+                        <button class='btn btn-info'>Save</button><button class='btn btn-default'>Cancel</button>\
+                    </div>\
+                    </form>", "data-html":"true", "data-original-title":"Form Settings"
+                });
+                if(typeof form_name !== 'undefined') $("legend").attr({"class":"valtype legend-border-title", "data-valtype":"form-title", "data-form-name":"form-name",  "form-name":form_name});
+                else $("legend").attr({"class":"valtype legend-border-title", "data-valtype":"form-title", "data-form-name":"form-name", "form-name":'form_name'});
+            }
+            if($("input[type=text]").length){
+                $("#target .form-group").children().children("input[type=text]").parent().parent().attr({"class":"form-group component", "data-type":"text", "data-toggle":"popover", "title":"Field Settings - Text Input", "trigger":"manual", "data-content":"\
+                    <form class=\'form\'>\
+                    <div class=\'form-group col-md-12\'>\
+                    <label class=\'control-label\'>Label Text</label> <input class=\'form-control\' type=\'text\' name=\'label\' id=\'label\'>\
+                    <label class=\'control-label\'>Placeholder</label> <input type=\'text\' name=\'placeholder\' id=\'placeholder\' class=\'form-control\'>\
+                    <label class=\'control-label\'>Attribute</label> <input class=\'form-control\' type=\'text\' name=\'attr\' id=\'attr\'>\
+                    <label class=\'control-label\'>Help Text</label> <input type=\'text\' name=\'help\' id=\'help\' class=\'form-control\'>\
+                    <label class=\'control-label\'>Required</label><br>\
+                    <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required No' name='required' id='required' checked=''><label class='form-check-label' for='required'>Required No</label></div>\
+                    <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required Yes' name='required' id='requiredyes'><label class='form-check-label'  for='requiredyes'>Required Yes</label></div>\
+                    <hr/>\
+                    <button class=\'btn btn-info\'>Save</button><button id=\'delete\' class=\'btn btn-danger\'>Delete</button><button class=\'btn btn-default\'>Cancel</button>\
+                    </div>\
+                    </form>", "data-html":"true"});
+                    $("#target .form-group").children().children("input[type=text]").attr({"id":"attr", "class":"form-control input-md valtype", "data-valtype":"placeholder"});
+            }
+            if($("input[type=number]").length){
+                $("#target .form-group").children().children("input[type=number]").parent().parent().attr({"class":"form-group component", "data-type":"text", "data-toggle":"popover", "title":"Field Settings - Number", "trigger":"manual", "data-content":"\
+                    <form class=\'form\'>\
+                    <div class=\'form-group col-md-12\'>\
+                    <label class=\'control-label\'>Label Text</label> <input class=\'form-control\' type=\'text\' name=\'label\' id=\'label\'>\
+                    <label class=\'control-label\'>Placeholder</label> <input type=\'text\' name=\'placeholder\' id=\'placeholder\' class=\'form-control\'>\
+                    <label class=\'control-label\'>Attribute</label> <input class=\'form-control\' type=\'text\' name=\'attr\' id=\'attr\'>\
+                    <label class=\'control-label\'>Help Text</label> <input type=\'text\' name=\'help\' id=\'help\' class=\'form-control\'>\
+                    <label class=\'control-label\'>Required</label><br>\
+                    <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required No' name='required' id='required' checked=''><label class='form-check-label' for='required'>Required No</label></div>\
+                    <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required Yes' name='required' id='requiredyes'><label class='form-check-label'  for='requiredyes'>Required Yes</label></div>\
+                    <hr/>\
+                    <button class=\'btn btn-info\'>Save</button><button id=\'delete\' class=\'btn btn-danger\'>Delete</button><button class=\'btn btn-default\'>Cancel</button>\
+                    </div>\
+                    </form>", "data-html":"true"});
+                    $("#target .form-group").children().children("input[type=number]").attr({"id":"attr", "class":"form-control input-md valtype", "data-valtype":"placeholder"});
+            }
+            if($("input[type=checkbox]").length){
+                $("#target .form-group").children().children().children().children("input[type=checkbox]").parent().parent().parent().parent().attr({"class":"form-group component", "data-type":"text", "data-toggle":"popover", "title":"Field Settings - Checkboxes", "trigger":"manual", "data-content":"\
+                    <form class=\'form\'>\
+                    <div class=\'form-group col-md-12\'>\
+                    <label class=\'control-label\'>Label Text</label> <input class=\'form-control\' type=\'text\' name=\'label\' id=\'label\'>\
+                    <label class=\'control-label\'>Group Name Attribute</label> <input class=\'form-control\' type=\'text\' name=\'name\' id=\'name\'>\
+                    <label class=\'control-label\'>Help Text</label> <input type=\'text\' name=\'help\' id=\'help\' class=\'form-control\'>\
+                    <label class=\'control-label\'>Required</label><br>\
+                    <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required No' name='required' id='required' checked=''><label class='form-check-label' for='required'>Required No</label></div>\
+                    <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required Yes' name='required' id='requiredyes'><label class='form-check-label'  for='requiredyes'>Required Yes</label></div>\
+                    <br><label class=\'control-label\'>Layout</label><br>\
+                    <div class=\'form-check form-check-inline\'><input type=\'radio\' class=\'form-check-input\' value=\'Inline No\' name=\'inline\' id=\'form-check\' checked=\'\'><label class=\'form-check-label\' for=\'form-check\'>Inline No</label></div>\
+                    <div class=\'form-check form-check-inline\'><input type=\'radio\' class=\'form-check-input\' value=\'Inline Yes\' name=\'inline\' id=\'form-check-inlineyes\'><label class=\'form-check-label\'  for=\'form-check-inlineyes\'>Inline Yes</label></div>\
+                    <label class=\'control-label\'>Options:</label><div><button id=\'add-option\' class=\'btn btn-success\'>add</button></div>\
+                    <hr/>\
+                    <button class=\'btn btn-info\'>Save</button><button id=\'delete\' class=\'btn btn-danger\'>Delete</button><button class=\'btn btn-default\'>Cancel</button>\
+                    </div>\
+                    </form>", "data-html":"true"
+                });
+                $("#target .form-group").children().children().children().children("input[type=checkbox]").parent().parent().parent().attr({"class":"col-md-6 valtype", "data-valtype":"checkboxes"});
+                $("#target .form-group").children().children().children().children("input[type=checkbox]").attr({"class":"valtype form-check-input", "type":"checkbox"});
+            }
+            if($("input[type=radio]").length){
+                $("#target .form-group").children().children().children().children("input[type=radio]").parent().parent().parent().parent().attr({"class":"form-group component", "data-toggle":"popover", "title":"Multiple Radios", "trigger":"manual",
+                    "data-content":"\
+                    <form class=\'form\'>\
+                        <div class=\'form-group col-md-12\'>\
+                        <label class=\'control-label\'>Label Text</label> <input class=\'form-control\' type=\'text\' name=\'label\' id=\'label\'>\
+                        <label class=\'control-label\'>Group Name Attribute</label> <input class=\'form-control\' type=\'text\' name=\'name\' id=\'name\'>\
+                        <label class=\'control-label\'>Help Text</label> <input type=\'text\' name=\'help\' id=\'help\' class=\'form-control\'>\
+                        <label class=\'control-label\'>Required</label><br>\
+                        <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required No' name='required' id='required' checked=''><label class='form-check-label' for='required'>Required No</label></div>\
+                        <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required Yes' name='required' id='requiredyes'><label class='form-check-label'  for='requiredyes'>Required Yes</label></div>\
+                        <br><label class=\'control-label\'>Layout</label><br>\
+                        <div class=\'form-check form-check-inline\'><input type=\'radio\' class=\'form-check-input\' value=\'Inline No\' name=\'inline\' id=\'form-check\' checked=\'\'><label class=\'form-check-label\' for=\'form-check\'>Inline No</label></div>\
+                        <div class=\'form-check form-check-inline\'><input type=\'radio\' class=\'form-check-input\' value=\'Inline Yes\' name=\'inline\' id=\'form-check-inlineyes\'><label class=\'form-check-label\'  for=\'form-check-inlineyes\'>Inline Yes</label></div>\
+                        <label class=\'control-label\'>Options:</label><div><button id=\'add-option\' class=\'btn btn-success\'>add</button></div>\
+                        <hr/>\
+                        <button class=\'btn btn-info\'>Save</button><button id=\'delete\' class=\'btn btn-danger\'>Delete</button><button class=\'btn btn-default\'>Cancel</button>\
+                        </div>\
+                    </form>", "data-html":"true"
+                });
+                $("#target .form-group").children().children().children().children("input[type=radio]").parent().parent().parent().attr({"class":"col-md-6 valtype", "data-valtype":"radios"});
+                $("#target .form-group").children().children().children().children("input[type=radio]").attr({"class":"valtype form-check-input", "type":"radio"});
+            }
+            if($("input[type=file]").length){
+                $("#target .form-group").children().children("input[type=file]").parent().parent().attr({"class":"form-group component", "data-type":"text", "data-toggle":"popover", "title":"Field Settings - Text Input", "trigger":"manual", "data-content":"\
+                    <form class=\'form\'>\
+                    <div class=\'form-group col-md-12\'>\
+                    <label class=\'control-label\'>Label Text</label> <input class=\'form-control\' type=\'text\' name=\'label\' id=\'label\'>\
+                    <label class=\'control-label\'>Attribute</label> <input class=\'form-control\' type=\'text\' name=\'attr\' id=\'attr\'>\
+                    <label class=\'control-label\'>Help Text</label> <input type=\'text\' name=\'help\' id=\'help\' class=\'form-control\'>\
+                    <label class=\'control-label\'>Required</label><br>\
+                    <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required No' name='required' id='required' checked=''><label class='form-check-label' for='required'>Required No</label></div>\
+                    <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required Yes' name='required' id='requiredyes'><label class='form-check-label'  for='requiredyes'>Required Yes</label></div>\
+                    <hr/>\
+                    <button class=\'btn btn-info\'>Save</button><button id=\'delete\' class=\'btn btn-danger\'>Delete</button><button class=\'btn btn-default\'>Cancel</button>\
+                    </div>\
+                    </form>", "data-html":"true"
+                });
+                $("#target .form-group").children().children("input[type=file]").attr({"id":"attr", "value":"file_1", "class":"form-control input-md valtype", "type":"file", "data-valtype":"value"});
+            }
+            if($("input[type=tablemodal]").length){
+                $("#target .form-group").children().children("input[type=tablemodal]").parent().parent().attr({"class":"form-group component", "data-type":"text", "data-toggle":"popover", "title":"Field Settings - Table Modal", "trigger":"manual", "data-content":"\
+                    <form class=\'form\'>\
+                    <div class=\'form-group col-md-12\'>\
+                    <label class=\'control-label\'>Label Text</label> <input class=\'form-control\' type=\'text\' name=\'label\' id=\'label\'>\
+                    <label class=\'control-label\'>Placeholder</label> <input type=\'text\' name=\'placeholder\' id=\'placeholder\' class=\'form-control\'>\
+                    <label class=\'control-label\'>Attribute</label> <input class=\'form-control\' type=\'text\' name=\'attr\' id=\'attr\'>\
+                    <label class=\'control-label\'>Help Text</label> <input type=\'text\' name=\'help\' id=\'help\' class=\'form-control\'>\
+                    <label class=\'control-label\'>Required</label><br>\
+                    <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required No' name='required' id='required' checked=''><label class='form-check-label' for='required'>Required No</label></div>\
+                    <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required Yes' name='required' id='requiredyes'><label class='form-check-label'  for='requiredyes'>Required Yes</label></div>\
+                    <label class=\'control-label\'>Upload Json Data</label> <input class=\'form-control\' type=\'file\' name=\'json_upload\' id=\'json_upload\'>\
+                    <hr/>\
+                    <button class=\'btn btn-info\'>Save</button><button id=\'delete\' class=\'btn btn-danger\'>Delete</button><button class=\'btn btn-default\'>Cancel</button>\
+                    </div>\
+                    </form>", "data-html":"true"
+                });
+                $("#target .form-group").children().children("input[type=tablemodal]").attr({"data-toggle":"modal", "type":"tablemodal", "class":"form-control input-md valtype", "data-valtype":"placeholder" });
+                $("#target #table-modal").attr({"class":"col-md-6 valtype", "data-valtype":"table-modal"});
+            }
+            if($("#target .form-group").children().children("button").parent().parent().length){
+                $("#target .form-group").children().children("button").parent().parent().attr({"class":"form-group component", "rel":"popover", "title":"Search Input", "trigger":"manual",
+                    "data-content":"\
+                    <form class='form'>\
+                        <div class=\'form-group col-md-12\'>\
+                        <label class=\'control-label\'>Button Text</label> <input class=\'form-control\' type=\'text\' name=\'label\' id=\'button\'>\
+                        <label class=\'control-label\' id=\'\'>Type: </label>\
+                        <select class=\'form-control input-md\' id=\'color\'>\
+                            <option id=\'btn-default\'>Default</option>\
+                            <option id=\'btn-primary\'>Primary</option>\
+                            <option id=\'btn-info\'>Info</option>\
+                            <option id=\'btn-success\'>Success</option>\
+                            <option id=\'btn-warning\'>Warning</option>\
+                            <option id=\'btn-danger\'>Danger</option>\
+                            <option id=\'btn-inverse\'>Inverse</option>\
+                        </select>\
+                        <hr/>\
+                        <button class=\'btn btn-info\'>Save</button><button id=\'delete\' class=\'btn btn-danger\'>Delete</button><button class=\'btn btn-default\'>Cancel</button>\
+                        </div>\
+                    </form>", "data-html":"true"
+                });
+                $("#target .form-group").children().children("button").parent().attr({"class":"col-md-6 valtype", "data-valtype":"button"});
+            }
+            if($("select").length){
+                $("#target .form-group").children().children("select").parent().parent().attr({
+                    "class":"form-group component", "rel":"popover", "title":"Field Settings - Select", "trigger":"manual",
+                    "data-content":"\
+                    <form class=\'form\'>\
+                    <div class=\'form-group col-md-12\'>\
+                        <label class=\'control-label\'>Label Text</label> <input class=\'form-control\' type=\'text\' name=\'label\' id=\'label\'>\
+                        <label class=\'control-label\'>Attribute</label> <input class=\'form-control\' type=\'text\' name=\'attr\' id=\'attr\'>\
+                        <label class=\'control-label\'>Help Text</label> <input type=\'text\' name=\'help\' id=\'help\' class=\'form-control\'>\
+                        <label class=\'control-label\'>Required</label><br>\
+                        <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required No' name='required' id='required' checked=''><label class='form-check-label' for='required'>Required No</label></div>\
+                        <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required Yes' name='required' id='requiredyes'><label class='form-check-label'  for='requiredyes'>Required Yes</label></div>\
+                        <label class=\'control-label\'>Options:</label><div><button id=\'add-option\' class=\'btn btn-success\'>add</button></div>\
+                        <hr/>\
+                        <button class=\'btn btn-info\'>Save</button><button id=\'delete\' class=\'btn btn-danger\'>Delete</button><button class=\'btn btn-default\'>Cancel</button>\
+                    </div>\
+                    </form>", "data-html":"true"
+                });
+                $("#target .form-group").children().children("select").attr({"class":"form-control valtype", "data-valtype":"option"});
+            }
+            if($("input[type=date]").length){
+                $("#target .form-group").children().children().children("input[type=date]").parent().parent().parent().attr({
+                    "class":"form-group component", "rel":"popover", "title":"Field Settings - Date", "trigger":"manual",
+                        "data-content":"\
+                        <form class=\'form\'>\
+                            <div class=\'form-group col-md-12\'>\
+                                <label class=\'control-label\'>Label Text</label> <input class=\'form-control\' type=\'text\' name=\'label\' id=\'label\'>\
+                                <label class=\'control-label\'>Attribute</label> <input class=\'form-control\' type=\'text\' name=\'attr\' id=\'attr\'>\
+                                <label class=\'control-label\'>Help Text</label> <input type=\'text\' name=\'help\' id=\'help\' class=\'form-control\'>\
+                                <label class=\'control-label\'>Required</label><br>\
+                                <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required No' name='required' id='required' checked=''><label class='form-check-label' for='required'>Required No</label></div>\
+                                <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required Yes' name='required' id='requiredyes'><label class='form-check-label'  for='requiredyes'>Required Yes</label></div>\
+                                <hr/>\
+                                <button class=\'btn btn-info\'>Save</button><button id=\'delete\' class=\'btn btn-danger\'>Delete</button><button class=\'btn btn-default\'>Cancel</button>\
+                            </div>\
+                        </form>", "data-html":"true"
+                });
+                $("#target .form-group").children().children().children("input[type=date]").attr({"class":"form-control input-md valtype", "data-valtype":"date"});
+            }
+            if($("input[type=time]").length){
+                $("#target .form-group").children().children().children("input[type=time]").parent().parent().parent().attr({
+                    "class":"form-group component", "rel":"popover", "title":"Field Settings - Time", "trigger":"manual",
+                        "data-content":"\
+                        <form class=\'form\'>\
+                            <div class=\'form-group col-md-12\'>\
+                                <label class=\'control-label\'>Label Text</label> <input class=\'form-control\' type=\'text\' name=\'label\' id=\'label\'>\
+                                <label class=\'control-label\'>Attribute</label> <input class=\'form-control\' type=\'text\' name=\'attr\' id=\'attr\'>\
+                                <label class=\'control-label\'>Help Text</label> <input type=\'text\' name=\'help\' id=\'help\' class=\'form-control\'>\
+                                <label class=\'control-label\'>Required</label><br>\
+                                <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required No' name='required' id='required' checked=''><label class='form-check-label' for='required'>Required No</label></div>\
+                                <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required Yes' name='required' id='requiredyes'><label class='form-check-label'  for='requiredyes'>Required Yes</label></div>\
+                                <label class=\'control-label\'>Help Text</label> <input type=\'text\' name=\'help\' id=\'help\' class=\'form-control\'>\
+                                <hr/>\
+                                <button class=\'btn btn-info\'>Save</button><button id=\'delete\' class=\'btn btn-danger\'>Delete</button><button class=\'btn btn-default\'>Cancel</button>\
+                            </div>\
+                        </form>", "data-html":"true"
+                });
+                $("#target .form-group").children().children().children("input[type=time]").attr({"class":"form-control valtype"});
+            }
+            if($("input[type=datetime]").length){
+                $("#target .form-group").children().children().children("input[type=datetime]").parent().parent().parent().attr({
+                    "class":"form-group form-group component", "rel":"popover", "title":"Field Settings - Datetime", "trigger":"manual",
+                        "data-content":"\
+                        <form class=\'form\'>\
+                            <div class=\'form-group col-md-12\'>\
+                                <label class=\'control-label\'>Label Text</label> <input class=\'form-control\' type=\'text\' name=\'label\' id=\'label\'>\
+                                <label class=\'control-label\'>Attribute</label> <input class=\'form-control\' type=\'text\' name=\'attr\' id=\'attr\'>\
+                                <label class=\'control-label\'>Help Text</label> <input type=\'text\' name=\'help\' id=\'help\' class=\'form-control\'>\
+                                <label class=\'control-label\'>Required</label><br>\
+                                <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required No' name='required' id='required' checked=''><label class='form-check-label' for='required'>Required No</label></div>\
+                                <div class='form-check form-check-inline'><input type='radio' class='form-check-input' value='Required Yes' name='required' id='requiredyes'><label class='form-check-label'  for='requiredyes'>Required Yes</label></div>\
+                                <label class=\'control-label\'>Help Text</label> <input type=\'text\' name=\'help\' id=\'help\' class=\'form-control\'>\
+                                <hr/>\
+                                <button class=\'btn btn-info\'>Save</button><button id=\'delete\' class=\'btn btn-danger\'>Delete</button><button class=\'btn btn-default\'>Cancel</button>\
+                            </div>\
+                        </form>", "data-html":"true"
+                });
+                $("#target .form-group").children().children().children("input[type=datetime]").attr({"class":"form-control datetimepicker-input valtype"});
+                $("#target #datetimepicker2").children(".input-group-append").attr({"class":"input-group-append valtype"});
+            }
+            $('#example_length').parent().parent().remove();
+            $('#example_info').parent().parent().remove();
+            $(".control-label").attr({"class":"col-md-6 control-label valtype", "data-valtype":'label'});
+            $(".help-block").attr({"class":"help-block valtype", "data-valtype":'help'});
+        }
+    // });
+}
 
 //   get title form
 var getTitle = function() {
