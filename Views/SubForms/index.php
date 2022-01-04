@@ -33,7 +33,7 @@
                     </tbody>
                 </table>
             </form>
-            <a href="/formgeneratornative/subFormGenerator/createSubForm/<?php echo array_column($sub_forms, 'id')[0];?>">
+            <a href="/formgeneratornative/subFormGenerator/createSubForm/<?php echo array_column($sub_forms, 'form_id')[0];?>">
                 <button  class="float btn btn-icon btn-add btn-info mt-1 mb-1" data-tooltip="tooltip" data-placement="left" title="" data-original-title="Build Sub Form">
                     <span class="btn-inner--icon"><i class="fe fe-plus"></i></span>
                 </button>
@@ -52,7 +52,7 @@
 			type: "warning",
             html: '<p>'+sub_form_title+' will deleted on your sub form list!</p>\
               <form id="delete_sub_form" action="" method="POST" enctype="multipart/form-data">\
-                <input type="hidden" value="<?php echo array_column($sub_forms, 'id')[0];?>" name="main_form_id" id="main_form_id">\
+                <input type="hidden" value="<?php echo array_column($sub_forms, 'form_id')[0];?>" name="main_form_id" id="main_form_id">\
                 <input type="hidden" value="" name="delete_main_form_sub_form" id="delete_main_form_sub_form">\
                 <input type="hidden" value="" name="delete_main_form_attr_sub_form" id="delete_main_form_attr_sub_form">\
              </form>',

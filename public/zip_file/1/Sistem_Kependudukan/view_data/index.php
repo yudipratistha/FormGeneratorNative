@@ -1,0 +1,1 @@
+<?php header("Location: view_data.php?form-project=sistem-kependudukan&form=form-kk&status=Sync"); ?>

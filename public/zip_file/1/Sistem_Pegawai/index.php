@@ -1,1 +1,0 @@
-<?php header("Location: view_data/view_data.php?form-project=sistem-pegawai&form=form-data-pegawai&status=Sync"); ?>
